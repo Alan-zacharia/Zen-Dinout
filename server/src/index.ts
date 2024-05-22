@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import configuredKeys from "./configs/config";
 import routes from "./application/routes/routes";
 import databaseConnection from "./configs/databaseConfig";
+import nodemailerCreateOtp from "./functions/MailerGenrator";
 
 const app: Application = express();
 
@@ -17,7 +18,8 @@ app.use(cookieParser());
 
 
 databaseConnection();
-// routes(app);
+routes(app);
+
 
 app.listen(configuredKeys.PORT, () => {
   console.log("Server is running on http://localhost:"+configuredKeys.PORT);
