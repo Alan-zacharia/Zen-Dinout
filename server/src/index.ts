@@ -17,8 +17,8 @@ app.use(cookieParser());
 
 
 databaseConnection();
-routes(app);
+// routes(app);
 
 app.listen(configuredKeys.PORT, () => {
-  console.log("Server is running on http://localhost:", configuredKeys.PORT);
+  console.log("Server is running on http://localhost:"+configuredKeys.PORT);
 });
