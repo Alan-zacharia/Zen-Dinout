@@ -20,5 +20,9 @@ userRouter.post('/login',validate(loginSchema), controller.Login.bind(controller
 
 
 
+userRouter.get('/login', controller.Login.bind(controller));
+
+
+
 export default userRouter;
 

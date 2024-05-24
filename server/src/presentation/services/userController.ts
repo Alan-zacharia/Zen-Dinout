@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import { IUserInteractor } from "../../domain/interface/use-cases/IUserInteractor";
 import { UserType } from "../../domain/entities/User";
+import { Verify } from "crypto";
 
 export class userController {
   constructor(private readonly interactor: IUserInteractor) {}
@@ -50,5 +51,35 @@ export class userController {
       console.error(" OOps ! error during register:", error);
       res.status(500).send("Internal server error");
     }
+  }
+
+  /**
+   * Otp verification service
+   * @param data - userId for verification otp
+   * @return user , message 
+   */
+
+  async OtpVerify(req:Request , res : Response , next : NextFunction){
+   try{
+
+   }catch(error){
+      console.error(" OOps ! error during resend otp service:", error);
+      res.status(500).send("Internal server error");
+   }
+  }
+
+ /**
+   * Resend otp generation service
+   * @param data - userId for resend otp
+   * @return New otp to users G-mail
+   */
+
+  async ResendOtp(req:Request , res : Response , next : NextFunction){
+   try{
+
+   }catch(error){
+      console.error(" OOps ! error during resend otp service:", error);
+      res.status(500).send("Internal server error");
+   }
   }
 }
