@@ -1,10 +1,12 @@
 import React from 'react'
+import AppRouter from './routes/AppRouter'
 
-const App = () => {
+
+const App : React.FC = () => {
   return (
-    <div>
-      
-    </div>
+ 
+      <AppRouter/>
+ 
   )
 }
 
