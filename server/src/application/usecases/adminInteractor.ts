@@ -1,7 +1,7 @@
 import { UserType } from "../../domain/entities/User";
-import { restaurantTypes } from "../../domain/entities/restaurants";
 import { IAdminRepositories } from "../../domain/interface/repositories/IAdminRepositories";
 import { IAdminInteractor } from "../../domain/interface/use-cases/IAdminInteractor";
+import { jwtGenerateToken } from "../../functions/jwtTokenFunctions";
 
 
 
@@ -10,13 +10,48 @@ import { IAdminInteractor } from "../../domain/interface/use-cases/IAdminInterac
 export class adminInteractorImpl implements IAdminInteractor  {
     constructor(private readonly repository : IAdminRepositories){};
     
-    adminLogin(credentials: { email: string; password: string; }): Promise<{ message: string; token: string | null; admin: UserType | null; }> {
-        throw new Error("Method not implemented.");
+    async adminLogin(credentials: { email: string; password: string; }): Promise<{ message: string; token: string | null; admin: UserType | null; }> {
+        console.log("Get admin login Interactor service........; ");
+        try{
+           const {admin , message} = await this.repository.loginAdminRepo(credentials);
+           let token : string = '';
+           if(admin){
+               token = jwtGenerateToken(admin.id as string);
+           }
+           return {admin , message , token}
+        }catch(error){
+            console.log("OOps error in admin login interactorImpl : ", error);
+            throw error;
+        }
     }
-    getUsers(): Promise<{ users: UserType | null; message: string; }> {
-        throw new Error("Method not implemented.");
+    async getUsers(): Promise<{ users: UserType | null; message: string; }> {
+        console.log("Get users Interactor service.........; ")
+        try{ 
+             const {message , users} = await this.repository.getUsersList();
+             return {users , message}
+        }catch(error){
+            console.log("OOps error in getUsers interactorImpl : ", error);
+            throw error;
+        }
     }
-    getResataurants(): Promise<{ restaurants: restaurantTypes | null; message: string; }> {
-        throw new Error("Method not implemented.");
+    async getResataurants(): Promise<{ restaurants: object | null; message: string; }> {
+        console.log("Get restaurants Interactor service.........; ")
+        try{
+            const {message , restaurants} = await this.repository.getRestaurantsList();
+            return {restaurants , message}
+        }catch(error){
+            console.log("OOps error in getUsers interactorImpl : ", error);
+            throw error;
+        }
+    }
+    async restaurantApprove(): Promise<{ restaurants: object | null; message: string; }> {
+        console.log("Get restaurants Interactor service.........; ")
+        try{
+            const {message , restaurants} = await this.repository.approve();
+            return {restaurants , message}
+        }catch(error){
+            console.log("OOps error in getUsers interactorImpl : ", error);
+            throw error;
+        }
     }
 }

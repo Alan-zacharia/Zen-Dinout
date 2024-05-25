@@ -18,7 +18,7 @@ export class userInteractorImpl implements IUserInteractor {
       const { user, message } = await this.repository.create(credentials);
       if (user) {
         const otp = await otpGenerator.generateOtp();
-        nodemailerCreateOtp(user.email, otp);
+        nodemailerCreateOtp(user.email as string, otp);
       }
       return { user, message };
     } catch (error) {

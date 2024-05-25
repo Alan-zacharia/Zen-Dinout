@@ -18,6 +18,7 @@ const adminRouter : Router = Router();
 adminRouter.post('/login',controller.loginAdmin.bind(controller));
 adminRouter.get('/users-list',controller.getUsers.bind(controller));
 adminRouter.get('/restaurants-list',controller.getRestaurants.bind(controller));
+adminRouter.get('/restaurants-approval-lists',controller.getRestaurants.bind(controller));
 
 
 
