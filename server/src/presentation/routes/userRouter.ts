@@ -17,10 +17,11 @@ const userRouter : Router = Router();
 /** Post Methods  */
 userRouter.post('/register',validate(registerSchema),userExists, controller.Register.bind(controller));
 userRouter.post('/login',validate(loginSchema), controller.Login.bind(controller));
+userRouter.post('/otp', controller.OtpVerify.bind(controller));
 
 
 
-userRouter.get('/login', controller.Login.bind(controller));
+userRouter.post('/resend-otp', controller.ResendOtp.bind(controller));
 
 
 

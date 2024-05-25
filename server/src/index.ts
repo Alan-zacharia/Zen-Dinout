@@ -12,7 +12,7 @@ import nodemailerCreateOtp from "./functions/MailerGenrator";
 const app: Application = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cors({ credentials :true , origin:"http://localhost:4000" }));
 app.use(cookieParser());
 

@@ -2,9 +2,13 @@ import { UserType } from "../../domain/entities/User";
 import { IUserRepository } from "../../domain/interface/repositories/IUserRepository";
 import { jwtGenerateToken } from "../../functions/jwtTokenFunctions";
 import UserModel from "../database/model.ts/userModel";
+import { otpGenerator } from "../../functions/OtpSetup";
+import nodemailerCreateOtp from "../../functions/MailerGenrator";
 import bcrypt from 'bcryptjs';
+import { OTPModel } from "../database/model.ts/OtpModel";
 
 export class userRepositoryImpl implements IUserRepository {
+  
   async findByCredentials(
     email: string,
     password: string
@@ -36,15 +40,49 @@ export class userRepositoryImpl implements IUserRepository {
     user: UserType
   ): Promise<{ user: UserType | null; message: string; }> {
     const { username, email, password, role } = user;
-    const newUser: UserType = await UserModel.create({
+    const otp = otpGenerator.generateOtp();
+    nodemailerCreateOtp(user.email as string, otp)
+    const newUser = new  UserModel({
       username,
       email,
       password,
       role,
+      otp
     });
+    await newUser.save()
+    const otpData = new OTPModel({ otp: otp , userId :newUser._id });
+    await otpData.save();
     return {
       user: newUser as UserType,
       message: "User created successfully",
     };
+  };
+
+  async OtpCheking(otp: string, userId: string): Promise<{ message: string; status: boolean; }> {
+    const Data = await OTPModel.findById(userId); 
+    const userData = await UserModel.findById(userId); 
+    if(userData && Data){
+      if(otp == Data.otp){
+        userData.isVerified = true;
+        userData.otp = '';
+        await userData.save();
+        return {status : true , message : "Otp Verified succesfully" }
+      } 
+    }
+      return {status : false , message : "Incorrect otp" }
   }
+  async resend( userId: string): Promise<{ message: string; status: boolean; }> {
+    console.log(userId)
+    const user = await UserModel.findById(userId);
+    console.log(user)
+    if(user){
+      const otp = otpGenerator.generateOtp();
+      nodemailerCreateOtp(user.email as string, otp);
+      const otpData = new OTPModel({ otp: otp , userId : user._id });
+      await otpData.save();
+      return {status : true , message : "Otp Resend succesfully" }
+    }
+    return {status : false , message : "Incorrect otp" }
+  };
+
 }

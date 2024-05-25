@@ -1,25 +1,16 @@
-import { error } from "console";
 import { UserType } from "../../domain/entities/User";
 import { IMailer } from "../../domain/interface/external-lib/IMailer";
 import { IUserRepository } from "../../domain/interface/repositories/IUserRepository";
 import { IUserInteractor } from "../../domain/interface/use-cases/IUserInteractor";
-import { otpGenerator } from "../../functions/OtpSetup";
-import nodemailerCreateOtp from "../../functions/MailerGenrator";
 import { jwtGenerateRefreshToken } from "../../functions/jwtTokenFunctions";
 
 export class userInteractorImpl implements IUserInteractor {
   constructor(private readonly repository: IUserRepository, Imailer: IMailer) {}
-
-
- 
+  
 
   async register(credentials: UserType): Promise<{ user: UserType | null; message: string }> {
     try {
       const { user, message } = await this.repository.create(credentials);
-      if (user) {
-        const otp = await otpGenerator.generateOtp();
-        nodemailerCreateOtp(user.email as string, otp);
-      }
       return { user, message };
     } catch (error) {
       if (error instanceof Error) {
@@ -53,5 +44,24 @@ export class userInteractorImpl implements IUserInteractor {
       console.log("Error occured in Login", error);
       throw error;
     }
+  };
+  async verify(otp: string, userId: string): Promise<{ message: string; status: boolean; }> {
+  try{
+     const {message , status } = await this.repository.OtpCheking(otp , userId);
+     return {message , status};
+  }catch(error){
+    console.log(error);
+    throw error;
   }
+  }
+  async resendOtp(userId: string): Promise<{ message: string; status: boolean; }> {
+  try{
+     const {message , status } = await this.repository.resend(userId);
+     return {message , status};
+  }catch(error){
+    console.log(error);
+    throw error;
+  }
+  }
+
 }
