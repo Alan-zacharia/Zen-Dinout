@@ -5,8 +5,7 @@ import Signup from '../pages/user/Register'
 import AdminLogin from '../components/admin/LoginForm'
 import AdminLayout from '../pages/admin/AdminHome'
 import NewRestaurants from '../components/admin/RestaurantRegistrationMan'
-   
-import OtpPage from '../pages/Otp'
+import { renderComponent } from './OtpProtected'
 const HomePage = React.lazy(() => import('../pages/user/Home'));
 const DashBoard = React.lazy(() => import('../components/admin/DashBoard'));
 const RestaurantMangement = React.lazy(() => import('../components/admin/RestaurantManagement'));
@@ -21,7 +20,7 @@ const AppRouter : React.FC = () => {
         {/* Auth routes */}
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Signup/>} />
-        <Route path="/otp" element={<OtpPage/>} />
+        <Route path="/otp"  element={renderComponent()} />
 
         <Route path="/" element={<HomePage />} />
 
@@ -41,6 +40,7 @@ const AppRouter : React.FC = () => {
     </Router>
   )
 }
+
 
 export default AppRouter;
 

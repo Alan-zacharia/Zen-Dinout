@@ -6,3 +6,9 @@ body{
    
     background:rgb(255, 255,255);
 }
+
+@layer utilities {
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+}

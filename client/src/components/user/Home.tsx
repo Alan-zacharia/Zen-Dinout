@@ -1,9 +1,10 @@
 import React from "react";
 import LoginButton from "../layouts/Button";
 import BackGroundImage from '../../assets/HomeBackground.jpg'
+import { localStorageRemoveItem } from "../../utils/localStorageImpl";
 
 const Home: React.FC = () => {
-
+  localStorageRemoveItem("otpSession")
   return (
     <div className="h-[600px] flex flex-row justify-between items-center lg:px-32 px-5 bg-cover bg-no-repeat" style={{backgroundImage: `url(${BackGroundImage})`}}>
       <div className="w-full lg:w-2/4 space-y-5">

@@ -21,8 +21,8 @@ const useAdminLogin = (): LoginReturnType => {
     setError(null);
     try{    
         const {data} = await adminLogin(datas);
-        setLoading(false)
         console.log(data);
+        setLoading(false)
     }catch(error : any){
         setLoading(false);
         if (error.response && error.response.data && error.response.data.message) {

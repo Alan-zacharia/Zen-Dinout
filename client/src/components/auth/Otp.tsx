@@ -1,63 +1,36 @@
 import { useFormik } from "formik";
-import React, {  useState  } from "react";
-import { Link, useNavigate } from "react-router-dom";
-// import { validateOtp } from "../../utils/validation";
-// import { verifyOtp } from "../../helpers/helperRoute";
-// import { getItemStorage, removeItemStorage } from "../../utils/localstorageimpl";
+import React from "react";
+import { Link } from "react-router-dom";
 import OtpInput from "react-otp-input";
 import OtpTimer from "../layouts/Timer";
+import { OtpType, validateOtp } from "../../utils/validations";
+import { otpForm, resendOtp } from "../../services/api";
+import useOtpForm from "../../hooks/useOtpForm";
+import { localStorageGetItem } from "../../utils/localStorageImpl";
 
 
 const Otp: React.FC = () => {
-  const [error, isOtpError] = useState<string>("");
-  const navigate = useNavigate();
+  const {error ,OtpFn ,loading} = useOtpForm();
   const formik = useFormik({
     initialValues: {
       otp: "",
     },
-    // validate: validateOtp,
-    onSubmit: async (res) => {
-    //   const email =  getItemStorage("userId");
-    //   console.log(email)
-    //   try {
-    //     console.log(email)
-    //     if (email) {
-    //       const response = await verifyOtp(email, res.otp);
-    //       const { message } = response.data;
-    //       console.log(message);
-         
-           
-          
-    //       navigate("/login");
-    //     }
-    //   } catch (error: any) {
-    //     if (
-    //       error.response &&
-    //       error.response.data &&
-    //       error.response.data.message
-    //     ) {
-    //       isOtpError(error.response.data.message);
-    //     } else {
-    //       isOtpError("An error occurred. Please try again later.");
-    //     }
-    //   }
+    validate: validateOtp,
+    onSubmit: async (res : OtpType) => {   
+      try {
+       OtpFn(res);
+      } catch (error) {
+       console.log(error)
+      }
     },
   });
+
   const handleOtpChange = (otp: string) => {
-    console.log('sdfsdfsdf')
     formik.setFieldValue("otp", otp);
-    console.log(otp);
   };
-  const hanldeResendOtp = ()=>{
-    // const email =  getItemStorage("userId");
-      console.log('resend ') 
-  }
 
   return (
     <>
-      <div className="absolute px-32 pt-6">
-        
-      </div>
       <div className="m-auto h-[400px] shadow-lg shadow-gray-400 w-[400px]">
         <h1 className=" p-8 text-2xl font-bold pt-10">
           <Link to="/register">
@@ -66,10 +39,16 @@ const Otp: React.FC = () => {
           Enter OTP
         </h1>
         <div className="p-8 pt-10">
+          
           <form onSubmit={formik.handleSubmit}>
+            { error && (
+              <div  className="text-red-600">{error}</div>
+            )}
             <div className="pb-5">
-              <p className="font-bold text-lg pb-3">OTP</p>
-              {error && <div className="text-red-500">{error}</div>}
+              <p className="font-bold text-lg pb-3">OTP</p>   
+              {formik.touched.otp && formik.errors.otp && (
+                <div className="text-red-500 pb-3">{formik.errors.otp}</div>
+              )}         
               <OtpInput
                 value={formik.values.otp}
                 onChange={handleOtpChange}
@@ -93,17 +72,15 @@ const Otp: React.FC = () => {
                
                 />)}
                 />
-                <OtpTimer handleResend={hanldeResendOtp} />
-              {formik.touched.otp && formik.errors.otp && (
-                <div className="text-red-500">{formik.errors.otp}</div>
-              )}
+                <OtpTimer/>
+            
             </div>
           
             <button
               className="shadow-lg shadow-gray-500 bg-orange-400 px-3 py-3 w-full"
               type="submit"
-            >
-              Submit
+              disabled={loading}>
+              {loading ? 'Loading...' : 'Submit'}
             </button>
           </form>
         </div>

@@ -1,10 +1,13 @@
 import axios from "axios";
+import { OtpType } from "../utils/validations";
 axios.defaults.baseURL = "http://localhost:3000"
 
 
 interface credentials {
+  username: string;
   email: string;
   password: string;
+  role:string;
 }
 /** return api response */
 export interface APIresponse {
@@ -38,9 +41,8 @@ const register = async (credentials: credentials) => {
  * @param data - Object containing email and password for login
  * @returns Promise that resolves to an object containing the logged-in  user , mesage , jwt, or null if login fails
  */
-const login = async (data: credentials): Promise<APIresponse> => {
+const login = async (data: Partial<credentials>): Promise<APIresponse> => {
   try {
-  
     const {
       data: { message, user, token },
     } = await axios.post("/api/login", data);
@@ -56,7 +58,7 @@ const login = async (data: credentials): Promise<APIresponse> => {
  * @param data - Object containing email and password for login
  * @returns Promise that resolves to an object containing the logged-in  admin , mesage , jwt, or null if login fails
  */
-const adminLogin = async (data: credentials): Promise<APIresponse> => {
+const adminLogin = async (data: Partial<credentials>): Promise<APIresponse> => {
   try {
     const {
       data: { message, user, token },
@@ -68,4 +70,25 @@ const adminLogin = async (data: credentials): Promise<APIresponse> => {
   }
 };
 
-export { login, register, adminLogin };
+const otpForm = async(otp : OtpType , userId : string)=>{
+ try{
+    const {data :  { message , success }} = await axios.post('/api/otp',{otp, userId});
+    console.log(message , success )
+    return {data : {message , success}};
+ }catch(error){
+  console.log(error); 
+  throw error;
+ }
+}
+const resendOtp = async( userId : string)=>{
+ try{
+    const {data :  { message , success }} = await axios.post('/api/resend-otp',{userId});
+    console.log(message , success )
+    return {data : {message , success}};
+ }catch(error){
+  console.log(error); 
+  throw error;
+ }
+}
+
+export { login, register, adminLogin , otpForm , resendOtp };

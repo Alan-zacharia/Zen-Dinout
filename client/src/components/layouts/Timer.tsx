@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-// import { resendOtoApi, verifyOtp } from '../../helpers/helperRoute';
-// import { getItemStorage } from '../../utils/localstorageimpl';
+import { localStorageGetItem } from "../../utils/localStorageImpl";
+import { resendOtp } from "../../services/api";
 
 
-interface TimerProps {
-    handleResend: () => void; 
-  }
+
   
 
-const Timer: React.FC<TimerProps> = ({handleResend }) => {
+const Timer: React.FC= () => {
   const [seconds, setSeconds] = useState(() => {
     const savedSeconds = localStorage.getItem("remainingSeconds");
     return savedSeconds ? parseInt(savedSeconds, 10) : 30;
@@ -24,12 +22,11 @@ const Timer: React.FC<TimerProps> = ({handleResend }) => {
     }, 1000);
     return () => clearInterval(interval);
   }, [seconds]);
-  const resendOtp = () => {
+  const resendOtpFn = () => {
     setSeconds(30);
     localStorage.setItem("remainingSeconds", "30");
-    //  const email =  getItemStorage("userId") as string;
-    //  resendOtoApi(email);
-    handleResend()
+    const userId = localStorageGetItem("otpData");
+    resendOtp(userId as string)
   };
 
   return (
@@ -52,7 +49,7 @@ const Timer: React.FC<TimerProps> = ({handleResend }) => {
         style={{
           color: seconds > 0 ? "#DFE3E8" : "#FF5630",
         }}
-        onClick={resendOtp}
+        onClick={resendOtpFn}
       >
         Resend otp
       </button>

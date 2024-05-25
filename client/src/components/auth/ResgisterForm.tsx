@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { Link, useNavigate } from "react-router-dom";
-// import { validateRegister } from "../../utils/validation";
+import { Link } from "react-router-dom";
 import signupLogo from "../../assets/SignupPage.jpg";
-// import { registerUser } from "../../helpers/helperRoute";
-// import { setItemStorage } from "../../utils/localstorageimpl";
+import { registerValidation } from "../../utils/validations";
+import useRegister from "../../hooks/useRegisteration";
+import { localStorageRemoveItem } from "../../utils/localStorageImpl";
 
+interface credentials {
+  username:string;
+  email: string;
+  password: string;
+  role:string;
+  confirmPassword:string;
+}
 const SignupForm: React.FC = () => {
-  const [exist, isExist] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const {error ,loading , registerFn} = useRegister();
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -17,25 +23,17 @@ const SignupForm: React.FC = () => {
       confirmPassword: "",
       role: "",
     },
-    // validate: validateRegister,
-    onSubmit: async (credentials) => {
-    //   console.log(credentials);
-    //       setItemStorage("userId", credentials.email);
-    //   await registerUser(credentials)
-    //     .then((res) => {
-    //       const user = res.data.user;
-           
-    //       navigate("/otp");
-    //       window.location.reload()
-    //     })
-    //     .catch((error) => {
-    //       if (error.response && error.response.data.message) {
-    //         isExist(error.response.data.message);
-    //       }
-    //       console.log(error.message);
-    //     });
+    validate: registerValidation,
+    onSubmit: async (credentials : credentials) => {
+      try{
+        const { confirmPassword , ...dataWithoutConfirmPassword } = credentials;
+        return registerFn(dataWithoutConfirmPassword)
+      }catch(error){
+        console.log(error)
+      }
     },
   });
+ 
 
   return (
     <>
@@ -50,8 +48,11 @@ const SignupForm: React.FC = () => {
             </p>
           </div>
           <form onSubmit={formik.handleSubmit}>
+            {error && (
+              <div className="text-red-600">{error}</div>
+            )}
             <div className="mb-6">
-              {exist && <div className="text-red-500">{exist}</div>}
+         
               <input
                 type="text"
                 placeholder="Name"
@@ -122,8 +123,8 @@ const SignupForm: React.FC = () => {
               <button
                 className="w-full bg-black text-white rounded-md py-3 text-center font-bold cursor-pointer mb-2"
                 type="submit"
-              >
-                Register
+              disabled={loading} >
+                {loading ? 'Loading' : 'Register'}
               </button>
 
               <Link to={"/login"}>
