@@ -1,4 +1,4 @@
-import React from "react";
+import React  from "react";
 import DashBoardStat from "./DashBoardStats";
 import TransactionChart from "./TransactionChart";
 import RecentRestaurants from "./RecentRestaurants";

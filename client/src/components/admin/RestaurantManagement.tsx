@@ -1,42 +1,84 @@
-import React from 'react'
+// import axios from "axios";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
-const RestaurantMangement : React.FC = () => {
+const RestaurantMangement: React.FC = () => {
+  const [restaurant, setRestaurant] = useState([]);
+  useEffect(() => {  
+    axios
+      .get("http://localhost:3000/admin/restaurants-list")
+      .then((res) => {
+        setRestaurant(res.data.restaurants);
+      })
+      .catch((err) => {
+        console.log(err);
+      }); 
+  }, [restaurant]);
+
+   
+
   return (
     <div className="text-gray-900 bg-gray-200">
-    <div className="p-4 flex">
-        <h1 className="text-3xl font-bold">
-            Restaurant Mangement
-        </h1>
-    </div>
-    <div className="px-3 py-4 flex justify-center">
+      <div className="p-4 flex">
+        <h1 className="text-3xl font-bold">Restaurant Approvals</h1>
+      </div>
+      <div className="px-3 py-4 flex justify-center">
         <table className="w-full text-md bg-white shadow-md rounded mb-4">
-            <tbody>
-                <tr className="border-b">
-                    <th className="text-left p-3 px-5">Restaurant-name</th>
-                    <th className="text-left p-3 px-5">Email</th>
-                    <th className="text-left p-3 px-5">Status</th>
-                    <th className="text-left p-3 px-5 ">Restrict</th>
-                    <th className="text-left p-3 px-5 flex justify-end"></th>
-                    <th></th>
-                </tr>
-                <tr className="border-b hover:bg-green-200 bg-gray-100">
-                    <td className="p-3 px-5"><input type="text" value="user.name" className="bg-transparent"/></td>
-                    <td className="p-3 px-5"><input type="text" value="user.email" className="bg-transparent"/></td>
+          <tbody>
+            
+            <tr className="border-b">
+              <th className="text-left p-3 px-5">Name</th>
+              <th className="text-left p-3 px-5">Email</th>
+              <th className="text-left p-3 px-5">Role</th>
+              <th className="text-left p-3 px-5">Phone</th>
+              <th className="text-left p-3 px-5 flex justify-end">Status</th>
+              <th></th>
+            </tr>
+            {restaurant && restaurant.length > 0 ? (
+
+              restaurant.map((restaurant: any) => {
+                return (
+                  <tr className="border-b hover:bg-orange-100 bg-gray-100">
                     <td className="p-3 px-5">
-                        <select value="user.role" className="bg-transparent">
-                            <option value="user">user</option>
-                            <option value="admin">admin</option>
-                        </select>
+                      <input
+                        type="text"
+                        value={restaurant.username}
+                        className="bg-transparent border-none focus:outline-none"
+                      />
                     </td>
-                    <td className="p-3 px-5"><button type="button" className="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button></td>
-                    <td className="p-3 px-5 flex justify-end font-bold"><button type="button" className="text-sm  hover:text-black text-gray-600 py-1 px-2 rounded focus:outline-none focus:shadow-outline">Show Details</button></td>
-                </tr>
-                
-            </tbody>
+                    <td className="p-3 px-5">
+                      <input
+                        type="text"
+                        className="bg-transparent border-none focus:outline-none"
+                        value={restaurant.email}
+                      />
+                    </td>
+
+                    <td className="p-3 px-5">
+                      <select value="user.role" className="bg-transparent">
+                        <option value="user">user</option>
+                        <option value="admin">admin</option>
+                      </select>
+                    </td>
+                    <td className="p-3 px-6">nill</td>
+                    <td className="p-3 px-5 flex justify-end">
+                    
+                    </td>
+                  </tr>
+                );
+              })):(
+                <tr className="border-b hover:bg-red-400 bg-gray-100">
+                <td colSpan={5} className="p-3 text-center text-black font-bold text-2xl">
+                  Restaurants not found
+                </td>
+              </tr>
+              )}
+             
+          </tbody>
         </table>
+      </div>
     </div>
-</div>
-  )
-}
+  );
+};
 
 export default RestaurantMangement;

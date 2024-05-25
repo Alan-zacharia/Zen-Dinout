@@ -1,19 +1,19 @@
 // import axios from "axios";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 const Customer: React.FC = () => {
-  const [user, setUser] = useState(true);
-   console.log('jghjhgjhgjhgjhg') ;
-//   useEffect(() => {  
-//     axios
-//       .get("http://localhost:4000/admin/user-details")
-//       .then((res) => {
-//         setUser(res.data.users);
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//       });
-//   }, []);
+  const [user, setUser] = useState([]);
+  useEffect(() => {  
+    axios
+      .get("http://localhost:3000/admin/users-list")
+      .then((res) => {
+        setUser(res.data.users);
+      })
+      .catch((err) => {
+        console.log(err);
+      }); 
+  }, [user]);
 
 
 //   const blockUser = (id : string , block:boolean) => {
@@ -28,9 +28,6 @@ const Customer: React.FC = () => {
 //     })
 //   };
    
-function on(){
-    setUser(men =>!men)
-}
 
   return (
     <div className="text-gray-900 bg-gray-200">
@@ -49,7 +46,8 @@ function on(){
               <th className="text-left p-3 px-5 flex justify-end">Status</th>
               <th></th>
             </tr>
-            {user &&
+            {user && user.length > 0 ? (
+
               user.map((user: any) => {
                 return (
                   <tr className="border-b hover:bg-orange-100 bg-gray-100">
@@ -80,11 +78,16 @@ function on(){
                     </td>
                   </tr>
                 );
-              })}
+              })):(
+                <tr className="border-b hover:bg-red-400 bg-gray-100">
+                <td colSpan={5} className="p-3 text-center text-black font-bold text-2xl">
+                  Users not found
+                </td>
+              </tr>
+              )}
+             
           </tbody>
         </table>
-
-        <button onClick={on}>asas</button>
       </div>
     </div>
   );
