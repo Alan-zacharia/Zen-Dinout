@@ -1,15 +1,15 @@
 import { useFormik } from "formik";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import OtpInput from "react-otp-input";
 import OtpTimer from "../layouts/Timer";
 import { OtpType, validateOtp } from "../../utils/validations";
-import { otpForm, resendOtp } from "../../services/api";
 import useOtpForm from "../../hooks/useOtpForm";
-import { localStorageGetItem } from "../../utils/localStorageImpl";
+import { useSelector } from "react-redux";
 
 
 const Otp: React.FC = () => {
+
   const {error ,OtpFn ,loading} = useOtpForm();
   const formik = useFormik({
     initialValues: {
@@ -45,7 +45,7 @@ const Otp: React.FC = () => {
               <div  className="text-red-600">{error}</div>
             )}
             <div className="pb-5">
-              <p className="font-bold text-lg pb-3">OTP</p>   
+              <p className="font-bold text-sm text-purple-400 pb-3">Your Verification code has been sent to your email, please enter it here to update.</p>   
               {formik.touched.otp && formik.errors.otp && (
                 <div className="text-red-500 pb-3">{formik.errors.otp}</div>
               )}         
@@ -66,8 +66,7 @@ const Otp: React.FC = () => {
                   border: '1px solid #ccc', 
                   borderRadius: '2px', 
                   borderColor:"green",
-                  boxSizing: 'border-box', 
-                  
+                  boxSizing: 'border-box',     
                 }} 
                
                 />)}

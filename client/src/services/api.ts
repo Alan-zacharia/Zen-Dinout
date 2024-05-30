@@ -16,6 +16,7 @@ export interface APIresponse {
     user?: credentials;
     token?: string;
     refreshToken?: string;
+    otp?:string
   };
 }
 
@@ -90,5 +91,15 @@ const resendOtp = async( userId : string)=>{
   throw error;
  }
 }
+const OtpSend = async( email : string)=>{
+ try{
+    const { data:{otp} } = await axios.post('/api/send-otp',{email});
+    console.log(otp)
+    return {otp};
+ }catch(error){
+  console.log(error); 
+  throw error;
+ }
+}
 
-export { login, register, adminLogin , otpForm , resendOtp };
+export { login, register, adminLogin , otpForm , resendOtp , OtpSend };

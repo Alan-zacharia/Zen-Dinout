@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import signupLogo from "../../assets/SignupPage.jpg";
 import { registerValidation } from "../../utils/validations";
 import useRegister from "../../hooks/useRegisteration";
-import { localStorageRemoveItem } from "../../utils/localStorageImpl";
+import { OtpSend } from "../../services/api";
+import Otp from "./Otp";
+
 
 interface credentials {
   username:string;
@@ -14,6 +16,8 @@ interface credentials {
   confirmPassword:string;
 }
 const SignupForm: React.FC = () => {
+  const [user , setUser] = useState({})
+  const [modal , setModal] = useState(false)
   const {error ,loading , registerFn} = useRegister();
   const formik = useFormik({
     initialValues: {
@@ -27,7 +31,16 @@ const SignupForm: React.FC = () => {
     onSubmit: async (credentials : credentials) => {
       try{
         const { confirmPassword , ...dataWithoutConfirmPassword } = credentials;
-        return registerFn(dataWithoutConfirmPassword)
+        setModal(true);
+        OtpSend(credentials.email).then((res)=>{
+         
+          setUser(credentials);
+
+        }).catch((er)=>{
+          console.log(er);
+        })
+        
+      //  registerFn(dataWithoutConfirmPassword);
       }catch(error){
         console.log(error)
       }
@@ -37,20 +50,22 @@ const SignupForm: React.FC = () => {
 
   return (
     <>
-      <div className="w-full lg:w-1/2 bg-white flex flex-col p-8 lg:p-20 justify-between">
+      <div className="w-full lg:w-1/2 bg-white flex flex-col p-8 lg:p-20 justify-between ">
         <h1 className="text-xl text-black font-semibold mb-8">Zen Dinout</h1>
 
         <div className="w-full flex flex-col max-w-md mx-auto lg:mx-32 ">
           <div className="mb-10">
             <h3 className="text-3xl font-semibold mb-2">Register</h3>
+           
             <p className="text-base mb-2">
-              Welcome User! Please Enter your details.
             </p>
           </div>
+        {modal ? <Otp/> :(
           <form onSubmit={formik.handleSubmit}>
             {error && (
               <div className="text-red-600">{error}</div>
             )}
+     
             <div className="mb-6">
          
               <input
@@ -93,7 +108,6 @@ const SignupForm: React.FC = () => {
                   </div>
                 )}
             </div>
-
             <div className="flex items-center mb-6">
               {formik.errors.role && formik.touched.role ? (
                 <select
@@ -134,17 +148,21 @@ const SignupForm: React.FC = () => {
               </Link>
             </div>
           </form>
+           )}
         </div>
-
-        <div className="flex justify-center">
+        <Link to={'/login'}>
+        <div className="flex justify-center ">
           <p className="text-sm font-normal text-black">
-            Don't have an account?
+            Already have an account?
             <span className="font-semibold underline cursor-pointer">
-              Sign up for free
+             Sign in
             </span>
           </p>
         </div>
+        </Link>
       </div>
+     
+      
       <div className="relative w-full lg:w-1/2 h-96 lg:h-screen lg:block  hidden md:block">
         <div className="absolute top-1/4 left-10 flex flex-col">
           <h1 className="text-4xl text-white font-semibold mb-4">

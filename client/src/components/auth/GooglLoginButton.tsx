@@ -1,8 +1,7 @@
-import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
 
-import { useNavigate } from "react-router-dom";
 
 interface GoogleLoginResponse {
   name: string;

@@ -1,137 +1,44 @@
-import React, { useState } from "react";
-import { Link } from "react-scroll";
-/** Icons */
-import { BiRestaurant } from "react-icons/bi";
-import { AiOutlineClose, AiOutlineMenuFold } from "react-icons/ai";
-/**end */
-import { useNavigate } from "react-router-dom";
-import Button from "../../layouts/Button";
+import React from "react"
+import NavLeftSide from "./NavLeftSide";
+import { Link } from "react-router-dom";
+
 
 const NavBar: React.FC = () => {
-
-  const navigate = useNavigate();
-  const [session, setsession] = useState("");
-  const [menu, setMenu] = useState(false);
-  function handleChange() {
-    setMenu(menu => !menu);
-  }
-   function handleLogout(){ 
-    localStorage.removeItem("user");
-    navigate('/login');
-   }
-   function handleLogin(){ 
-    localStorage.removeItem("user");
-    navigate('/login');
-   }
-
   return (
-  
-    <div className="fixed w-full">
-      <div>
-        <div className="flex flex-row justify-between p-5 px-5 md:px-32 bg-white shadow-[0_3px_10px_rgba(0,0,0,0.2)]">
-          <div className="flex flex-row items-center cursor-pointer">
-            <span>
-              <BiRestaurant size={32} />
-            </span>
-            <h1 className="text-xl font-semibold">Zen Dinout</h1>
-          </div>
-
-          <nav className="hidden md:flex flex-row items-center text-lg font-medium gap-8">
-            <Link
-              to="home"
-              spy={true}
-              smooth={true}
-              duration={500}
-              className="hover:text-orange-500  transition-all cursor-pointer"
-            >
-              Home
-            </Link>
-            <Link
-              to="about"
-              spy={true}
-              smooth={true}
-              duration={500}
-              className="hover:text-orange-500  transition-all cursor-pointer"
-            >
-              About
-            </Link>
-            <Link
-              to="blog"
-              spy={true}
-              smooth={true}
-              duration={500}
-              className="hover:text-orange-500 transition-all cursor-pointer"
-            >
-              Blog
-            </Link>
-            <Link
-              to="reviews"
-              spy={true}
-              smooth={true}
-              duration={500}
-              className="hover:text-orange-500  transition-all cursor-pointer"
-            >
-              Reviews
-            </Link>
-            {session ? (
-              <div onClick={handleLogin}>
-              <Button  title="Logout"/>
-              </div>
-              ) : (
-                <div onClick={handleLogout}>
-                <Button  title="Login"/>
-                </div>
-              )
-            }
-        
-          </nav>
-          <div className="md:hidden">
-            {menu ? (
-              <AiOutlineClose size={25} onClick={handleLogin} />
-            ) : (
-              <AiOutlineMenuFold size={25} onClick={handleChange} />
-            )}
-          </div>
-          <div
-            className={`${
-              menu ? "translate-x-0" : "-translate-x-full"
-            } lg:hidden bg-black absolute flex flex-col text-white left-0 top-20 font-semibold text-2xl pt-8 text-center pb-4 gap-8 w-full h-fit transition-transform duration-300`}
-          >
-            <Link
-              to="home"
-              className="hover:text-orange-500  transition-all cursor-pointer"
-            >
-              Home
-            </Link>
-            <Link
-              to="tables"
-              className="hover:text-orange-500  transition-all cursor-pointer"
-            >
-              Tables
-            </Link>
-            <Link
-              to="about"
-              className="hover:text-orange-500  transition-all cursor-pointer"
-            >
-              About
-            </Link>
-            <Link
-              to="blog"
-              className="hover:text-orange-500 transition-all cursor-pointer"
-            >
-              Blog
-            </Link>
-            <Link
-              to="reviews"
-              className="hover:text-orange-500  transition-all cursor-pointer"
-            >
-              Reviews
-            </Link>
-           
-          </div>
+    <div className="navbar bg-base-100 ">
+    <div className="navbar-start ">
+      <div className="dropdown">
+        <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
         </div>
+        <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 ">
+          
+          <li ><a>Home</a></li>
+          <li>
+            <a>Book a Table</a>
+          </li>
+          <li><a>Item 3</a></li>
+        </ul>
       </div>
+      <div className=" xl:px-80 text-3xl font-bold flex items-center"  >
+      <a className="">Zen<span className="text-orange-600">Dinout</span></a>
+      <a className="hidden md:flex" ><NavLeftSide/></a>
+        </div>
     </div>
+    <div className="navbar-center hidden lg:flex">
+      <ul className="menu-horizontal px-1 font-semibold text-base gap-20 cursor-pointer ">
+     
+        <li className="hover:text-red-500"><a>Home</a></li>
+        <li className="hover:text-red-500">
+       <a>Book a Table</a>
+        </li>
+        <li className="hover:text-red-500"><a>Blog</a></li>
+      </ul>
+    </div>
+    <div className="navbar-end xl:mr-72">
+     <Link to='login'><h1 className="text-lg font-bold font-sans text-red-600 cursor-pointer"><a>Login</a></h1></Link>
+    </div>
+  </div>
   );
 };
 
