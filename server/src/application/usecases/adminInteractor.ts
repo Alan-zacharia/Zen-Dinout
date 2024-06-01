@@ -3,55 +3,83 @@ import { IAdminRepositories } from "../../domain/interface/repositories/IAdminRe
 import { IAdminInteractor } from "../../domain/interface/use-cases/IAdminInteractor";
 import { jwtGenerateToken } from "../../functions/jwtTokenFunctions";
 
-
-
-
-
-export class adminInteractorImpl implements IAdminInteractor  {
-    constructor(private readonly repository : IAdminRepositories){};
-    
-    async adminLogin(credentials: { email: string; password: string; }): Promise<{ message: string; token: string | null; admin: UserType | null; }> {
-        console.log("Get admin login Interactor service........; ");
-        try{
-           const {admin , message} = await this.repository.loginAdminRepo(credentials);
-           let token : string = '';
-           if(admin){
-               token = jwtGenerateToken(admin.id as string);
-           }
-           return {admin , message , token}
-        }catch(error){
-            console.log("OOps error in admin login interactorImpl : ", error);
-            throw error;
-        }
+export class adminInteractorImpl implements IAdminInteractor {
+  constructor(private readonly repository: IAdminRepositories) {}
+  async adminLogin(credentials: {
+    email: string;
+    password: string;
+  }): Promise<{
+    message: string;
+    token: string | null;
+    admin: UserType | null;
+  }> {
+    console.log("Get admin login Interactor service........; ");
+    try {
+      const { admin, message } = await this.repository.loginAdminRepo(
+        credentials
+      );
+      let token: string = "";
+      if (admin) {
+        token = jwtGenerateToken(admin.id as string);
+      }
+      return { admin, message, token };
+    } catch (error) {
+      console.log("OOps error in admin login interactorImpl : ", error);
+      throw error;
     }
-    async getUsers(): Promise<{ users: UserType | null; message: string; }> {
-        console.log("Get users Interactor service.........; ")
-        try{ 
-             const {message , users} = await this.repository.getUsersList();
-             return {users , message}
-        }catch(error){
-            console.log("OOps error in getUsers interactorImpl : ", error);
-            throw error;
-        }
+  }
+  async getUsers(): Promise<{ users: UserType | null; message: string }> {
+    console.log("Get users Interactor service.........; ");
+    try {
+      const { message, users } = await this.repository.getUsersList();
+      return { users, message };
+    } catch (error) {
+      console.log("OOps error in getUsers interactorImpl : ", error);
+      throw error;
     }
-    async getResataurants(): Promise<{ restaurants: object | null; message: string; }> {
-        console.log("Get restaurants Interactor service.........; ")
-        try{
-            const {message , restaurants} = await this.repository.getRestaurantsList();
-            return {restaurants , message}
-        }catch(error){
-            console.log("OOps error in getUsers interactorImpl : ", error);
-            throw error;
-        }
+  }
+  async getResataurants(): Promise<{
+    restaurants: object | null;
+    message: string;
+  }> {
+    console.log("Get restaurants Interactor service.........; ");
+    try {
+      const { message, restaurants } =
+        await this.repository.getRestaurantsList();
+      return { restaurants, message };
+    } catch (error) {
+      console.log("OOps error in getUsers interactorImpl : ", error);
+      throw error;
     }
-    async restaurantApprove(): Promise<{ restaurants: object | null; message: string; }> {
-        console.log("Get restaurants Interactor service.........; ")
-        try{
-            const {message , restaurants} = await this.repository.approve();
-            return {restaurants , message}
-        }catch(error){
-            console.log("OOps error in getUsers interactorImpl : ", error);
-            throw error;
-        }
+  }
+  async restaurantApprove(): Promise<{
+    restaurants: object | null;
+    message: string;
+  }> {
+    console.log("Get restaurants Interactor service.........; ");
+    try {
+      const { message, restaurants } = await this.repository.approve();
+      return { restaurants, message };
+    } catch (error) {
+      console.log("OOps error in getUsers interactorImpl : ", error);
+      throw error;
     }
+  }
+
+  async actionInter(
+    id: string,
+    block: string
+  ): Promise<{ users: UserType | null; message: string }> {
+    console.log("User Actions interactor");
+    try {
+      const { users, message } = await this.repository.userBlockUnblock(
+        id,
+        block
+      );
+      return { users, message };
+    } catch (error) {
+      console.log("OOps error in user actions interactorImpl : ", error);
+      throw error;
+    }
+  }
 }

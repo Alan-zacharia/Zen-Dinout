@@ -49,9 +49,6 @@ const userSchema: Schema<UserDocument> = new Schema({
         type : Boolean,
         default : false
     },
-    otp:{
-        type : String,
-    }
 });
 
 userSchema.pre<UserDocument>("save",async function (next) {

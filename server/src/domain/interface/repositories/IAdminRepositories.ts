@@ -5,6 +5,7 @@ import { UserType } from "../../entities/User";
 export interface IAdminRepositories{
     loginAdminRepo(credentials : {email : string , password : string}):Promise<{admin : UserType | null , message : string }>
     getUsersList():Promise<{users : object | null , message : string}>
+    userBlockUnblock(id : string , block : string):Promise<{users : object | null , message : string}>
     getRestaurantsList():Promise<{restaurants : object | null , message : string}>
     approve():Promise<{restaurants : object | null , message : string}>
 }

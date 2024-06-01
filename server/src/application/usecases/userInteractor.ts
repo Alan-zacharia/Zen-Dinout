@@ -8,10 +8,10 @@ export class userInteractorImpl implements IUserInteractor {
   constructor(private readonly repository: IUserRepository, Imailer: IMailer) {}
   
 
-  async register(credentials: UserType): Promise<{ user: UserType | null; message: string }> {
+  async register(credentials: UserType): Promise<{ user: UserType | null; message: string; token : string}> {
     try {
-      const { user, message } = await this.repository.create(credentials);
-      return { user, message };
+      const { user, message , token  } = await this.repository.create(credentials);
+      return { user, message , token };
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);

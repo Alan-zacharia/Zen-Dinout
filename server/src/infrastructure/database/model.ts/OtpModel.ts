@@ -1,5 +1,6 @@
-import { required } from "joi";
 import mongoose, { Schema } from "mongoose";
+import bcrypt from 'bcryptjs';
+
 interface OTPDocument extends Document {
     userId:string
     otp: string;
@@ -17,10 +18,16 @@ const OtpSchema = new Schema<OTPDocument>({
     }, 
     createdAt:{
         type : Date ,
-        expires:30 ,
         default :Date.now()
-    }
+    },
+    
 });
+
+OtpSchema.pre<OTPDocument>("save",async function (next){
+   const otp =  bcrypt.hashSync(this.otp,8);
+   this.otp = otp;
+   next()
+})
 
 
 export const OTPModel = mongoose.model<OTPDocument>('OTP', OtpSchema);

@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import restaurantModel from "../database/model.ts/restaurantModel";
 
 export class adminRepositoryImpl implements IAdminRepositories {
+ 
   async loginAdminRepo(credentials: {
     email: string;
     password: string;
@@ -32,7 +33,8 @@ export class adminRepositoryImpl implements IAdminRepositories {
   }
   async getUsersList(): Promise<{ users: object | null; message: string }> {
     try {
-      const users = await UserModel.find({});
+      console.log('Get USer Repo')
+      const users = await UserModel.find({isVerified : true});
       return { users, message: "Users list Successfull" };
     } catch (error) {
       console.log("Error in get user repo : ", error);
@@ -62,5 +64,20 @@ export class adminRepositoryImpl implements IAdminRepositories {
       console.log("Error in get restaurant approve repo : ", error);
       throw error;
     }
+  };
+
+  async userBlockUnblock(id: string, block: string): Promise<{ users: UserType | null ; message: string; }> {
+       try{
+        let user;
+        if(block == 'false'){
+          user = await UserModel.findByIdAndUpdate(id,{isBlocked : true },{new : true});
+        }else{
+          user = await UserModel.findByIdAndUpdate(id,{isBlocked : false },{new :true});
+        } 
+          return {users : user , message : "user actions successfull"}
+       }catch(error){
+        console.log("Error in get restaurant actions repo : ", error);
+        throw error;
+       }
   }
 }
