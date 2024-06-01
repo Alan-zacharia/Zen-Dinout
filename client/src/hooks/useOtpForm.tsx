@@ -18,9 +18,8 @@ function useOtpForm() : ReturnType {
         setLoading(true);
         setError(null);
          try{
-          const userId = localStorageGetItem("otpData")
-          const {data} = await otpForm(otp , userId as string);
-          console.log(data); 
+          const userId = localStorageGetItem("otpData");
+          
           navigate('/login')
           return;
          }catch(error : any){

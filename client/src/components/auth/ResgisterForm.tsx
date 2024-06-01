@@ -4,21 +4,19 @@ import { Link } from "react-router-dom";
 import signupLogo from "../../assets/SignupPage.jpg";
 import { registerValidation } from "../../utils/validations";
 import useRegister from "../../hooks/useRegisteration";
-import { OtpSend } from "../../services/api";
-import Otp from "./Otp";
 
 
 interface credentials {
-  username:string;
+  username: string;
   email: string;
   password: string;
-  role:string;
-  confirmPassword:string;
-}
+  role: string;
+  confirmPassword: string;
+} 
 const SignupForm: React.FC = () => {
-  const [user , setUser] = useState({})
-  const [modal , setModal] = useState(false)
-  const {error ,loading , registerFn} = useRegister();
+
+
+  const { errors, loadings, registerFn } = useRegister();
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -28,25 +26,15 @@ const SignupForm: React.FC = () => {
       role: "",
     },
     validate: registerValidation,
-    onSubmit: async (credentials : credentials) => {
-      try{
-        const { confirmPassword , ...dataWithoutConfirmPassword } = credentials;
-        setModal(true);
-        OtpSend(credentials.email).then((res)=>{
-         
-          setUser(credentials);
-
-        }).catch((er)=>{
-          console.log(er);
-        })
-        
-      //  registerFn(dataWithoutConfirmPassword);
-      }catch(error){
-        console.log(error)
+    onSubmit: async (credentials: credentials) => {
+      try {
+        const { confirmPassword, ...dataWithoutConfirmPassword } = credentials;
+        registerFn(dataWithoutConfirmPassword)
+      } catch (error) {
+        console.log(error);
       }
     },
   });
- 
 
   return (
     <>
@@ -56,18 +44,14 @@ const SignupForm: React.FC = () => {
         <div className="w-full flex flex-col max-w-md mx-auto lg:mx-32 ">
           <div className="mb-10">
             <h3 className="text-3xl font-semibold mb-2">Register</h3>
-           
-            <p className="text-base mb-2">
-            </p>
+
+            <p className="text-base mb-2"></p>
           </div>
-        {modal ? <Otp/> :(
+
           <form onSubmit={formik.handleSubmit}>
-            {error && (
-              <div className="text-red-600">{error}</div>
-            )}
-     
+            {errors && <div className="text-red-600">{errors}</div>}
+
             <div className="mb-6">
-         
               <input
                 type="text"
                 placeholder="Name"
@@ -137,8 +121,9 @@ const SignupForm: React.FC = () => {
               <button
                 className="w-full bg-black text-white rounded-md py-3 text-center font-bold cursor-pointer mb-2"
                 type="submit"
-              disabled={loading} >
-                {loading ? 'Loading' : 'Register'}
+                disabled={loadings}
+              >
+                {loadings ? "Loading" : "Register"}
               </button>
 
               <Link to={"/login"}>
@@ -148,21 +133,19 @@ const SignupForm: React.FC = () => {
               </Link>
             </div>
           </form>
-           )}
         </div>
-        <Link to={'/login'}>
-        <div className="flex justify-center ">
-          <p className="text-sm font-normal text-black">
-            Already have an account?
-            <span className="font-semibold underline cursor-pointer">
-             Sign in
-            </span>
-          </p>
-        </div>
+        <Link to={"/login"}>
+          <div className="flex justify-center ">
+            <p className="text-sm font-normal text-black">
+              Already have an account?
+              <span className="font-semibold underline cursor-pointer">
+                Sign in
+              </span>
+            </p>
+          </div>
         </Link>
       </div>
-     
-      
+
       <div className="relative w-full lg:w-1/2 h-96 lg:h-screen lg:block  hidden md:block">
         <div className="absolute top-1/4 left-10 flex flex-col">
           <h1 className="text-4xl text-white font-semibold mb-4">

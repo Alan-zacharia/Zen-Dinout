@@ -4,7 +4,7 @@ import GoogleLoginButton from "../auth/GooglLoginButton";
 import useLogin from "../../hooks/useLogin";
 import { loginValidation } from "../../utils/validations";
 import { Link } from "react-router-dom";
-import { localStorageRemoveItem } from "../../utils/localStorageImpl";
+
 
 
 
@@ -15,7 +15,6 @@ interface UserType {
 }
 
 const LoginForm : React.FC = () => {
-  localStorageRemoveItem("otpSession")
   const {loading ,loginFn ,  error} = useLogin();
   const formik = useFormik<UserType>({
     initialValues: {

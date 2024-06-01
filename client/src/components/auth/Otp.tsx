@@ -89,7 +89,3 @@ const Otp: React.FC = () => {
 };
 
 export default Otp;
-
-
-
-

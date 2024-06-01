@@ -12,7 +12,7 @@ const AdminLayout: React.FC = () => {
       setMenu(menu => !menu);
     }
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-neutral-200 overflow-x-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-neutral-50 overflow-x-hidden">
       <Sidebar menu={menu} />
       <div className="flex-1">
         <Header />

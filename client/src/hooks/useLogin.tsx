@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { adminLogin, login } from "../services/api";
+import {  login } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "react-query";
 
 interface credentials {
   email: string;
@@ -15,6 +16,7 @@ interface LoginReturnType {
 }
 
 const useLogin = (): LoginReturnType => {
+  const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ const useLogin = (): LoginReturnType => {
     try {
       const { data } = await login(datas);
       setLoading(false);
+      queryClient.invalidateQueries("validateToken");
       if (data.user?.role == "user") {
         navigate("/");
       } else {

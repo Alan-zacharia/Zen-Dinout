@@ -5,21 +5,21 @@ import NavBar from "../../components/user/layouts/NavBar";
 import Hero from "../../components/user/layouts/Hero";
 import Footer from "../../components/user/layouts/Footer";
 import Card from "../../components/layouts/Card";
+import { useQueryClient } from "react-query";
 
 
-axios.defaults.withCredentials = true;
 
 const HomePage: React.FC = () => {
-  return (
+  
+  return ( 
     <div className="h-screen ">
-      <NavBar/>
-      <Hero/>
-      <Home/>
-      <section className="xl:ml-7 md:justify-center xl:justify-normal flex flex-wrap gap-3 mb-52 bg-slate-50">
-      <Card/>
-      </section>
-      <Footer/>
-    
+      <NavBar />
+      <Hero />
+      <Home />
+      <div className="flex flex-wrap lg:justify-normal lg:ml-20 mb-20 justify-center gap-5 lg:gap-5">
+        <Card />
+      </div>
+      <Footer />
     </div>
   );
 };

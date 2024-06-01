@@ -7,6 +7,9 @@ import {
   DASHBOARD_SIDEBAR_BOTTOM_LINKS,
   DASHBOARD_SIDEBAR_LINKS,
 } from "../../../lib/constants/Navigation";
+import { useQueryClient } from "react-query";
+import LogoutButton from "./LogoutButton";
+
 
 const linkClassess =
   "flex items-center gap-2 px-3 py-2 rounded-lg text-base hover:no-underline hover:bg-indigo-200  font-light active:bg-indigo-400 ";
@@ -23,11 +26,8 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({menu}) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  function hanldeLogin() {
-    localStorage.removeItem("adminToken");
-    navigate("/admin/login");
-  }
   return (
     <>
     
@@ -57,12 +57,8 @@ const Sidebar: React.FC<SidebarProps> = ({menu}) => {
         <span className="text-xl text-black ">
           <HiOutlineLogout />
         </span>
-        <button
-          onClick={hanldeLogin}
-          className="text-black font-semibold hover:font-bold"
-        >
-          Log Out
-        </button>
+        <LogoutButton/>
+       
       </div>
       
      
