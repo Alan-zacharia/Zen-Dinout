@@ -5,10 +5,14 @@ import Header from '../../components/seller/shared/Header'
 
 const SellerHome = () => {
   return (
-    <div>
-        <Header/>
+    <div className='flex flex-col md:flex-row h-screen overflow-x-hidden bg-slate-50'>
+        <div className=''>
         <SideBar/>
-        <div>
+        </div>
+        <nav > 
+          <Header/>
+        </nav>
+        <div className='mx-auto w-screen lg:px-56 '>
         <Outlet/>
         </div>
     </div>

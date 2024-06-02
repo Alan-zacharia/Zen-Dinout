@@ -10,7 +10,6 @@ import {
 import { useQueryClient } from "react-query";
 import LogoutButton from "./LogoutButton";
 
-
 const linkClassess =
   "flex items-center gap-2 px-3 py-2 rounded-lg text-base hover:no-underline hover:bg-indigo-200  font-light active:bg-indigo-400 ";
 
@@ -21,53 +20,42 @@ interface SidebarLink {
 }
 
 interface SidebarProps {
-  menu : boolean;
+  menu: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({menu}) => {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+const Sidebar: React.FC<SidebarProps> = ({ menu }) => {
 
   return (
     <>
-    
       <div className="lg:flex flex-col w-60 p-3 bg-white text-white hidden">
-      <div className="flex items-center gap-2 px-1 py-3">
-        <FcBullish fontSize={24} />
-        <span className=" text-black text-2xl font-bold">Zen Dinout</span>
-      </div>
-      <div className=" flex flex-col gap-4 py-8">
-        {DASHBOARD_SIDEBAR_LINKS.map((item: SidebarLink, index: number) => (
-          <SideBarLinks key={index} item={item} />
-        ))}
-      </div>
-      <div className="pt-2 flex-1 flex flex-col  gap-0.5 border-t">
-        {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map(
-          (item: SidebarLink, index: number) => (
+        <div className="flex items-center gap-2 px-1 py-3">
+          <FcBullish fontSize={24} />
+          <span className=" text-black text-2xl font-bold">Zen Dinout</span>
+        </div>
+        <div className=" flex flex-col gap-4 py-8">
+          {DASHBOARD_SIDEBAR_LINKS.map((item: SidebarLink, index: number) => (
             <SideBarLinks key={index} item={item} />
-          )
-        )}
+          ))}
+        </div>
+        <div className="pt-2 flex-1 flex flex-col  gap-0.5 border-t">
+          {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map(
+            (item: SidebarLink, index: number) => (
+              <SideBarLinks key={index} item={item} />
+            )
+          )}
+        </div>
+        <div
+          className={classNames(
+            " cursor-pointer hover:bg-red-500 hover:text-white mb-6",
+            linkClassess
+          )}
+        >
+          <span className="text-xl text-black ">
+            <HiOutlineLogout />
+          </span>
+          <LogoutButton />
+        </div>
       </div>
-      <div
-        className={classNames(
-          " cursor-pointer hover:bg-red-500 hover:text-white mb-6",
-          linkClassess
-        )}
-      >
-        <span className="text-xl text-black ">
-          <HiOutlineLogout />
-        </span>
-        <LogoutButton/>
-       
-      </div>
-      
-     
-    </div>
-   
-      
-     
-  
-    
     </>
   );
 };

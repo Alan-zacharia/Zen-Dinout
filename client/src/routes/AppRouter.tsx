@@ -10,6 +10,11 @@ import { useAppContext } from '../Contexts/AppContext'
 import { useAdminAppContext } from '../Contexts/AdminAppContext'
 import SellerHome from '../pages/seller/SellerHome'
 import SellerDashBoard from '../components/seller/SellerDashBoard'
+import Reservation from '../components/seller/Reservation'
+import Table from '../components/seller/Table'
+import Menu from '../components/seller/Menu'
+import TimeSlots from '../components/seller/TimeSlots'
+import RestaurantDetails from '../components/seller/RestaurantDetails'
 const HomePage = React.lazy(() => import('../pages/user/Home'));
 const DashBoard = React.lazy(() => import('../components/admin/DashBoard'));
 const RestaurantMangement = React.lazy(() => import('../components/admin/RestaurantManagement'));
@@ -50,13 +55,12 @@ const AppRouter : React.FC = () => {
         {/* Seller Routers */}
         <Route path='/restaurant/' element={<SellerHome/>}>
          <Route index element={<SellerDashBoard/>} />
-         <Route path='/restaurant/reservations' element={<SellerDashBoard/>} />
-         <Route path='/restaurant/table' element={<SellerDashBoard/>} />
-         <Route path='/restaurant/time-slots' element={<SellerDashBoard/>} />
-         <Route path='/restaurant/menu' element={<SellerDashBoard/>} />
-         <Route path='/restaurant/order' element={<SellerDashBoard/>} />
-         <Route path='/restaurant/restaurant-view' element={<SellerDashBoard/>} />
-          
+         <Route path='/restaurant/reservations' element={<Reservation/>} />
+         <Route path='/restaurant/table' element={<Table/>} />
+         <Route path='/restaurant/time-slots' element={<TimeSlots/>} />
+         <Route path='/restaurant/menu' element={<Menu/>} />
+         <Route path='/restaurant/order' element={<Menu/>} />
+         <Route path='/restaurant/restaurant-details' element={<RestaurantDetails/>} />
         </Route>
 
         <Route path="*" element={<Navigate to='/page-not-Found'/>} />
