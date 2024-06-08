@@ -26,9 +26,7 @@ const Form = () => {
         >
           <div className="relative p-4 w-full max-w-md bg-white rounded-lg shadow">
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Create Item
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900">Add Item</h3>
               <button
                 onClick={toggleModal}
                 type="button"
@@ -49,128 +47,128 @@ const Form = () => {
                     d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
                   ></path>
                 </svg>
-                <span className="sr-only">Close modal</span>
               </button>
             </div>
 
             <form className="p-4 md:p-6 h-full">
-              <div className="grid gap-4 mb-4 grid-cols-2">
+              <div className="grid gap-4 mb-4 grid-cols-2 ">
                 <div className="col-span-2">
                   <label
                     htmlFor="name"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-900 "
                   >
-                    Dish
+                    Item name
                   </label>
                   <input
+          
+                   name="item"
+                   id="item"
                     type="text"
-                    name="name"
-                    id="name"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Type product name"
+                    placeholder="Item name"
+                    className="input input-bordered input-warning w-full max-w-xs"
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
                   <label
                     htmlFor="price"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-900 "
                   >
                     Price
                   </label>
                   <input
-                    type="number"
-                    name="price"
-                    id="price"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="$2999"
+                   type="number"
+                   name="price"
+                   id="price"
+   
+                    placeholder="Type here"
+                    className="input input-bordered input-warning w-full max-w-xs"
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
                   <label
                     htmlFor="category"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-900 "
                   >
-                    Category
+                    Select category
                   </label>
-                  <select
-                    id="category"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  >
-                    <option selected disabled>
+                  <select className="select select-warning w-full max-w-xs">
+                    <option disabled selected>
                       Select category
                     </option>
-                    <option value="TV">TV/Monitors</option>
-                    <option value="PC">PC</option>
-                    <option value="GA">Gaming/Console</option>
-                    <option value="PH">Phones</option>
+                    <option>Cheese</option>
+                    <option>Veggie</option>
+                    <option>Pepperoni</option>
+                    <option>Margherita</option>
+                    <option>Hawaiian</option>
                   </select>
                 </div>
-                <div className="col-span-2 sm:col-span-1">
+                <div className="col-span-2">
                   <label
-                    htmlFor="price"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 "
                   >
-                    Price
+                    Item name
                   </label>
                   <input
+  
+                   name="image"
+                   id="image"
                     type="file"
-                    name="price"
-                    id="price"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="$2999"
+                    className="file-input file-input-bordered file-input-warning w-full max-w-xs"
                   />
                 </div>
+
                 <div className="col-span-2 flex gap-4">
                   <div className="col-span-2 sm:col-span-1">
                     <label
                       htmlFor="price"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      className="block mb-2 text-sm font-medium text-gray-900 "
                     >
-                      Price
+                      Discount
                     </label>
                     <input
-                      type="number"
-                      name="price"
-                      id="price"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="$2999"
+                    type="number"
+                    name="discount"
+                    id="discount"
+                      placeholder="Discount"
+                      className="input input-bordered input-warning w-full max-w-xs"
                     />
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label
-                      htmlFor="price"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      htmlFor="tags"
+                      className="block mb-2 text-sm font-medium text-gray-900 "
                     >
-                      Price
+                      Tags
                     </label>
                     <input
-                      type="number"
-                      name="price"
-                      id="price"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="$2999"
+              
+                     name="tag"
+                     id="tag"
+                      type="text"
+                      placeholder="Tags"
+                      className="input input-bordered input-warning w-full max-w-xs"
                     />
                   </div>
                 </div>
                 <div className="form-control">
                   <label className="cursor-pointer label">
-                    <span className="label-text text-lg font-bold">non-veg</span>
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="checkbox checkbox-warning"
-                    />
+                    <span className="label-text text-lg font-bold">
+                      non-veg
+                    </span>
+                    <input type="checkbox" className="checkbox checkbox-warning" />
                   </label>
                 </div>
               </div>
               <button
-                type="submit"
-                className="text-white w-full justify-center inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                type="button"
+                className="text-white w-full justify-center inline-flex items-center text-lg  hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-500font-medium rounded-lg  px-5 py-2.5 text-center btn btn-warning dark:hover:ring-yellow-500 dark:focus:ring-yellow-500"
               >
-                Add
+                Save 🔥
               </button>
             </form>
           </div>
+
         </div>
       )}
     </>
@@ -178,3 +176,7 @@ const Form = () => {
 };
 
 export default Form;
+
+
+
+

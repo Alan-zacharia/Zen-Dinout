@@ -25,9 +25,9 @@ const useAdminLogin = (): LoginReturnType => {
     setError(null);
     try{    
         const {data} = await adminLogin(datas);
-        console.log(data);
+       
         setLoading(false)
-        queryClient.invalidateQueries("validateToken");
+        queryClient.invalidateQueries("validateAToken");
         navigate('/admin/')
     }catch(error : any){
         setLoading(false);

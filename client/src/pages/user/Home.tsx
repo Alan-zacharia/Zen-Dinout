@@ -1,25 +1,20 @@
-import axios from "axios";
-
-import Home from "../../components/user/Home";
 import NavBar from "../../components/user/layouts/NavBar";
-import Hero from "../../components/user/layouts/Hero";
 import Footer from "../../components/user/layouts/Footer";
-import Card from "../../components/layouts/Card";
-import { useQueryClient } from "react-query";
-
+import { Outlet } from "react-router-dom";
 
 
 const HomePage: React.FC = () => {
-  
-  return ( 
+  return (
     <div className="h-screen ">
-      <NavBar />
-      <Hero />
-      <Home />
-      <div className="flex flex-wrap lg:justify-normal lg:ml-20 mb-20 justify-center gap-5 lg:gap-5">
-        <Card />
+      <div className="fixed z-50 top-0 left-0 w-full">
+      <NavBar /> 
       </div>
+      <div className="">
+      <Outlet />
+      </div>
+      <div >
       <Footer />
+      </div>
     </div>
   );
 };

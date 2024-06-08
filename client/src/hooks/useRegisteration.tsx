@@ -27,10 +27,7 @@ const useRegister = (): LoginReturnType => {
     setError(null);
     try{    
         const {data} = await register(datas);  
-        localStorageSetItem("otpData" , data.user._id as string);
-        localStorageSetItem("remainingSeconds", "30");
         setLoading(false);
-        navigate('/login');
     }catch(error : any){
         setLoading(false);
         if (error.response && error.response.data && error.response.data.message) {

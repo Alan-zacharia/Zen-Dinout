@@ -3,7 +3,8 @@ import React from 'react'
 const Footer : React.FC = () => {
   return (
     <>
-    <footer className="footer p-10 bg-zinc-800 text-base-content ">
+
+    <footer className="footer  p-10 bg-zinc-800 text-base-content ">
 
   <div className='hidden lg:flex'>
     
@@ -45,6 +46,7 @@ const Footer : React.FC = () => {
  </aside>
              
 </div>
+
 </> 
   )
 }

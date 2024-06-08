@@ -1,19 +1,22 @@
 // import axios from "axios";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+axios.defaults.withCredentials = true;
 
 const RestaurantMangement: React.FC = () => {
   const [restaurant, setRestaurant] = useState([]);
   useEffect(() => {  
-    axios
-      .get("http://localhost:3000/admin/restaurants-approval-lists")
-      .then((res) => {
-        setRestaurant(res.data.restaurants);
-      })
-      .catch((err) => {
-        console.log(err);
-      }); 
-  }, [restaurant]);
+    const fetchData = async () => {
+    
+    await axios.get("http://localhost:3000/admin/restaurants-approval-lists").then((response)=>{
+      setRestaurant(response.data.restaurants)
+    }).catch((error)=>{
+      console.log(error); 
+    })
+    }
+    fetchData()
+  }, []);
 
    
 
@@ -29,20 +32,19 @@ const RestaurantMangement: React.FC = () => {
             <tr className="border-b">
               <th className="text-left p-3 px-5">Name</th>
               <th className="text-left p-3 px-5">Email</th>
-              <th className="text-left p-3 px-5">Role</th>
-              <th className="text-left p-3 px-5">Phone</th>
-              <th className="text-left p-3 px-5 flex justify-end">Status</th>
+              <th className="text-left p-3 px-5">Contact</th>
+              <th className="text-left p-3 px-5 flex justify-end">Action</th>
               <th></th>
             </tr>
             {restaurant && restaurant.length > 0 ? (
 
               restaurant.map((restaurant: any) => {
                 return (
-                  <tr className="border-b hover:bg-orange-100 bg-gray-100">
+                  <tr className="border-b  bg-gray-100  text-orange-500 font-semibold">
                     <td className="p-3 px-5">
                       <input
                         type="text"
-                        value={restaurant.username}
+                        value={restaurant.restaurantName}
                         className="bg-transparent border-none focus:outline-none"
                       />
                     </td>
@@ -54,15 +56,14 @@ const RestaurantMangement: React.FC = () => {
                       />
                     </td>
 
-                    <td className="p-3 px-5">
-                      <select value="user.role" className="bg-transparent">
-                        <option value="user">user</option>
-                        <option value="admin">admin</option>
-                      </select>
-                    </td>
-                    <td className="p-3 px-6">nill</td>
-                    <td className="p-3 px-5 flex justify-end">
                     
+                    <td className="p-3 px-6"><input
+                        type="text"
+                        className="bg-transparent border-none focus:outline-none"
+                        value={restaurant.contact}
+                      /></td>
+                    <td className="p-3 px-5 flex justify-end">
+                      <Link to={`/restaurant/approval-restaurant:${restaurant._id}`}><button className="p-2 bg-green-500 text-white rounded-xl px-4 hover:bg-green-400">Veiw</button></Link>
                     </td>
                   </tr>
                 );

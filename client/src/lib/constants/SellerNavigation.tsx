@@ -8,7 +8,7 @@ export const SELLER_SIDEBAR_LINKS = [
     {
         keys: "dashboard",
         label: "Dashboard",
-        path: "/restaurant",
+        path: "/restaurant/",
         icon: <MdDashboard size={27}/>
       },
     {
@@ -38,7 +38,7 @@ export const SELLER_SIDEBAR_LINKS = [
     {
         keys: "orders",
         label: "Orders",
-        path: "/restaurant/orders",
+        path: "/restaurant/order-history",
         icon: <BsFillBoxSeamFill size={27}/>
       },
     {

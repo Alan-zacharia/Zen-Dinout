@@ -6,7 +6,7 @@ import Header from '../../components/seller/shared/Header'
 const SellerHome = () => {
   return (
     <div className='flex flex-col md:flex-row h-screen overflow-x-hidden bg-slate-50'>
-        <div className=''>
+        <div >
         <SideBar/>
         </div>
         <nav > 

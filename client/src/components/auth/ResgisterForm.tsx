@@ -1,20 +1,25 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import signupLogo from "../../assets/SignupPage.jpg";
 import { registerValidation } from "../../utils/validations";
 import useRegister from "../../hooks/useRegisteration";
+import OtpForm from "../layouts/OtpForm";
+import axios from "axios";
+import { localStorageSetItem } from "../../utils/localStorageImpl";
 
 
 interface credentials {
-  username: string;
+  username: string;           
   email: string;
   password: string;
-  role: string;
   confirmPassword: string;
 } 
 const SignupForm: React.FC = () => {
-
+  const navigate = useNavigate()
+  const [otpFormModal , setOtpFormModal] = useState(false);
+  const [otpData , setOtp] = useState<string | null >(null);
+  const [error , setError] = useState<string | null >(null);
 
   const { errors, loadings, registerFn } = useRegister();
   const formik = useFormik({
@@ -23,22 +28,43 @@ const SignupForm: React.FC = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      role: "",
     },
     validate: registerValidation,
     onSubmit: async (credentials: credentials) => {
-      try {
-        const { confirmPassword, ...dataWithoutConfirmPassword } = credentials;
-        registerFn(dataWithoutConfirmPassword)
-      } catch (error) {
-        console.log(error);
+      try{
+        const response = await axios.post('http://localhost:3000/api/generate-otp', {email : credentials.email});
+        localStorageSetItem("remainingSeconds", "30");
+        setOtpFormModal(true);
+        console.log(response.data);
+        setOtp(response.data.otp);
+      }catch(error : any){
+        console.log(error)
+        if (error && error.response && error.response.data) {
+          setError(error.response.data.message);
+       }
       }
     },
   });
+  const resendOtp = async() =>{
+    const response = await axios.post('http://localhost:3000/api/generate-otp', {email : formik.values.email});
+    setOtp(response.data.otp)
+  }
+
+  const handleOtpVerification = ()=>{
+     try {
+        registerFn(formik.values);
+        navigate('/login')
+      } catch (error) {
+        console.log(error);
+      }
+  }
 
   return (
     <>
       <div className="w-full lg:w-1/2 bg-white flex flex-col p-8 lg:p-20 justify-between ">
+      {otpFormModal && (
+        <OtpForm otpData={otpData} onOtpVerified={handleOtpVerification} resendOtp={resendOtp}/>
+      )}
         <h1 className="text-xl text-black font-semibold mb-8">Zen Dinout</h1>
 
         <div className="w-full flex flex-col max-w-md mx-auto lg:mx-32 ">
@@ -49,7 +75,9 @@ const SignupForm: React.FC = () => {
           </div>
 
           <form onSubmit={formik.handleSubmit}>
-            {errors && <div className="text-red-600">{errors}</div>}
+            {!error && errors ? ( <div className="text-red-600">{errors}</div>) :(
+              <div className="text-red-600">{error}</div>
+            )}
 
             <div className="mb-6">
               <input
@@ -93,25 +121,6 @@ const SignupForm: React.FC = () => {
                 )}
             </div>
             <div className="flex items-center mb-6">
-              {formik.errors.role && formik.touched.role ? (
-                <select
-                  {...formik.getFieldProps("role")}
-                  className="font-bold focus:outline-none text-red-500"
-                >
-                  <option value="choose">Please choose role</option>
-                  <option value="user">User</option>
-                  <option value="seller">Seller</option>
-                </select>
-              ) : (
-                <select
-                  {...formik.getFieldProps("role")}
-                  className="font-bold focus:outline-none text-gray-700"
-                >
-                  <option value="choose">Choose user or seller</option>
-                  <option value="user">User</option>
-                  <option value="seller">Seller</option>
-                </select>
-              )}
               <p className="ml-auto text-sm cursor-pointer underline">
                 Forgot password?
               </p>
@@ -160,3 +169,8 @@ const SignupForm: React.FC = () => {
 };
 
 export default SignupForm;
+
+
+
+
+

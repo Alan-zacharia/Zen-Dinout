@@ -2,6 +2,7 @@ import { useState } from "react";
 import {  login } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
+import { sellerLogin } from "../services/SellerApiClient";
 
 interface credentials {
   email: string;
@@ -10,7 +11,7 @@ interface credentials {
 }
 
 interface LoginReturnType {
-  loginFn: (data: credentials) => void;
+  loginFn: (data: credentials , role : string) => void;
   loading: boolean;
   error: string | null;
 }
@@ -20,19 +21,24 @@ const useLogin = (): LoginReturnType => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const loginFn = async (datas: credentials) => {
+  const loginFn = async (datas: credentials , role : string) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await login(datas);
-      setLoading(false);
-      queryClient.invalidateQueries("validateToken");
-      if (data.user?.role == "user") {
+    
+      if (role == "user") {
+        const { data } = await login(datas);
+        setLoading(false);
+        queryClient.invalidateQueries("validateToken");
         navigate("/");
       } else {
-        navigate("/restaurant");
+        console.log('Restaurant')
+        const { data } = await sellerLogin(datas);
+        console.log(data.user) 
+        setLoading(false);
+        queryClient.invalidateQueries("validateSellerToken");
+        navigate("/restaurant/");
       }
-      return;
     } catch (error: any) {
       setLoading(false);
       if (

@@ -6,7 +6,7 @@ import { resendOtp } from "../../services/api";
 
   
 
-const Timer: React.FC= () => {
+const Timer = ({resendOtp} : {resendOtp : ()=>void}) => {
   const [seconds, setSeconds] = useState(() => {
     const savedSeconds = localStorage.getItem("remainingSeconds");
     return savedSeconds ? parseInt(savedSeconds, 10) : 30;
@@ -25,12 +25,11 @@ const Timer: React.FC= () => {
   const resendOtpFn = () => {
     setSeconds(30);
     localStorage.setItem("remainingSeconds", "30");
-    const userId = localStorageGetItem("otpData");
-    resendOtp(userId as string)
+    resendOtp();
   };
 
   return (
-    <div className="relative pt-3">
+    <div className="relative pt-3 pb-3">
       {seconds > 0 ? (
         <p>
           Time Remaining :
@@ -44,7 +43,7 @@ const Timer: React.FC= () => {
       )}
 
       <button
-        className="underline absolute right-7 top-3"
+        className="underline absolute right-2 top-3"
         disabled={seconds > 0}
         style={{
           color: seconds > 0 ? "#DFE3E8" : "#FF5630",

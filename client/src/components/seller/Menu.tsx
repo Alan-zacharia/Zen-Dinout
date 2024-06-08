@@ -1,24 +1,20 @@
 import React from "react";
 import { FaTrash } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
-import IMg from '../../assets/Login-image.jpg'
+import IMg from "../../assets/Login-image.jpg";
 import Form from "../layouts/Form";
-
 
 const Menu: React.FC = () => {
   return (
-    <div className="h-full pt-32 px-10 fixed">
+    <div className="h-full pt-32 px-10 z-50">
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold text-orange-500">Menu</h1>
-        <div className="flex justify-end">
-          
-            <Form/>
-        
-         
+        <div className="flex justify-end ">
+          <Form />
         </div>
       </div>
-      <div className="flex flex-col gap-20">
-        <div className="pt-5 flex gap-5 ">
+      <div className="flex flex-col gap-5">
+        <div className="pt-10 flex lg:flex-row flex-col gap-5 ">
           <select className="select select-warning w-full max-w-[200px] font-semibold text-orange-500">
             <option disabled selected>
               Categories
@@ -39,7 +35,7 @@ const Menu: React.FC = () => {
               Dessert
             </option>
           </select>
-          <div>
+          <div >
             <input
               type="text"
               placeholder="Search"
@@ -55,12 +51,10 @@ const Menu: React.FC = () => {
             </label>
           </div>
         </div>
-        <div>
-
+        <div></div>
         <h1 className="text-2xl font-bold text-orange-400 ">Starters</h1>
-        </div>
-        <div className="flex flex-wrap gap-5 overflow-x-auto  h-[280px]">
-          {[1, 2, 3, 4, 5,6,7,8,9,].map(() => {
+        <div className="flex flex-wrap gap-5 overflow-x-auto  h-[280px] lg:h-[570px] shadow-xl  rounded-md ">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(() => {
             return (
               <div className=" w-full max-w-[250px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 transition transform duration-200 hover:-translate-y-1">
                 <a href="#">
@@ -98,7 +92,6 @@ const Menu: React.FC = () => {
           })}
         </div>
       </div>
-      
     </div>
   );
 };

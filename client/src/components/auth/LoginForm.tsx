@@ -6,8 +6,6 @@ import { loginValidation } from "../../utils/validations";
 import { Link } from "react-router-dom";
 
 
-
-
 interface UserType {
   email: string;
   password: string;
@@ -24,8 +22,9 @@ const LoginForm : React.FC = () => {
     },
     validate: loginValidation,
     onSubmit: async (credentials : UserType) => {
+      console.log(credentials) 
       try{
-        loginFn(credentials)
+        loginFn(credentials , credentials.role)
       }catch(error){
          console.log(error)
       }
