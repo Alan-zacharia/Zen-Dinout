@@ -22,6 +22,9 @@ import SellerRegisterationPage from '../pages/seller/SellerRegisterationPage'
 import UserProfile from '../components/user/UserProfile'
 import HomeLayout from '../components/user/layouts/HomeLayout'
 import ForgotPassword from '../pages/user/ForgotPassword'
+import RestaurantApprovalForm from '../components/admin/RestaurantApprovalForm'
+import ForgotPasswordPageRecieveEmail from '../pages/user/ForgotPasswordPageRecieveEmail'
+import { localStorageGetItem } from '../utils/localStorageImpl'
 const HomePage = React.lazy(() => import('../pages/user/Home'));
 const DashBoard = React.lazy(() => import('../components/admin/DashBoard'));
 const RestaurantMangement = React.lazy(() => import('../components/admin/RestaurantManagement'));
@@ -32,6 +35,7 @@ const AppRouter : React.FC = () => {
   const {isLoggedIn} = useAppContext();
   const { isAdminLoggedIn } = useAdminAppContext();
   const { isSellerLoggedIn } = useSellerAppContext();
+  const resetPassword = localStorageGetItem("&reset%pas%%")
   
   return (
     <Router>
@@ -47,7 +51,9 @@ const AppRouter : React.FC = () => {
          <Route index element={ <HomeLayout/> } />
          <Route path="/account" element={ <UserProfile/> } />
         </Route>
-        <Route path="/forgot-password" element={ <ForgotPassword  /> } />
+        <Route path='/reset-password' element={<ForgotPasswordPageRecieveEmail />}/>
+
+        <Route path="/reset-password/fps/:id" element={resetPassword ? <ForgotPassword  /> : <Navigate to="*"/> } />
 
 
        
@@ -63,20 +69,21 @@ const AppRouter : React.FC = () => {
         <Route path='/admin/customers' element={isAdminLoggedIn ?  <Customers/> : <Navigate to ='/admin/login'/>} /> 
         <Route path='/admin/restaurants' element={isAdminLoggedIn ?  <RestaurantMangement/> : <Navigate to ='/admin/login'/>} /> 
         <Route path='/admin/new-registerations' element={isAdminLoggedIn ? <NewRestaurants/> : <Navigate to ='/admin/login'/>} /> 
+        <Route path='/admin/restaurant-approval/:id' element={isAdminLoggedIn ? <RestaurantApprovalForm/> : <Navigate to ='/admin/login'/>} /> 
         </Route>
 
         {/* Seller Routers */}
         
         <Route path='/restaurant/registeration' element={<SellerRegisterationPage/> }/>
 
-        <Route path='/restaurant/' element={ <SellerHome/>}>
-         <Route index element={<SellerDashBoard/>} />
-         <Route path='/restaurant/reservations' element={ <Reservation/>} />
-         <Route path='/restaurant/table' element={ <Table/> } />
-         <Route path='/restaurant/time-slots' element={ <TimeSlots/> } />
-         <Route path='/restaurant/menu' element={<Menu/> } />
-         <Route path='/restaurant/order-history' element={<Orders/>} />
-         <Route path='/restaurant/restaurant-details' element={<RestaurantDetails/>} />
+        <Route path='/restaurant/' element={isSellerLoggedIn ? <SellerHome/> : <Navigate to="/login"/>}>
+         <Route index element={isSellerLoggedIn ? <SellerDashBoard/> : <Navigate to="/login"/>} />
+         <Route path='/restaurant/reservations' element={isSellerLoggedIn ? <Reservation/> : <Navigate to="/login"/> } />
+         <Route path='/restaurant/table' element={ isSellerLoggedIn ? <Table/> : <Navigate to="/login"/>  } />
+         <Route path='/restaurant/time-slots' element={ isSellerLoggedIn ?  <TimeSlots/> : <Navigate to="/login"/> } />
+         <Route path='/restaurant/menu' element={ isSellerLoggedIn ? <Menu/> : <Navigate to="/login"/> } />
+         <Route path='/restaurant/order-history' element={isSellerLoggedIn ? <Orders/> : <Navigate to="/login"/>} />
+         <Route path='/restaurant/restaurant-details' element={isSellerLoggedIn ? <RestaurantDetails/> : <Navigate to="/login"/>} />
         </Route>
 
         <Route path="*" element={<PageNotFound/>} />

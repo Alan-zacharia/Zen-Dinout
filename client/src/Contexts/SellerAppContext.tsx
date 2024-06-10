@@ -6,6 +6,7 @@ import { validateToken } from "../services/SellerApiClient";
 
 type AppContext = {
   isSellerLoggedIn :boolean;
+  isUserId : string
 };
 
 const AppContext = React.createContext<AppContext | undefined>(undefined);
@@ -22,7 +23,7 @@ export const AppSContextProvider = ({
   return (
     <AppContext.Provider
       value={{
-     
+        isUserId : 'hihj',
         isSellerLoggedIn : !isError
       }}
     >

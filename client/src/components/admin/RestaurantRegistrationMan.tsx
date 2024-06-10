@@ -7,8 +7,7 @@ axios.defaults.withCredentials = true;
 const RestaurantMangement: React.FC = () => {
   const [restaurant, setRestaurant] = useState([]);
   useEffect(() => {  
-    const fetchData = async () => {
-    
+    const fetchData = async () => {  
     await axios.get("http://localhost:3000/admin/restaurants-approval-lists").then((response)=>{
       setRestaurant(response.data.restaurants)
     }).catch((error)=>{
@@ -63,7 +62,7 @@ const RestaurantMangement: React.FC = () => {
                         value={restaurant.contact}
                       /></td>
                     <td className="p-3 px-5 flex justify-end">
-                      <Link to={`/restaurant/approval-restaurant:${restaurant._id}`}><button className="p-2 bg-green-500 text-white rounded-xl px-4 hover:bg-green-400">Veiw</button></Link>
+                      <Link to={`/admin/restaurant-approval/:${restaurant._id}`}><button className="p-2 bg-green-500 text-white rounded-xl px-4 hover:bg-green-400">Veiw</button></Link>
                     </td>
                   </tr>
                 );

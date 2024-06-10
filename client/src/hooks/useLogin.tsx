@@ -28,6 +28,7 @@ const useLogin = (): LoginReturnType => {
     
       if (role == "user") {
         const { data } = await login(datas);
+        console.log(data.user) 
         setLoading(false);
         queryClient.invalidateQueries("validateToken");
         navigate("/");

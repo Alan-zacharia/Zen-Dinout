@@ -3,10 +3,12 @@ import React, { useState } from "react";
 
 import Carousel from "../layouts/Carousel";
 import Card from "../layouts/Card";
+import { localStorageRemoveItem } from "../../utils/localStorageImpl";
 
 
 
 const Home: React.FC = () => {
+  localStorageRemoveItem("&reset%pas%%")
   return (
     <>
     <div className="h-[500px] pt-8 overflow-y-hidden">

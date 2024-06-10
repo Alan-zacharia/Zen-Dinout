@@ -1,66 +1,47 @@
-import React, { useState } from 'react'
-import {
-    Combobox,
-    ComboboxInput,
-    ComboboxOption,
-    ComboboxOptions,
-  } from "@headlessui/react";
-  
-  interface Person {
-    id: number;
-    name: string;
-  }
-  
-  const people: Person[] = [
-    { id: 1, name: "location" },
-    { id: 2, name: "Kochi" },
-    { id: 3, name: "Therese Wunsch" },
-    { id: 4, name: "Benedict Kessler" },
-    { id: 5, name: "Katelyn Rohan" },
-  ];
-  
+import React, { useState } from "react";
+import { FaLocationDot } from "react-icons/fa6";
+import getLocations from "../../../services/getPlaceApi";
+import classNames from "classnames";
+
+
 const NavLeftSide = () => {
+  const [suggestion, setSuggestions] = useState([]);
+  const [searchItem, setSearchItem] = useState<string>("");
 
-    const [selectedPerson, setSelectedPerson] = useState<Person>(people[0]);
-  const [query, setQuery] = useState<string>("");
+  const handleLocationSearch = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const searchedTerm = e.target.value;
+    setSearchItem(searchedTerm);
+    const data = await getLocations(searchedTerm);
+    setSuggestions(data);
+  };
+  const handleInput = (suggestion : any)=>{
+    setSearchItem(suggestion.place_name);
+    setSuggestions([])
+  }
 
-  const filteredPeople: Person[] =
-    query === ""
-      ? people
-      : people.filter((person: Person) =>
-          person.name.toLowerCase().includes(query.toLowerCase())
-        );
   return (
-    <div className="lg:flex items-center text-[14px] px-10 ">
-    <Combobox
-      value={selectedPerson}
-      onChange={(person: Person | null) =>
-        person && setSelectedPerson(person)
-      }
-      onClose={() => setQuery("")}
-    >
-      <ComboboxInput
-      className="w-44 focus:outline-none border border-gray-400 p-2 h-8"
-        aria-label="Assignee"
-        displayValue={(person: Person | null) => person?.name || ""}
-        onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-          setQuery(event.target.value)
-        }
-      />
-      <ComboboxOptions anchor="bottom" className="empty:hidden w-44 bg-white  shadow-xl shadow-black text-[15px] font-bold font-sans  p-2 ">
-        {filteredPeople.map((person: Person) => (
-          <ComboboxOption
-            key={person.id}
-            value={person}
-            className="data-[focus]:bg-blue-100"
-          >
-            {person.name}
-          </ComboboxOption>
-        ))}
-      </ComboboxOptions>
-    </Combobox>
-  </div>
-  )
-}
+    <div className="lg:flex items-center text-[14px] px-10 flex flex-col relative">
+     <input type="text" className="px-2 w-[200px] outline-none border border-black"
+     onChange={handleLocationSearch} 
+     value={searchItem} 
+     placeholder="Location......."/>
+    <FaLocationDot size={23} className="absolute right-12 top-2"/>
+     {suggestion &&  (
+     <ul className={classNames( suggestion.length > 1 ? "bg-white absolute w-[200px] top-12 overflow-x-auto h-52" : "" ) } >      
+      {suggestion.map((suggestion : any , index : number)=>(
+         <li key={index}
+         className="px-4 py-3 cursor-pointer hover:bg-blue-200"
+         onClick={()=> handleInput(suggestion)}
+         >
+          {suggestion.place_name}
+         </li>     
+     ))}
+    </ul>
+    )}
+    </div>
+  );
+};
 
-export default NavLeftSide
+export default NavLeftSide;

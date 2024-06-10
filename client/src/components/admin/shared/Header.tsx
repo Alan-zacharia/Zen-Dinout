@@ -19,17 +19,8 @@ function Header() {
   const navigate = useNavigate();
   return (
     <div className="bg-white h-16 px-4 flex justify-between items-center border-b border-gray-300">
-      <div className="relative flex-shrink-0 w-52 md:w-auto">
-        <HiOutlineSearch
-          fontSize={24}
-          className="text-gray-400 absolute top-1/2 -translate-y-1/2 left-3"
-        />
-        <input
-          type="text"
-          placeholder="Search....."
-          className="text-sm focus:outline-none border active:outline-none border-gray-300 h-10 w-full pl-10 pr-4 rounded-sm"
-        />
-      </div>
+      <div className="relative flex-shrink-0 w-52 md:w-auto"/>
+       
       <div className="flex items-center gap-4 mr-2">
         <Popover className="relative">
           {({ open }) => (

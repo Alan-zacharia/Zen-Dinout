@@ -6,6 +6,7 @@ import SignOutButton from "../../auth/SignOutButton";
 
 const NavBar: React.FC = () => {
   const { isLoggedIn } = useAppContext();
+  console.log(isLoggedIn)
   return (
     <div className="navbar bg-base-100 shadow-lg shadow-neutral-400 h-20">
       <div className="navbar-start ">

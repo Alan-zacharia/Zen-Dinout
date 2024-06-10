@@ -4,6 +4,7 @@ import GoogleLoginButton from "../auth/GooglLoginButton";
 import useLogin from "../../hooks/useLogin";
 import { loginValidation } from "../../utils/validations";
 import { Link } from "react-router-dom";
+import { localStorageRemoveItem } from "../../utils/localStorageImpl";
 
 
 interface UserType {
@@ -13,6 +14,7 @@ interface UserType {
 }
 
 const LoginForm : React.FC = () => {
+  localStorageRemoveItem("&reset%pas%%")
   const {loading ,loginFn ,  error} = useLogin();
   const formik = useFormik<UserType>({
     initialValues: {
@@ -22,7 +24,7 @@ const LoginForm : React.FC = () => {
     },
     validate: loginValidation,
     onSubmit: async (credentials : UserType) => {
-      console.log(credentials) 
+      console.log(credentials)   
       try{
         loginFn(credentials , credentials.role)
       }catch(error){
@@ -103,9 +105,9 @@ const LoginForm : React.FC = () => {
                   <option value="seller">Seller</option>
                 </select>
               )}
-              <p className="ml-auto text-sm cursor-pointer underline">
+              <Link to={'/reset-password'}><p className="ml-auto text-sm cursor-pointer underline">
                 Forgot password?
-              </p>
+              </p></Link>
             </div>
 
             <div className="flex flex-col mb-4">

@@ -145,3 +145,13 @@ export const sellerRegiseterationValidation = ()=>{
       ),
   })
 }
+
+
+export const valdateResetPassword = ()=>{
+     return Yup.object().shape({
+      password : Yup.string().required("Please enter the password !").max(20,"Please enter a password less than 20 characters")
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/,"Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character!"),
+      confirmPassword:Yup.string().required("Confirm password is required !").min(8,"Password must be 8 characters long !").max(20,"Please enter a password less than 20 characters")
+      .oneOf([Yup.ref("password")],"Passwords must match")
+     })
+}

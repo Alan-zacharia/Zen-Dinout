@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
-import React, { ChangeEvent, useRef, useState } from "react";
-import * as Yup from "yup";
+import React, { ChangeEvent, useEffect, useRef, useState  } from "react";
+
 import PreviewImage from "../layouts/PreviewImage";
 import { imageCloudUpload } from "../../services/SellerApiClient";
 import useSellerRefisteration from "../../hooks/useSellerRefisteration";
@@ -8,8 +8,21 @@ import { sellerRegiseterationValidation } from "../../utils/validations";
 import GoogleMap from "../GoogleMap";
 import getLocations from "../../services/getPlaceApi";
 import { CiCircleRemove } from "react-icons/ci";
+import axios from "axios";
 
 const RestaurantDetails = () => {
+  const [restaurantDetails, setRestaurantDetails] = useState<{email : string ; contact : string ; restaurantName : string}>({email:"" , contact : "" , restaurantName : ""});
+  useEffect(()=>{
+    const fetchData = async()=>{
+      await axios.get("http://localhost:3000/restaurant/restaurant-details").then((res)=>{
+        setRestaurantDetails(res.data.restaurantDetails);
+      }).catch((error)=>{
+        console.log(error)   
+      })
+    }
+    fetchData()
+  },[]);
+
   const [suggestion, setSuggestions] = useState([]);
   const [lat, setLat] = useState(10.0);
   const [lng, setLng] = useState(76.5);
@@ -40,6 +53,7 @@ const RestaurantDetails = () => {
       registerFn(data);
     },
   });
+
   const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     setLocation(e.target.value);
     const data = await getLocations(e.target.value);
@@ -56,7 +70,7 @@ const RestaurantDetails = () => {
     setSuggestions([]);
   };
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const fileInputFeaturedRef = useRef<HTMLInputElement>(null); // Corrected ref name
+  const fileInputFeaturedRef = useRef<HTMLInputElement>(null); 
 
   const handleRemoveImage = () => {
     formik.setFieldValue("secondaryImages", null); 
@@ -91,6 +105,7 @@ const RestaurantDetails = () => {
                   placeholder="Restaurant name"
                   className="input input-bordered input-warning w-full max-w-xs"
                   {...formik.getFieldProps("restaurantName")}
+                  value={restaurantDetails.restaurantName}
                 />
                 {formik.touched.restaurantName &&
                   formik.errors.restaurantName && (
@@ -106,6 +121,7 @@ const RestaurantDetails = () => {
                   placeholder="Email"
                   className="input input-bordered input-warning w-full max-w-xs"
                   {...formik.getFieldProps("email")}
+                  value={restaurantDetails.email}
                 />
                 {formik.touched.email && formik.errors.email && (
                   <div className="text-red-500 text-sm pt-2">
@@ -120,6 +136,7 @@ const RestaurantDetails = () => {
                   placeholder="Phone number"
                   className="input input-bordered input-warning w-full max-w-xs"
                   {...formik.getFieldProps("contact")}
+                  value={restaurantDetails.contact}
                 />
                 {formik.touched.contact && formik.errors.contact && (
                   <div className="text-red-500 text-sm pt-2">

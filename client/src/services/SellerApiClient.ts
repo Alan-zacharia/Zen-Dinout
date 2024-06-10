@@ -27,7 +27,7 @@ export const sellerRegisteration = async (datas : credentials )=>{
 
 export const validateToken = async () => {
     const response = await axios.get("/restaurant/validate-token");
-    console.log(response.data);
+    console.log(response.data); 
     if (response.status !== 200) {
       throw new Error("Token invalid");
     }

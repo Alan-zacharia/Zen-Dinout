@@ -6,7 +6,7 @@ import { registerValidation } from "../../utils/validations";
 import useRegister from "../../hooks/useRegisteration";
 import OtpForm from "../layouts/OtpForm";
 import axios from "axios";
-import { localStorageSetItem } from "../../utils/localStorageImpl";
+import { localStorageRemoveItem, localStorageSetItem } from "../../utils/localStorageImpl";
 
 
 interface credentials {
@@ -16,6 +16,8 @@ interface credentials {
   confirmPassword: string;
 } 
 const SignupForm: React.FC = () => {
+
+  localStorageRemoveItem("&reset%pas%%")
   const navigate = useNavigate()
   const [otpFormModal , setOtpFormModal] = useState(false);
   const [otpData , setOtp] = useState<string | null >(null);
