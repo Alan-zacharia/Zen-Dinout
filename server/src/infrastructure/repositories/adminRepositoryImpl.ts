@@ -4,9 +4,10 @@ import { IAdminRepositories } from "../../domain/interface/repositories/IAdminRe
 import UserModel from "../database/model.ts/userModel";
 import bcrypt from 'bcryptjs';
 import restaurantModel from "../database/model.ts/restaurantModel";
+import nodeMaile_confirmationEmail from "../../functions/ConfrimationRestarantMailer";
 
 export class adminRepositoryImpl implements IAdminRepositories {
- 
+
   async loginAdminRepo(credentials: {
     email: string;
     password: string;
@@ -57,8 +58,10 @@ export class adminRepositoryImpl implements IAdminRepositories {
     restaurants: object | null;
     message: string;
   }> {
+    console.log('hhhhhhh')
     try {
-      const restaurants = await restaurantModel.find({});
+      const restaurants = await restaurantModel.find({isApproved : false});
+      console.log(restaurants)
       return { restaurants, message: "restaurant list Successfull" };
     } catch (error) {
       console.log("Error in get restaurant approve repo : ", error);
@@ -78,6 +81,29 @@ export class adminRepositoryImpl implements IAdminRepositories {
        }catch(error){
         console.log("Error in get restaurant actions repo : ", error);
         throw error;
-       }
+       };  
+  };
+
+  async getapprovalRestaurant(restaurantId: string): Promise<{ restaurants: object | null; message: string; }> {
+   try{
+       const restaurantDetails = await restaurantModel.findById(restaurantId);
+       console.log(restaurantDetails);
+       return {restaurants : restaurantDetails , message : "Restaurant details......"}
+   }catch(error){ 
+       console.log("Oops an error occurred in getapprovalRestaurant repository",  error );
+       throw error
+   }
+  };
+  async confrimRestaurant(restaurantId: string): Promise<{ success: boolean; message: string; }> {
+    try{
+        const restaurant = await restaurantModel.findByIdAndUpdate(restaurantId,{isApproved : true});
+        console.log(restaurant);
+        nodeMaile_confirmationEmail(restaurant?.email as string);
+        return {success : true , message : "Success"}
+    }catch(error){
+      console.log("OOps an error occured in comfirmation ", error);
+      throw error;
+    }
   }
+
 }

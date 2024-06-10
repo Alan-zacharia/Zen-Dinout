@@ -12,7 +12,7 @@ declare global {
 };
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies["auth_token"];
+    const token = req.cookies["Uauth_token"];
     if(!token){
         return res.status(401).json({message : "unautharized"});
     }

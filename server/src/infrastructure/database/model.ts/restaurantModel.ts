@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from 'bcryptjs';
+
 const restaurantSchema = new mongoose.Schema(
   {
     restaurantName: {
@@ -13,46 +15,46 @@ const restaurantSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    phone: {
+    contact: {
       type: String,
     },
-    password: {
-      type: String,
-      required: true,
-    },
-    role: {
-      type: String,
-      enum: ["seller"],
-      default: "seller",
+    password :{
+       type:String,
+       required:true
     },
     address: String,
     description: String,
-    tableRatePerPerson: {
+    TableRate: {
       type: Number,
       default: 200,
     },
-    location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        default: "Point",
-      },
-      coordinates: {
-        type: [Number],
-        default: [0, 0],
-      },
-    },
+    // location: {
+    //   type: {
+    //     type: String,
+    //     enum: ["Point"],
+    //     default: "Point",
+    //   },
+    //   coordinates: {
+    //     type: [Number],
+    //     default: [0, 0],
+    //   },
+    // },
+    location:String,
     openingTime: String,
     closingTime: String,
-    qrCode: String,
+    // qrCode: String,
+
     isListed: {
       type: Boolean,
-      default: false,
+      default: true,
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
+    featuredImage: String,
+
+    secondaryImages: [
+      {
+        type: String,
+      },
+    ],
     isApproved: {
       type: Boolean,
       default: false,
@@ -61,20 +63,18 @@ const restaurantSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    primaryImage: String,
-
-    secondaryImages: [
-      {
-        type: String,
-      },
-    ],
-    verificationToken: String,
   },
+  
   { timestamps: true }
 );
 
 restaurantSchema.index({ location: "2dsphere" }); 
-
+restaurantSchema.pre("save",async function (next) {
+  this.updatedAt = new Date();
+  const hashedPassword = await bcrypt.hash(this.password, 10);
+  this.password = hashedPassword;
+  next();
+});
  const restaurantModel = mongoose.model("Restaurant", restaurantSchema);
  export default restaurantModel;
 

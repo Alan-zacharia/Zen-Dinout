@@ -38,17 +38,17 @@ const userSchema: Schema<UserDocument> = new Schema({
     },
     role:{
      type:String,
-     enum : ["user","seller"],
      default:"user"
     },
     isVerified : {
         type : Boolean,
-        default : false
+        default : true
     },
     isAdmin : {
         type : Boolean,
         default : false
     },
+    
 });
 
 userSchema.pre<UserDocument>("save",async function (next) {

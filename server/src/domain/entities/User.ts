@@ -5,6 +5,5 @@ export class UserType {
         public readonly password? : string,
         public readonly id? : string,
         public readonly phone? : string,
-        public readonly role? : string,
     ){}
 }

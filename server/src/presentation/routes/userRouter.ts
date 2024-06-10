@@ -23,35 +23,35 @@ userRouter.post('/register',[
     check("username","Name is required").isString(),
     check("email","Email is required").isEmail(),
     check("password","Password with 8 or more charaters required").isLength({ min : 6}),
-    check("role","role is required").isString(),
 ],userExists, controller.Register.bind(controller));
 
 
 userRouter.post('/login',[check("email","Email is required").isEmail(),
     check("password","Password with 8 or more charaters required").isLength({ min : 8}),
     check("role","Role is required").isString()
-], controller.Login.bind(controller));
+    ], controller.Login.bind(controller));
+    
+userRouter.post('/logout',controller.Logout.bind(controller));
+userRouter.post('/generate-otp',userExists,controller.GenerateOtp.bind(controller));
 
+/** Put Methods  */
+userRouter.post('/reset-password',controller.reset_password.bind(controller))
+userRouter.put('/reset-password/:id',controller.resetPasswordPut.bind(controller))
 
 
 
 
 userRouter.post('/otp', controller.OtpVerify.bind(controller));
 userRouter.post('/resend-otp', controller.ResendOtp.bind(controller));
-userRouter.post('/send-otp',(req,res)=>{
-    console.log(req.body)
-    const {email} = req.body
-    const otp = otpGenerator.generateOtp();
-    nodemailerCreateOtp(email as string, otp);
-    return res.status(200).json({otp});
-});
+
+
+
 
 
 userRouter.get('/validate-token',verifyToken,(req:Request,res:Response)=>{
    res.status(200).send({userId : req.userId})
 })
 
-userRouter.post('/logout',controller.Logout.bind(controller));
 
 
 

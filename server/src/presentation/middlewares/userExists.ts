@@ -21,7 +21,7 @@ export const userExists = async (
     }
     next();
   } catch (error) {
-    res.status(400).json({ message: "Internal server error", toke: null });
+    res.status(400).json({ message: "Internal server error", token: null });
     console.log("Oops Error in userExists middleware ", error);
   }
 };

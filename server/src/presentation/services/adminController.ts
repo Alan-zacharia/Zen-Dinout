@@ -69,7 +69,7 @@ export class adminController {
     console.log("Get restaurants service");
     try {
       const { message, restaurants } = await this.interactor.getResataurants();
-      return { message, restaurants };
+      return res.status(200).json({ message, restaurants });
     } catch (error) {
       console.error(
         " OOps ! error during  admin get restaurant service:",
@@ -86,7 +86,7 @@ export class adminController {
     console.log("Get restaurants service");
     try {
       const { message, restaurants } = await this.interactor.restaurantApprove();
-      return { message, restaurants };
+      return res.status(200).json({ message, restaurants });
     } catch (error) {
       console.error(
         " OOps ! error during  admin get restaurant service:",
@@ -94,7 +94,49 @@ export class adminController {
       );
       res.status(500).send("Internal server error");
     }
-  }
+  };
+  /**
+   * get restaurants list service
+   * @returns Object containing restaurants data, message
+   */
+  async approval_restaurant(req: Request, res: Response, next: NextFunction) {
+    console.log("Get approval_restaurant service");
+    const {id} = req.params
+    try {
+      const restaurantId = id.split(':')
+      console.log("Resataurant ID :", restaurantId[1]);
+      const { message, restaurants } = await this.interactor.getRestaurantDetailsInteractor(restaurantId[1]);
+      return res.status(200).json({ message, restaurants });
+    } catch (error) {
+      console.error(
+        " OOps ! error during  admin get restaurant service:",
+        error
+      );
+      res.status(500).send("Internal server error");
+    }
+  };
+
+  /**
+   * put restaurants approval service
+   * @returns Object containing restaurants data, approve
+   */
+  async confirmRestaurant_Approval(req: Request, res: Response, next: NextFunction) {
+    console.log("confirm Restaurant_Approval restaurants service");
+    const id = req.params.id
+    try {
+      const restaurantId = id.split(':');
+      console.log(restaurantId[1]);
+      const { message , success } = await this.interactor.confirmRestaurantInteractor(restaurantId[1]);
+      return res.status(200).json({ message, success });
+    } catch (error) {
+      console.error(
+        " OOps ! error during  admin get restaurant service:",
+        error
+      );
+      res.status(500).send("Internal server error");
+    }
+  };
+  
   async Logout(req : Request , res : Response , next : NextFunction){
     console.log("Admin Logout")
     try{

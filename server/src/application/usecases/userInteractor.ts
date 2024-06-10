@@ -6,12 +6,11 @@ import { jwtGenerateRefreshToken } from "../../functions/jwtTokenFunctions";
 
 export class userInteractorImpl implements IUserInteractor {
   constructor(private readonly repository: IUserRepository, Imailer: IMailer) {}
-  
 
-  async register(credentials: UserType): Promise<{ user: UserType | null; message: string; token : string}> {
+  async register(credentials: UserType): Promise<{ user: UserType | null; message: string; }> {
     try {
-      const { user, message , token  } = await this.repository.create(credentials);
-      return { user, message , token };
+      const { user, message  } = await this.repository.create(credentials);
+      return { user, message  };
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
@@ -62,6 +61,25 @@ export class userInteractorImpl implements IUserInteractor {
     console.log(error);
     throw error;
   }
-  }
+  };
+  async resetPasswordInteractor(email: string): Promise<{ message: string; success: boolean; }> {
+    try{
+      const {message , success} = await this.repository.resetPassword(email)
+      return {message , success}
+    }catch(error){
+      console.log(error);
+      throw error;
+    }
+  };
+  async resetPasswordChangeInteractor(id: string , password:string): Promise<{ message: string; status: boolean; }> {
+   try{
+    const {message , status} = await this.repository.resetPasswordConfirm(id,password);
+    return {message , status}
+   }catch(error){
+    console.log(error);
+    throw error;
+   }
+  };
+ 
 
 }

@@ -9,4 +9,6 @@ export interface IAdminInteractor {
     actionInter(id : string , block : string):Promise<{users : UserType | null , message : string}>, 
     getResataurants():Promise<{restaurants : object | null , message : string}>,
     restaurantApprove():Promise<{restaurants : object | null , message : string}>,
+    getRestaurantDetailsInteractor(restaurantId : string):Promise<{restaurants : object | null , message : string}>
+    confirmRestaurantInteractor(restaurantId : string):Promise<{success : boolean ; message : string}>
 }

@@ -6,9 +6,10 @@ import { otpGenerator } from "../../functions/OtpSetup";
 import nodemailerCreateOtp from "../../functions/MailerGenrator";
 import bcrypt, { hashSync } from 'bcryptjs';
 import { OTPModel } from "../database/model.ts/OtpModel";
+import reset_PasswordMailer from "../../functions/resetPasswordEmail";
 
 export class userRepositoryImpl implements IUserRepository {
-  
+
   async findByCredentials(
     email: string,
     password: string
@@ -19,14 +20,19 @@ export class userRepositoryImpl implements IUserRepository {
     if(!user){
         message = 'User not found';
     }else{
+      if(user.isVerified){
         const hashedPassword = await bcrypt.compare(password , user.password);
          if(!hashedPassword){
            console.log('password is not match');
            message = 'Invalid password';
          }else{
+          
             token =  jwtGenerateToken(user._id as string);
             console.log(token);
          }
+        }else{
+          message = 'User Not Found';
+        }
     } 
     if(user && !message ){
         return { user : user , message :"Login Successfull" , token };
@@ -38,28 +44,22 @@ export class userRepositoryImpl implements IUserRepository {
 
   async create(
     user: UserType
-  ): Promise<{ user: UserType | null; message: string; token : string }> {
+  ): Promise<{ user: UserType | null; message: string;}> {
+    console.log("User creation repository.................................")
     try{
-    const { username, email, password, role } = user;
-    const otp = otpGenerator.generateOtp();
-    nodemailerCreateOtp(user.email as string, otp)
+    const { username, email, password } = user;
     const newUser = new  UserModel({
       username,
       email,
       password,
-      role,
     });
-    await newUser.save()
-    const otpData = new OTPModel({ otp: otp , userId :newUser._id });
-    await otpData.save();
-    const token = jwtGenerateToken(newUser._id as string);
-    return {user: newUser as UserType,message: "User created successfully", token};
+    await newUser.save();
+    return {user: newUser as UserType,message: "User created successfully"};
   }catch(error){
     console.log("Error in create repository ",error)
     return {
       user: null,
       message: "User created successfully",
-      token :''
     };
   }
   };
@@ -106,4 +106,34 @@ export class userRepositoryImpl implements IUserRepository {
     return {status : false , message : "Incorrect otp" }
   };
 
+  async resetPassword(email: string): Promise<{ message: string; success: boolean; }> {
+      console.log("Reset password repository.......")
+    try{
+      const user = await UserModel.findOne({email});
+      if(!user){
+        return {message : "User not found" , success : false} 
+      }
+      reset_PasswordMailer(user.email, user._id as string);
+      return {message : "User exists" , success : true};
+    }catch(error){
+      console.log("Oops error in reset-password Repo " , error);
+      throw error;
+    }
+  };
+
+  async resetPasswordConfirm(id: string , password:string): Promise<{ message: string; status: boolean; }> {
+    try{
+      console.log("Confirm reset password.........",id)
+      const hashedPassword = await bcrypt.hash(password,8)
+      const user = await UserModel.findByIdAndUpdate(id,{password : hashedPassword});
+      console.log(user);
+      if(!user) return {message : "Something went wrong" , status : false};
+      return {message : "Successfully reseted" , status : true}
+    }catch(error : any){
+      console.log("Oops an error occured in Reset password repo : ", error.message);
+      throw error;
+    }
+  };
+ 
+  
 }

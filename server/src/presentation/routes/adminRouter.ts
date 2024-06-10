@@ -14,20 +14,24 @@ const controller = new adminController(interactor);
 const adminRouter : Router = Router();
 
 
+/** Get Methods  */
+adminRouter.get('/users-list',controller.getUsers.bind(controller));
+adminRouter.get('/restaurants-list',controller.getRestaurants.bind(controller));
+adminRouter.get('/restaurants-approval-lists',controller.approveRestaurant.bind(controller));
+adminRouter.get('/restaurant-approval/:id',controller.approval_restaurant.bind(controller));
+adminRouter.get('/validate-token',adminVerifyToken,(req:Request,res:Response)=>{res.status(200).send({userId : req.userId})});
 
 /** Post Methods  */
 adminRouter.post('/login',controller.loginAdmin.bind(controller));
-adminRouter.get('/users-list',controller.getUsers.bind(controller));
-adminRouter.get('/restaurants-list',controller.getRestaurants.bind(controller));
-adminRouter.get('/restaurants-approval-lists',controller.getRestaurants.bind(controller));
-
-
-adminRouter.put('/user-actions/:id/:block',controller.userActions.bind(controller));
-
-adminRouter.get('/validate-token',adminVerifyToken,(req:Request,res:Response)=>{
-    res.status(200).send({userId : req.userId})
- });
 adminRouter.post('/logout',controller.Logout.bind(controller));
+
+
+
+/** Put Methods */
+adminRouter.put('/user-actions/:id/:block',controller.userActions.bind(controller));
+adminRouter.put('/restaurant-approval/:id',controller.confirmRestaurant_Approval.bind(controller));
+
+
 
 export default adminRouter;
 
