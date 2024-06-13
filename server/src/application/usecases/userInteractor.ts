@@ -1,28 +1,25 @@
 import { UserType } from "../../domain/entities/User";
+import { RestaurantType } from "../../domain/entities/restaurants";
 import { IMailer } from "../../domain/interface/external-lib/IMailer";
 import { IUserRepository } from "../../domain/interface/repositories/IUserRepository";
 import { IUserInteractor } from "../../domain/interface/use-cases/IUserInteractor";
-import { jwtGenerateRefreshToken } from "../../functions/jwtTokenFunctions";
+import { jwtGenerateRefreshToken } from "../../functions/auth/jwtTokenFunctions";
+import logger from "../../infrastructure/lib/Wintson";
 
 export class userInteractorImpl implements IUserInteractor {
-  constructor(private readonly repository: IUserRepository, Imailer: IMailer) {}
+  constructor(private readonly repository: IUserRepository) {};
 
-  async register(credentials: UserType): Promise<{ user: UserType | null; message: string; }> {
+  async userRegisterInteractor(credentials: UserType): Promise<{ user: UserType | null; message: string; }> {
     try {
-      const { user, message  } = await this.repository.create(credentials);
+      const { user, message  } = await this.repository.userCreate(credentials);
       return { user, message  };
     } catch (error) {
-      if (error instanceof Error) {
-        console.log(error.message);
-        throw new Error(error.message);
-      }
-      console.log(error);
-      throw error;
+      logger.error((error as Error).message);
+      throw (error as Error).message
     }
   }
 
-
-  async login(credentials: { email: string;password: string; }): Promise<{
+  async userLoginInteractor(credentials: { email: string;password: string; }): Promise<{
     user: UserType | null;
     message: string;
     token: string | null;
@@ -30,56 +27,67 @@ export class userInteractorImpl implements IUserInteractor {
   }> {
     try {
       const { user, message, token } = await this.repository.findByCredentials(
-        credentials.email,
-        credentials.password
+      credentials.email,
+      credentials.password
       );
       let refreshToken = "";
       if (user) {
-        refreshToken = await jwtGenerateRefreshToken(user.id as string);
+      refreshToken = jwtGenerateRefreshToken(user.id as string);
       }
-      console.log(token, user);
       return { user, message, token, refreshToken };
     } catch (error) {
-      console.log("Error occured in Login", error);
-      throw error;
+      logger.error((error as Error).message);
+      throw (error as Error).message;
     }
   };
-  async verify(otp: string, userId: string): Promise<{ message: string; status: boolean; }> {
-  try{
-     const {message , status } = await this.repository.OtpCheking(otp , userId);
-     return {message , status};
-  }catch(error){
-    console.log(error);
-    throw error;
-  }
-  }
-  async resendOtp(userId: string): Promise<{ message: string; status: boolean; }> {
-  try{
-     const {message , status } = await this.repository.resend(userId);
-     return {message , status};
-  }catch(error){
-    console.log(error);
-    throw error;
-  }
+
+  async generateOtpInteractor(email : string): Promise<{ message: string; otp : number }> {
+    try{
+      const {message , otp} = await this.repository.generateOtp(email);
+      return {message  , otp};
+    }catch(error){
+      logger.error((error as Error).message);
+      throw (error as Error).message;
+    }
   };
+
   async resetPasswordInteractor(email: string): Promise<{ message: string; success: boolean; }> {
     try{
       const {message , success} = await this.repository.resetPassword(email)
       return {message , success}
     }catch(error){
-      console.log(error);
-      throw error;
+      logger.error((error as Error).message);
+      throw (error as Error).message;
     }
   };
+
   async resetPasswordChangeInteractor(id: string , password:string): Promise<{ message: string; status: boolean; }> {
-   try{
-    const {message , status} = await this.repository.resetPasswordConfirm(id,password);
-    return {message , status}
-   }catch(error){
-    console.log(error);
-    throw error;
-   }
+    try{
+     const {message , status} = await this.repository.resetPasswordConfirm(id,password);
+     return {message , status}
+    }catch(error){
+     logger.error((error as Error).message);
+     throw (error as Error).message;
+    }
+   };
+
+  async googleLoginInteractor(credentials: {email : string , sub :  string , given_name : string}): Promise<{ message: string; user: UserType; token:string }> {
+    try{
+      const {message , user ,token } = await this.repository.googleCredentialsCreate(credentials);
+      return {message , user , token};
+    }catch(error){
+      logger.error((error as Error).message);
+      throw (error as Error).message;
+    }
   };
- 
+  async getListedRestaurantsInteractor():Promise<{ listedRestaurants : RestaurantType[]}> {
+    try{
+      const {listedRestaurants} = await this.repository.getListedRestaurants();
+      return {listedRestaurants};
+    }catch(error){
+      logger.error((error as Error).message);
+      throw (error as Error).message;
+    }
+  };
 
 }

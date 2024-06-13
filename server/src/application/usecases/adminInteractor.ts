@@ -1,8 +1,8 @@
 import { UserType } from "../../domain/entities/User";
 import { IAdminRepositories } from "../../domain/interface/repositories/IAdminRepositories";
 import { IAdminInteractor } from "../../domain/interface/use-cases/IAdminInteractor";
-import { jwtGenerateToken } from "../../functions/jwtTokenFunctions";
-import restaurantModel from "../../infrastructure/database/model.ts/restaurantModel";
+import { jwtGenerateToken } from "../../functions/auth/jwtTokenFunctions";
+
 
 export class adminInteractorImpl implements IAdminInteractor {
   constructor(private readonly repository: IAdminRepositories) {}

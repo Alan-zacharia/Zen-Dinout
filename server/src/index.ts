@@ -3,10 +3,12 @@ import express, { Application } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+
 /** Folders import */
 import configuredKeys from "./configs/config";
 import routes from "./application/routes/routes";
 import databaseConnection from "./configs/databaseConfig";
+
 
 const app: Application = express();
 

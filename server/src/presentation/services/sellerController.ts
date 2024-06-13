@@ -22,6 +22,7 @@ export class sellerController {
             res.status(500).send({message : "Internal server error"})
         }
     }
+    
     async restaurant_Login(req : Request , res : Response , next : NextFunction ){
         console.log('restaurant_Login....')
         try {
@@ -42,7 +43,25 @@ export class sellerController {
           console.error("OOps ! error during seller register:", error);
           res.status(500).send("Internal server error");
         }
-    }
+    };
+
+    async restaurant_updation(req : Request , res : Response , next : NextFunction ){
+      const {datas} = req.body;
+      console.log(req.body)
+      console.log(datas);
+      try{
+           const {message , restaurant } = await this.interactor.restaurantDetailsUpdateInteractor(datas);
+           if(!restaurant){
+              return res.status(401).json({message : "Restaurant Registeration Failed"})
+           }
+           return res.status(201).json({message });
+
+      }catch(error){
+          console.log("!OOPS error in restaurant_registeration service !",error);
+          res.status(500).send({message : "Internal server error"})
+      }
+  };
+
     async restuarnt_Details(req : Request , res : Response , next : NextFunction ){
       console.log("Seller profile ....")
       const email = req.userId;
@@ -53,5 +72,18 @@ export class sellerController {
         console.log("OOps ! error during register:" , error);
         res.status(500).send("Internal server error");
        }
+    };
+
+    async sellerLogout(req: Request, res: Response, next: NextFunction) {
+      console.log("Logout Seller");
+      try {
+         res.cookie("seller_auth","",{
+          expires: new Date(0),
+         })
+         res.send()
+      } catch (error) {
+        console.error(" OOps ! error during resend otp service:", error);
+        res.status(500).send("Internal server error");
+      }
     }
 }

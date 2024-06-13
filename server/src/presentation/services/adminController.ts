@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { IUserInteractor } from "../../domain/interface/use-cases/IUserInteractor";
 import { IAdminInteractor } from "../../domain/interface/use-cases/IAdminInteractor";
-import { jwtGenerateToken } from "../../functions/jwtTokenFunctions";
+
 
 export class adminController {
   constructor(private readonly interactor: IAdminInteractor) {}

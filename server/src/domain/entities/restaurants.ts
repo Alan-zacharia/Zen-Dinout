@@ -10,7 +10,10 @@ export class RestaurantType {
         public readonly password: string,
         public readonly description: string,
         public readonly openingTime: string,
-        public readonly location: string,
+        public readonly location: {
+            type:string,
+            coordinates : [string , string]
+        },
         public readonly closingTime: string,
         public readonly TableRate: string,
         public readonly featuredImage: string,

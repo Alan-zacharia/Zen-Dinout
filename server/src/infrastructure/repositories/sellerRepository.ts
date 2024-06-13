@@ -2,7 +2,7 @@ import { RestaurantType } from "../../domain/entities/restaurants";
 import { IRestaurantRepository } from "../../domain/interface/repositories/ISellerRepositories";
 import nodemaileMailSeller from "../../functions/MaileGenSeller";
 import nodemailerCreateOtp from "../../functions/MailerGenrator";
-import { jwtGenerateToken } from "../../functions/jwtTokenFunctions";
+import { jwtGenerateToken } from "../../functions/auth/jwtTokenFunctions";
 import restaurantModel from "../database/model.ts/restaurantModel";
 import bcrypt from 'bcryptjs';
 
@@ -59,6 +59,39 @@ export class sellerRepository implements IRestaurantRepository {
           return {restaurant : newRestuarnt.toObject() , message : "Restaurant registeration successfull."}
         }
         return {restaurant : null , message : "Restaurant registeration successfull."}
+    }catch(error){
+        console.log("!OOps Error in seller Reposiitory" + error);
+        throw error;
+    }
+  };
+
+  async createRestaurantDetails(
+    restaurant: RestaurantType
+  ): Promise<{ restaurant: Partial<RestaurantType> ; message: string }> {
+    try{
+        const { restaurantName , email , contact , address , description , location,
+          openingTime , closingTime , TableRate , featuredImage , secondaryImages
+         } = restaurant;
+
+         const coordinates : [number , number ] = [
+          parseFloat(location.coordinates[0]),
+          parseFloat(location.coordinates[1]),
+         ]
+         console.log(restaurant)
+        const restaurantDetails = await restaurantModel.findOneAndUpdate({email},
+        {
+          restaurantName,
+          contact,
+          address,
+          description,
+          location : { type : location.type , coordinates},
+          openingTime,
+          closingTime,
+          TableRate,
+          featuredImage,
+          secondaryImages
+        },{upsert : true , new : true});
+        return {restaurant : restaurantDetails.toObject() , message : "Restaurant details updated."}
     }catch(error){
         console.log("!OOps Error in seller Reposiitory" + error);
         throw error;

@@ -6,19 +6,18 @@ import UserModel from "../../infrastructure/database/model.ts/userModel";
  * @param email - email for checking
  * @returns if exist return exist message otherwise next()
  */
-export const userExists = async (
+export const userBlocked = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+    const {email} = req.body;
   try {
     console.log(req.body)
-    const { email } = req.body;
-    const user = await UserModel.findOne({ email: email });
-    if (user) {
-      return res
-        .status(400)
-        .json({ message: "User already exists.", token: null });
+    const user = await UserModel.findOne({email : email});
+    console.log(user);
+    if(user && user.isBlocked){
+        return res.status(401).json({message : "User Blocked"});
     }
     next();
   } catch (error) {

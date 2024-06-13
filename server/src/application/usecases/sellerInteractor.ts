@@ -7,14 +7,14 @@ import restaurantModel from "../../infrastructure/database/model.ts/restaurantMo
 
 export class sellerInteractor implements IRestaurantInteractor{
     constructor( private readonly repository : IRestaurantRepository) {}
-
+    
     async restaurantRegisteration(credentials: RestaurantType): Promise<{ restaurant: object | null; message: string; }> {
         try{
             console.log(credentials)
             const {message , restaurant} = await this.repository.create(credentials);
             return {message , restaurant}
-        }catch(error){
-            console.log("Error from the Restaurant registeration Intercator ........." + error)
+            }catch(error){
+                console.log("Error from the Restaurant registeration Intercator ........." + error)
             throw error
         }
     };
@@ -27,9 +27,8 @@ export class sellerInteractor implements IRestaurantInteractor{
         }catch(error){
             console.log("Error from the Restaurant registeration Intercator ........." + error)
             throw error
-        }
-    }
-;
+            }
+ };
 
 
 async sellerProfileInteractor(email:string): Promise<{ restaurant: object; }> {
@@ -45,4 +44,14 @@ async sellerProfileInteractor(email:string): Promise<{ restaurant: object; }> {
         throw new Error("Method not implemented.");
     }
     
+    async restaurantDetailsUpdateInteractor(credentials: RestaurantType): Promise<{ restaurant: Partial<RestaurantType>; message: string; }> {
+        console.log("Restaurant updation interactor.......")
+        try{
+        const {message , restaurant} = await this.repository.createRestaurantDetails(credentials);
+        return { restaurant , message};
+    }catch(error){
+        console.log("OOps error in restaurantDetailsUpdateInteractor : " , error);
+        throw error;
+    }
+    }
 }

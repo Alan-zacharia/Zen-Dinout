@@ -18,13 +18,14 @@ const sellerRouter : Router = Router();
 /** Post Methods  */
 sellerRouter.post('/restaurant-regiseteration',seller_Exists,controller.restaurant_registeration.bind(controller));
 sellerRouter.post('/restaurant-login',controller.restaurant_Login.bind(controller));
+sellerRouter.put('/restaurant-updation',controller.restaurant_updation.bind(controller))
 
 /** Get Methods  */
 sellerRouter.get('/restaurant-details',sellerVerifyToken,controller.restuarnt_Details.bind(controller))
 sellerRouter.get('/validate-token',sellerVerifyToken,(req,res)=>{
     res.status(200).send({userId : req.userId})
 })
-
+sellerRouter.put('/restaurant-logout',controller.sellerLogout.bind(controller));
 
 
 export default sellerRouter;
