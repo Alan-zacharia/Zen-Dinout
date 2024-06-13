@@ -7,7 +7,8 @@ import useRegister from "../../hooks/useRegisteration";
 import OtpForm from "../layouts/OtpForm";
 import axios from "axios";
 import { localStorageRemoveItem, localStorageSetItem } from "../../utils/localStorageImpl";
-
+import GoogleLoginButton from "../auth/GooglLoginButton";
+import { Toaster } from "react-hot-toast";
 
 interface credentials {
   username: string;           
@@ -63,6 +64,7 @@ const SignupForm: React.FC = () => {
 
   return (
     <>
+     <Toaster position="top-center" />
       <div className="w-full lg:w-1/2 bg-white flex flex-col p-8 lg:p-20 justify-between ">
       {otpFormModal && (
         <OtpForm otpData={otpData} onOtpVerified={handleOtpVerification} resendOtp={resendOtp}/>
@@ -88,7 +90,7 @@ const SignupForm: React.FC = () => {
                 className="w-full py-2 px-2 my-2 bg-transparent text-black border-black border-b outline-none focus:outline-none"
                 {...formik.getFieldProps("username")}
               />
-              {formik.touched.username && formik.errors.username && (
+              {formik.touched.username && formik.submitCount > 0 && formik.errors.username && (
                 <div className="text-red-500">{formik.errors.username}</div>
               )}
               <input
@@ -97,7 +99,7 @@ const SignupForm: React.FC = () => {
                 className="w-full py-2 px-2 my-2 bg-transparent text-black border-black border-b outline-none focus:outline-none"
                 {...formik.getFieldProps("email")}
               />
-              {formik.touched.email && formik.errors.email && (
+              {formik.touched.email && formik.submitCount > 0 && formik.errors.email && (
                 <div className="text-red-500">{formik.errors.email}</div>
               )}
               <input
@@ -106,7 +108,7 @@ const SignupForm: React.FC = () => {
                 className="w-full py-2 px-2 my-2 bg-transparent text-black border-black border-b outline-none focus:outline-none"
                 {...formik.getFieldProps("password")}
               />
-              {formik.touched.password && formik.errors.password && (
+              {formik.touched.password && formik.submitCount > 0 && formik.errors.password && (
                 <div className="text-red-500">{formik.errors.password}</div>
               )}
               <input
@@ -115,7 +117,7 @@ const SignupForm: React.FC = () => {
                 className="w-full py-2 px-2 my-2 bg-transparent text-black border-black border-b outline-none focus:outline-none"
                 {...formik.getFieldProps("confirmPassword")}
               />
-              {formik.touched.confirmPassword &&
+              {formik.touched.confirmPassword && formik.submitCount > 0 &&
                 formik.errors.confirmPassword && (
                   <div className="text-red-500">
                     {formik.errors.confirmPassword}
@@ -130,20 +132,15 @@ const SignupForm: React.FC = () => {
 
             <div className="flex flex-col mb-4">
               <button
-                className="w-full bg-black text-white rounded-md py-3 text-center font-bold cursor-pointer mb-2"
+                className="w-full bg-black text-white rounded-md py-3 text-center font-bold cursor-pointer"
                 type="submit"
                 disabled={loadings}
               >
                 {loadings ? "Loading" : "Register"}
               </button>
-
-              <Link to={"/login"}>
-                <button className="w-full bg-white border border-black rounded-md py-3 text-center font-semibold cursor-pointer">
-                  Login
-                </button>
-              </Link>
             </div>
           </form>
+              <GoogleLoginButton label={"Up"} />
         </div>
         <Link to={"/login"}>
           <div className="flex justify-center ">

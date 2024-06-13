@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import HomeBackGroundImg from '../../../assets/HomeBackground.jpg';
 import { AiOutlineSearch } from 'react-icons/ai';
 import Button from '../../layouts/Button';
-const Hero: React.FC = () => {
+
+
+interface HeroProps {
+  handleSearch: (query: string) => void;
+}
+const Hero : React.FC<HeroProps> = ({ handleSearch }) => {
+  const handleChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+    const searchItem = e.target.value;
+    handleSearch(searchItem);
+  };
+
   return (
     <div className='mx-auto'>
       <div className='max-h-[500px] relative'>
@@ -20,16 +30,18 @@ const Hero: React.FC = () => {
             <AiOutlineSearch className='text-black' size={30} />
             <input
               type="text"
-              placeholder="Search Restaurants"
+              placeholder="Search Restaurants....."
+              name='search'
               className="bg-transparent text-sm p-3 focus:outline-none w-full text-black placeholder-black"
+              onChange={handleChange}
             />
-          <Button title='Search' classN=' bg-red-600 border-none h-10 w-28 hover:text-black hover:bg-red-600 text-white rounded-none ' />
+            <Button title='Search' classN=' bg-red-600 border-none h-10 w-28 hover:text-black hover:bg-red-600 text-white rounded-none ' />
           </div>
         </div>
         <img src={HomeBackGroundImg} alt="img" className='w-full max-h-[400px] object-cover ' />
       </div>
     </div>
   );
-}
+};
 
 export default Hero;

@@ -5,6 +5,7 @@ import signupLogo from "../../assets/SignupPage.jpg";
 import { SellerRegisterationValidate } from "../../utils/validations";
 import useRegister from "../../hooks/useRegisteration";
 import axios from "axios";
+import {Toaster , toast} from "react-hot-toast"
 
 const SellerRegistration: React.FC = () => {
   const [error , setError] = useState('')
@@ -22,7 +23,9 @@ const SellerRegistration: React.FC = () => {
         const data = await axios
           .post("/restaurant/restaurant-regiseteration", { credentials })
           .then((res) => {
-            console.log(res.data); 
+            
+            toast.success("Message sent to your email");
+  
           })
           .catch((error : any) => {
             setError(error.response.data.message)
@@ -46,11 +49,13 @@ const SellerRegistration: React.FC = () => {
           backgroundPosition: "center",
         }}
       >
+        <Toaster position="top-center"/>
         <div className="  w-full max-w-md p-6 bg-gray-950 rounded-lg shadow-md opacity-70 ">
           <h1 className="text-xl font-bold leading-tight tracking-tight md:text-3xl text-orange-500 ">
             Create an account
           </h1>
           <form className="mt-6 space-y-6 pt-2" onSubmit={formik.handleSubmit}>
+
            {error && (
             <div className="text-red-500 font-bold">{error}</div>
            )}
@@ -68,7 +73,7 @@ const SellerRegistration: React.FC = () => {
               >
                 Restaurant name
               </label>
-            {formik.touched.restaurantName && formik.errors.restaurantName && (
+            {formik.touched.restaurantName && formik.submitCount > 0 && formik.errors.restaurantName && (
               <div className="text-red-500 text-sm w-full font-bold">{formik.errors.restaurantName}</div>
             )}
             </div>
@@ -88,7 +93,7 @@ const SellerRegistration: React.FC = () => {
                 >
                 Email address
               </label>
-              {formik.errors.email && (
+              {formik.touched.email && formik.submitCount > 0 && formik.errors.email && (
               <div className="text-red-500 w-full text-sm font-bold">{formik.errors.email}</div>
             )}
             </div>
@@ -108,7 +113,7 @@ const SellerRegistration: React.FC = () => {
                 >
                 Contact
               </label>
-              {formik.errors.contact && (
+              {formik.touched.contact && formik.submitCount > 0 && formik.errors.contact && (
               <div className="text-red-500 w-full text-sm font-bold">{formik.errors.contact}</div>
             )}
             </div>
@@ -128,7 +133,7 @@ const SellerRegistration: React.FC = () => {
               >
                 Password
               </label>
-              {formik.errors.password && (
+              {formik.touched.contact && formik.submitCount > 0 && formik.errors.password && (
               <div className="text-red-500 text-sm w-full font-bold">{formik.errors.password}</div>
             )}
             </div>
@@ -164,7 +169,7 @@ const SellerRegistration: React.FC = () => {
             </button>
             <p className="text-sm font-light text-white">
               Already have an account?{" "}
-              <Link to={"/login"}>
+              <Link to={"/restaurant/login"}>
                 <a className="font-medium text-primary-600 hover:underline dark:text-primary-500">
                   Login here
                 </a>

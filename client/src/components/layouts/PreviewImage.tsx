@@ -5,6 +5,7 @@ type FileProps = {
 }
 
 const PreviewImage: React.FC<FileProps> = ({ file }) => {
+    console.log(typeof file , file)
     const [preview, setPreviewImage] = useState<string | null>(null);
     useEffect(() => {
     if (file) {
@@ -17,15 +18,12 @@ const PreviewImage: React.FC<FileProps> = ({ file }) => {
         };
     }
 },[file]);
-const handleRemoveImage = () => {
-    setPreviewImage(null);
-  };
+
     return (
         <div >
             {preview &&
             <>
             <img className='w-[300px]' src={preview} alt="" />
-            
             </>
              }
         </div>

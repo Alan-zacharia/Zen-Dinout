@@ -18,6 +18,7 @@ import RestaurantDetails from '../components/seller/RestaurantDetails'
 import PageNotFound from '../pages/PageNotFound'
 import { useSellerAppContext } from '../Contexts/SellerAppContext'
 import SellerRegisteration from '../components/seller/SellerRegisteration'
+import RestaurantViewDetails from '../pages/user/RestaurantViewDetails'
 import SellerRegisterationPage from '../pages/seller/SellerRegisterationPage'
 import UserProfile from '../components/user/UserProfile'
 import HomeLayout from '../components/user/layouts/HomeLayout'
@@ -25,6 +26,7 @@ import ForgotPassword from '../pages/user/ForgotPassword'
 import RestaurantApprovalForm from '../components/admin/RestaurantApprovalForm'
 import ForgotPasswordPageRecieveEmail from '../pages/user/ForgotPasswordPageRecieveEmail'
 import { localStorageGetItem } from '../utils/localStorageImpl'
+import SellerLoginPage from '../pages/seller/SellerLoginPage'
 const HomePage = React.lazy(() => import('../pages/user/Home'));
 const DashBoard = React.lazy(() => import('../components/admin/DashBoard'));
 const RestaurantMangement = React.lazy(() => import('../components/admin/RestaurantManagement'));
@@ -34,8 +36,12 @@ const Customers = React.lazy(() => import('../components/admin/UserManagement'))
 const AppRouter : React.FC = () => {
   const {isLoggedIn} = useAppContext();
   const { isAdminLoggedIn } = useAdminAppContext();
-  const { isSellerLoggedIn } = useSellerAppContext();
-  const resetPassword = localStorageGetItem("&reset%pas%%")
+  // const { isSellerLoggedIn } = useSellerAppContext();
+  let isSellerLoggedIn = true
+  const resetPassword = localStorageGetItem("&reset%pas%%"); 
+  const registerHide = localStorageGetItem("%%register%%"); 
+  const sellerHIde = localStorageGetItem("%%sellregis%%"); 
+
   
   return (
     <Router>
@@ -44,12 +50,13 @@ const AppRouter : React.FC = () => {
         {/* Auth routes */}
      
         <Route path="/login" element={ <Login/> } />
-        <Route path="/register" element={<Signup/> } />
+        <Route path="/register" element={!registerHide ? <Signup/> : <Navigate to="/"/>} />
        
          
         <Route path="/" element={<HomePage />} >
          <Route index element={ <HomeLayout/> } />
          <Route path="/account" element={ <UserProfile/> } />
+         <Route path="/restaurant-view/:restaurantId" element={ <RestaurantViewDetails/> } />
         </Route>
         <Route path='/reset-password' element={<ForgotPasswordPageRecieveEmail />}/>
 
@@ -74,7 +81,8 @@ const AppRouter : React.FC = () => {
 
         {/* Seller Routers */}
         
-        <Route path='/restaurant/registeration' element={<SellerRegisterationPage/> }/>
+        <Route path='/restaurant/registeration' element={!sellerHIde ? <SellerRegisterationPage/> : <Navigate to="/restaurant/"/> }/>
+        <Route path='/restaurant/login' element={ <SellerLoginPage/> }/>
 
         <Route path='/restaurant/' element={isSellerLoggedIn ? <SellerHome/> : <Navigate to="/login"/>}>
          <Route index element={isSellerLoggedIn ? <SellerDashBoard/> : <Navigate to="/login"/>} />

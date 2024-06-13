@@ -1,11 +1,13 @@
 import React from 'react'
 import { Logout } from '../../services/api'
 import { useQueryClient } from 'react-query';
+import { localStorageRemoveItem } from '../../utils/localStorageImpl';
 
 const SignOutButton : React.FC = () => {
     const queryClient = useQueryClient();
     const handleClick = ()=>{
         Logout().then((res)=>{
+            localStorageRemoveItem("%%register%%");
             queryClient.invalidateQueries('validateToken');
         }).catch((err)=>{
             console.log(err)

@@ -1,8 +1,9 @@
 import axios from 'axios';
 import React, { useEffect ,  useState } from 'react'
-import { useParams } from 'react-router-dom'
-
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import {toast , Toaster} from "react-hot-toast";
 const RestaurantApprovalForm = () => {
+  const navigate = useNavigate();
   const [restaurantDetails , setRestautrantDetails] = useState<{restaurantName : string ; email :string ; contact : string}>();
   const { id } = useParams();
   useEffect(()=>{
@@ -18,13 +19,17 @@ const RestaurantApprovalForm = () => {
   },[])
   const handleApprove = async()=>{
      await axios.put(`http://localhost:3000/admin/restaurant-approval/${id}`).then((response)=>{
-       console.log(response.data) 
+       toast.success("Approved successfull");
+      setTimeout(()=>{
+        navigate('/admin/restaurants');
+      },2000)
      }).catch((error)=>{
       console.log(error);  
      })
   }
   return (
     <div className='flex p-20 items-center h-full'>
+      <Toaster position='top-center'/>
       <div className='w-full max-w-[900px] bg-white shadow-2xl shadow-neutral-500 rounded-3xl flex flex-col lg:flex-row lg:p-10 justify-between'>
         {restaurantDetails && (
         <div className='flex flex-col gap-5 '>

@@ -5,36 +5,39 @@ import useLogin from "../../hooks/useLogin";
 import { loginValidation } from "../../utils/validations";
 import { Link } from "react-router-dom";
 import { localStorageRemoveItem } from "../../utils/localStorageImpl";
-
+import { useAppContext } from "../../Contexts/AppContext";
+import { Toaster } from "react-hot-toast";
 
 interface UserType {
   email: string;
   password: string;
-  role:string
-}
+  role: string;
+};
 
-const LoginForm : React.FC = () => {
-  localStorageRemoveItem("&reset%pas%%")
-  const {loading ,loginFn ,  error} = useLogin();
+const LoginForm: React.FC = () => {
+  localStorageRemoveItem("&reset%pas%%");
+  const { isLoggedIn } = useAppContext();
+  const { loading, loginFn, error } = useLogin();
   const formik = useFormik<UserType>({
     initialValues: {
       email: "",
       password: "",
-      role:""
+      role: "",
     },
     validate: loginValidation,
-    onSubmit: async (credentials : UserType) => {
-      console.log(credentials)   
-      try{
-        loginFn(credentials , credentials.role)
-      }catch(error){
-         console.log(error)
+    onSubmit: async (credentials: UserType) => {
+      console.log(credentials);
+      try {
+        loginFn(credentials, credentials.role);
+      } catch (error) {
+        console.log(error);
       }
     },
   });
 
   return (
     <>
+      <Toaster position="top-center" />
       <div className="relative w-full lg:w-1/2 h-96 lg:h-screen lg:block hidden md:block">
         <div className="absolute top-1/4 left-10 flex flex-col">
           <h1 className="text-4xl text-white font-bold mb-4">
@@ -50,7 +53,6 @@ const LoginForm : React.FC = () => {
           className="w-full h-full object-cover  "
         />
       </div>
-
       <div className="w-full lg:w-1/2 bg-white flex flex-col p-8 lg:p-20 justify-between">
         <h1 className="text-xl text-black font-semibold mb-8">Zen Dinout</h1>
 
@@ -70,31 +72,52 @@ const LoginForm : React.FC = () => {
                 className="w-full py-2 px-2 my-2 bg-transparent text-black border-black border-b outline-none focus:outline-none"
                 {...formik.getFieldProps("email")}
               />
-              {formik.touched.email && formik.errors.email && (
-                <div className="text-red-500">{formik.errors.email}</div>
-              )}
+              {formik.touched.email &&
+                formik.submitCount > 0 &&
+                formik.errors.email && (
+                  <div className="text-red-500">{formik.errors.email}</div>
+                )}
               <input
                 type="password"
                 placeholder="Password"
                 className="w-full py-2 px-2 my-2 bg-transparent text-black border-black border-b outline-none focus:outline-none"
                 {...formik.getFieldProps("password")}
               />
-              {formik.touched.password && formik.errors.password && (
-                <div className="text-red-500">{formik.errors.password}</div>
-              )}
-              
+               {formik.touched.password &&
+                formik.submitCount > 0 &&
+                formik.errors.password && (
+                  <div className="text-red-500">{formik.errors.password}</div>
+                )}
+              <p className="ml-auto text-sm underline flex justify-end">
+                <Link to={"/reset-password"}>
+                  <a className="cursor-pointer ">Forgot password ?</a>
+                </Link>
+              </p>
+             
             </div>
-
             <div className="flex items-center mb-6">
-            {formik.errors.role && formik.touched.role ? (
-                <select
-                  {...formik.getFieldProps("role")}
-                  className="font-bold focus:outline-none text-red-500"
-                >
-                  <option value="choose">Please choose role</option>
-                  <option value="user">User</option>
-                  <option value="seller">Seller</option>
-                </select>
+              {isLoggedIn ? (
+                <>
+                  {formik.errors.role &&
+                  formik.submitCount > 0 &&
+                  formik.touched.role ? (
+                    <select
+                      {...formik.getFieldProps("role")}
+                      className="font-bold focus:outline-none text-red-500"
+                    >
+                      <option value="choose">Please choose role</option>
+                      <option value="seller">Seller</option>
+                    </select>
+                  ) : (
+                    <select
+                      {...formik.getFieldProps("role")}
+                      className="font-bold focus:outline-none text-gray-700"
+                    >
+                      <option value="choose">Choose role</option>
+                      <option value="seller">Seller</option>
+                    </select>
+                  )}
+                </>
               ) : (
                 <select
                   {...formik.getFieldProps("role")}
@@ -105,21 +128,15 @@ const LoginForm : React.FC = () => {
                   <option value="seller">Seller</option>
                 </select>
               )}
-              <Link to={'/reset-password'}><p className="ml-auto text-sm cursor-pointer underline">
-                Forgot password?
-              </p></Link>
             </div>
-
             <div className="flex flex-col mb-4">
-             
-              <button 
-              disabled={false}
+              <button
+                disabled={false}
                 className="w-full bg-black text-white rounded-md py-3 text-center font-bold cursor-pointer mb-2"
                 type="submit"
               >
-                {loading ? 'Loading' : 'Login' }
+                {loading ? "Loading" : "Login"}
               </button>
-
               <Link to={"/register"}>
                 <button className="w-full bg-white border border-black rounded-md py-3 text-center font-semibold cursor-pointer">
                   Register
@@ -131,10 +148,8 @@ const LoginForm : React.FC = () => {
             <div className="w-full bg-black/40 h-[1px]"></div>
             <p className="absolute bg-white text-black/80 px-2">or</p>
           </div>
-
-          <GoogleLoginButton/>
+          <GoogleLoginButton label={"In"} />
         </div>
-
         <div className="flex justify-center">
           <p className="text-sm font-normal text-black">
             Don't have an account?

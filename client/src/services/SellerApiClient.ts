@@ -17,8 +17,8 @@ export interface credentials {
 
 export const sellerRegisteration = async (datas : credentials )=>{
      try{
-       const {data : { success , message}} = await axios.post('/restaurant/restaurant-regiseteration',{datas});
-       return {data :{success , message}}
+       const {data : {  message}} = await axios.put('/restaurant/restaurant-updation',{datas});
+       return {data :{ message}}
       } catch (error) {
         console.log(error);
         throw error;

@@ -1,7 +1,7 @@
 import ReactMapGl, { Marker } from "react-map-gl";
 import React, { useEffect, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { BiMapPin } from "react-icons/bi";
+import { HiLocationMarker } from "react-icons/hi";
 
 export const TOKEN = import.meta.env.VITE_API_MAXBOX_TOKEN;
 
@@ -54,7 +54,7 @@ const GoogleMap: React.FC<CustomMapProps> = ({
           draggable={isMarkerDraggable}
           onDragEnd={handleMarkerDrag}
         >
-          <BiMapPin color="#ff0000" width={30} height={30} strokeWidth={2.5} />
+          <HiLocationMarker color="#ff0000"  size={30} strokeWidth={2.5} />
         </Marker>
       </ReactMapGl>
     </div>

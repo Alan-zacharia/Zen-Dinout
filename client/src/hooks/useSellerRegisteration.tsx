@@ -4,21 +4,21 @@ import { credentials } from "../services/SellerApiClient";
 
 interface LoginReturnType {
   registerFn: (data: credentials) => void;
-  loading: boolean;
+  
   error: string | null;
 }
 
-const useSellerRefisteration = (): LoginReturnType => {
+const useSellerRegisteration = (): LoginReturnType => {
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+
   const registerFn = async (datas: credentials) => {
-    setLoading(true);
+    
     try {
       const { data } = await sellerRegisteration(datas);
-      console.log(data.success , data.message)
-      setLoading(false);
+      console.log(data.message)
+      
     } catch (error: any) {
-      setLoading(false);
+   
       if (
         error.response &&
         error.response.data &&
@@ -29,7 +29,7 @@ const useSellerRefisteration = (): LoginReturnType => {
     }
   };
 
-  return { error, loading, registerFn };
+  return { error, registerFn };
 };
 
-export default useSellerRefisteration;
+export default useSellerRegisteration;

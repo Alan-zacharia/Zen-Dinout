@@ -6,7 +6,6 @@ import SignOutButton from "../../auth/SignOutButton";
 
 const NavBar: React.FC = () => {
   const { isLoggedIn } = useAppContext();
-  console.log(isLoggedIn)
   return (
     <div className="navbar bg-base-100 shadow-lg shadow-neutral-400 h-20">
       <div className="navbar-start ">
@@ -82,25 +81,32 @@ const NavBar: React.FC = () => {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu-horizontal px-1 font-semibold text-base gap-20 cursor-pointer ">
-          <li className="hover:text-red-500">
+          <Link to={'/'}><li className="hover:text-red-500">
             <a>Home</a>
           </li>
+          </Link>
+          <Link to={'/'}>
           <li className="hover:text-red-500">
             <a>Book a Table</a>
           </li>
+          </Link>
+          <Link to={'/'}>
           <li className="hover:text-red-500">
             <a>Blog</a>
           </li>
+          </Link>
         </ul>
       </div>
       <div className="navbar-end xl:mr-72">
         {isLoggedIn ? (
           <>
+              <Link to={'/account'}>
             <div className="avatar cursor-pointer">
               <div className="w-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                 <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
               </div>
             </div>
+              </Link>
             <div>
             <SignOutButton />
             </div>

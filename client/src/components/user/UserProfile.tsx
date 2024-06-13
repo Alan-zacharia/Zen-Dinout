@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast, {Toaster} from 'react-hot-toast'
+import { Link } from "react-router-dom";
 const UserProfile = () => {
   const [name, setName] = useState('Alan');
   const [nameInput, setInput] = useState(false);
@@ -40,13 +41,22 @@ const UserProfile = () => {
                 <p className="text-sm font-bold">Alan Zacharia</p>
               </div>
             </div>
-            <div className="w-full h-[600px] bg-white shadow-xl shadow-neutral-300">
-              {/* Navigations
-                
-                ORder 
-                Account
-                payment
-                Stuffs*/}
+            <div className="p-20 w-full h-[600px] bg-white shadow-xl shadow-neutral-300 flex flex-col gap-10 text-lg font-bold text-blue-500 items-center">
+              <div className="w-[200px] px-10 pt-1 h-10 hover:bg-black">
+              Account
+              </div>
+              <div className="w-[200px] px-10 pt-1 h-10 hover:bg-black">
+              Bookings
+              </div>
+              <div className="w-[200px] px-10 pt-1 h-10 hover:bg-black">
+              Transactions
+              </div>
+              <div className="w-[200px] px-10 pt-1 h-10 hover:bg-black">
+              settings
+              </div>
+              <div className="w-[200px] px-10 pt-1 h-10 hover:bg-black">
+              Logout
+              </div>
             </div>
           </div>
 
@@ -102,7 +112,7 @@ const UserProfile = () => {
                   id="disabled-input"
                   className=" border cursor-not-allowed  border-neutral-400 bg-neutral-100 outline-none p-3 w-[300px] text-sm"
                   disabled
-                  value={"Alan Zacharia"}
+                  value={"alanzacaharia@gmail.com"}
                 />
               </div>
             </div>
@@ -124,11 +134,13 @@ const UserProfile = () => {
               </div>
             </div>
             <div className="flex flex-col gap-6">
+              <Link to="/reset-password">
               <div className="flex pl-14 pt-14 items-center gap-5">
                 <button className="font-bold  text-white bg-red-500 rounded-lg p-3">
                   Change Password
                 </button>
               </div>
+              </Link>
             </div>
 
             <div className="flex flex-col gap-6">

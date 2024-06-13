@@ -30,10 +30,6 @@ export const loginValidation = (values: Partial<UserType>) => {
     errors.password = "Password must be 8 characters long";
   };
 
-  if (!values.role) {
-    errors.role = "Role is required";
-  };
-
   return errors;
 };
 
@@ -98,10 +94,27 @@ export const SellerRegisterationValidate = () =>{
     .matches(/^[0-9]+$/, "Invalid contact number") 
     .min(10, 'Invalid phone number') 
     .max(10, 'Invalid phone number'), 
-    password : Yup.string().required("Please enter your password !").min(8,'Password must be 8 characters length').max(20 , 'Password must be less than 20 characters').matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/,
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+    password: Yup.string()
+    .required("Please enter your password!")
+    .min(8, 'Password must be at least 8 characters long, one lower case , uppercase and one number.')
+    .max(20, 'Password must be less than 20 characters')
+    .matches(
+      /^(?=.*[a-z])/,
+      'Password must contain at least one lowercase letter'
     )
+    .matches(
+      /^(?=.*[A-Z])/,
+      'Password must contain at least one uppercase letter'
+    )
+    .matches(
+      /^(?=.*\d)/,
+      'Password must contain at least one number'
+    )
+    .matches(
+      /^(?=.*[!@#$%^&*])/,
+      'Password must contain at least one special character'
+    )
+  
   })
 }
 
@@ -113,7 +126,10 @@ export const sellerRegiseterationValidation = ()=>{
     contact : Yup.string().required("Contact is required !").length(10),
     address : Yup.string().required("Address is required !"),
     description : Yup.string().required("Description is required !"),
-    location : Yup.string().required("Location is required !"),
+    // location : Yup.string().required("Location is required !"),
+    location: Yup.object().shape({
+    type: Yup.string().required("Location is required"),
+    }),
     openingTime : Yup.string().required("Opening time is required !"),
     closingTime : Yup.string().required("Closing time is required !"),
     TableRate : Yup.number().required("Table rate is required !").min(1,"Table Rate must be valid !").max(1000,"Table rate limit is 1000"),

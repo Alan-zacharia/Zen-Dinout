@@ -3,6 +3,7 @@ import {  login } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { sellerLogin } from "../services/SellerApiClient";
+import { localStorageSetItem } from "../utils/localStorageImpl";
 
 interface credentials {
   email: string;
@@ -21,32 +22,23 @@ const useLogin = (): LoginReturnType => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const loginFn = async (datas: credentials , role : string) => {
+  const loginFn = async (datas: credentials) => {
     setLoading(true);
     setError(null);
-    try {
-    
-      if (role == "user") {
-        const { data } = await login(datas);
-        console.log(data.user) 
-        setLoading(false);
-        queryClient.invalidateQueries("validateToken");
-        navigate("/");
-      } else {
-        console.log('Restaurant')
-        const { data } = await sellerLogin(datas);
-        console.log(data.user) 
-        setLoading(false);
-        queryClient.invalidateQueries("validateSellerToken");
-        navigate("/restaurant/");
-      }
-    } catch (error: any) {
+    try{
+      await login(datas).then((res)=>{
+      console.log(res.data.user);
       setLoading(false);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      localStorageSetItem("%%register%%","true");
+      queryClient.invalidateQueries("validateToken");
+      navigate("/");
+      }).catch((error)=>{
+      console.log(error)
+      });
+    }catch(error: any) {
+      setLoading(false);
+      if (error.response && error.response.data &&
+          error.response.data.message ) {
         setError(error.response.data.message);
       }
     }

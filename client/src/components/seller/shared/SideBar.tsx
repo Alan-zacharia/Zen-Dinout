@@ -1,17 +1,12 @@
 import React from "react";
-import {
-  MdDateRange,
-  MdOutlineRestaurant,
-  MdTableRestaurant,
-  MdDashboard,
-} from "react-icons/md";
-import { LuTimer } from "react-icons/lu";
-import { BiFoodMenu } from "react-icons/bi";
-import { BsFillBoxSeamFill } from "react-icons/bs";
+
 import { IoLogOut } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import { SELLER_SIDEBAR_LINKS } from "../../../lib/constants/SellerNavigation";
+import axios from "axios";
+import { useQueryClient } from "react-query";
+import { localStorageRemoveItem } from "../../../utils/localStorageImpl";
 
 interface SidebarLink {
   keys : string;
@@ -21,6 +16,12 @@ interface SidebarLink {
 }
 
 const SideBar = () => {
+  const QueryClient = useQueryClient()
+  const handleLogout = async()=>{
+    await axios.put("http://localhost:3000/restaurant/restaurant-logout");
+    localStorageRemoveItem("%%sellregis%%")
+    QueryClient.invalidateQueries('validateSellerToken');
+  }
   return (
     <div>
      
@@ -36,9 +37,10 @@ const SideBar = () => {
               <span className="text-base font-bold">
                 ----------------------
               </span>
-              <li className="hover:bg-white hover:text-red-500 hover:rounded-2xl ">
+              <li className="hover:bg-white hover:text-red-500 hover:rounded-2xl " onClick={handleLogout}>
                 <a>
                   <IoLogOut size={27} />
+                  
                   Logout
                 </a>
               </li>
