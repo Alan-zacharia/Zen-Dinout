@@ -1,25 +1,6 @@
-import axios from "axios";
-import { OtpType } from "../utils/validations";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-axios.defaults.baseURL = API_BASE_URL;
-axios.defaults.withCredentials = true;
+import axios from '../api/axios'
+import { APIresponse, credentials, otpType } from '../types/userTypes';
 
-interface credentials {
-  username: string;
-  email: string;
-  password: string;
-  role: string;
-}
-/** return api response */
-export interface APIresponse {
-  data: {
-    message?: string;
-    user?: credentials;
-    token?: string;
-    refreshToken?: string;
-    otp?: string;
-  };
-}
 
 /**
  * Function for user and seller registeration
@@ -39,7 +20,7 @@ const register = async (credentials: credentials | {}) => {
 };
 
 /**
- * Function for user and seller login
+ * Function for user login
  * @param data - Object containing email and password for login
  * @returns Promise that resolves to an object containing the logged-in  user , mesage , jwt, or null if login fails
  */
@@ -51,6 +32,22 @@ const login = async (data: Partial<credentials>): Promise<APIresponse> => {
     return { data: { message, user, token } };
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+};
+/**
+ * Function for restaurant login
+ * @param data - Object containing email and password for login
+ * @returns Promise that resolves to an object containing the logged-in  user , mesage , jwt, or null if login fails
+ */
+const restaurantLoginApi = async (data: Partial<credentials>): Promise<APIresponse> => {
+  try {
+    const {
+      data: { message, user, token },
+    } = await axios.post("/restaurant/restaurant-login", data);
+    return { data: { message, user, token } };
+  } catch (error) {
+    console.log(error); 
     throw error;
   }
 };
@@ -72,7 +69,7 @@ const adminLogin = async (data: Partial<credentials>): Promise<APIresponse> => {
   }
 };
 
-const otpForm = async (otp: OtpType, userId: string) => {
+const otpForm = async (otp: otpType, userId: string) => {
   try {
     const {
       data: { message, success },
@@ -125,10 +122,10 @@ const Logout = async () => {
 };
 
 
-
 export {
   login,
   register,
+  restaurantLoginApi,
   adminLogin,
   otpForm,
   resendOtp,

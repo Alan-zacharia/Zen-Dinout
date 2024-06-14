@@ -3,7 +3,7 @@ import RestaurantViewComponent from "../../components/user/RestaurantViewCompone
 
 const RestaurantViewDetails : React.FC = () => {
   return (
-    <div className='h-screen flex'>
+    <div className='h-full pt-28 pb-10 flex'>
        <RestaurantViewComponent/>
     </div>
   )

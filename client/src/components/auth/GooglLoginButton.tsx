@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { localStorageSetItem } from "../../utils/localStorageImpl";
 import {toast} from 'react-hot-toast';
+const PASS_KEY = import.meta.env.VITE_API_BCRYPT_PASS_KEY;
 interface GoogleLoginResponse {
   name: string;
   given_name: string;
   email: string;
   picture: string;
-}
+};
 
 const GoogleLoginButton = ({label}:{label : string}) => {
   const queryClient = useQueryClient();
@@ -25,13 +26,22 @@ const GoogleLoginButton = ({label}:{label : string}) => {
           },
           withCredentials: false,
         })
-        await axios.post("http://localhost:3000/api/google-login",{email : res.data.email , password : res.data.sub, username : res.data.given_name }).then((res)=>{
-        localStorageSetItem("%%register%%" , "true");
-        queryClient.invalidateQueries("validateToken");
-        navigate("/");
-        }).catch((error)=>{
-          toast.error(error.response.data.message);
-        })
+        if(label === "In"){
+          await axios.post("http://localhost:3000/api/login",{email : res.data.email , password : res.data.sub + PASS_KEY , username : res.data.given_name }).then((res)=>{
+            localStorageSetItem("%%register%%" , "true");
+            queryClient.invalidateQueries("validateToken");
+            navigate("/");
+            }).catch((error)=>{
+              toast.error(error.response.data.message);
+            })
+        }else{
+          await axios.post("http://localhost:3000/api/register",{username : res.data.given_name , email : res.data.email , password : res.data.sub + PASS_KEY}).then((res)=>{
+            queryClient.invalidateQueries("validateToken");
+            navigate("/login");
+            }).catch((error)=>{
+              toast.error(error.response.data.message);
+            })
+        }
       }catch(error){
         console.log(error)
       }

@@ -36,8 +36,8 @@ const Customers = React.lazy(() => import('../components/admin/UserManagement'))
 const AppRouter : React.FC = () => {
   const {isLoggedIn} = useAppContext();
   const { isAdminLoggedIn } = useAdminAppContext();
-  // const { isSellerLoggedIn } = useSellerAppContext();
-  let isSellerLoggedIn = true
+  const { isSellerLoggedIn } = useSellerAppContext();
+  
   const resetPassword = localStorageGetItem("&reset%pas%%"); 
   const registerHide = localStorageGetItem("%%register%%"); 
   const sellerHIde = localStorageGetItem("%%sellregis%%"); 
@@ -84,13 +84,13 @@ const AppRouter : React.FC = () => {
         <Route path='/restaurant/registeration' element={!sellerHIde ? <SellerRegisterationPage/> : <Navigate to="/restaurant/"/> }/>
         <Route path='/restaurant/login' element={ <SellerLoginPage/> }/>
 
-        <Route path='/restaurant/' element={isSellerLoggedIn ? <SellerHome/> : <Navigate to="/login"/>}>
-         <Route index element={isSellerLoggedIn ? <SellerDashBoard/> : <Navigate to="/login"/>} />
-         <Route path='/restaurant/reservations' element={isSellerLoggedIn ? <Reservation/> : <Navigate to="/login"/> } />
-         <Route path='/restaurant/table' element={ isSellerLoggedIn ? <Table/> : <Navigate to="/login"/>  } />
-         <Route path='/restaurant/time-slots' element={ isSellerLoggedIn ?  <TimeSlots/> : <Navigate to="/login"/> } />
-         <Route path='/restaurant/menu' element={ isSellerLoggedIn ? <Menu/> : <Navigate to="/login"/> } />
-         <Route path='/restaurant/order-history' element={isSellerLoggedIn ? <Orders/> : <Navigate to="/login"/>} />
+        <Route path='/restaurant/' element={isSellerLoggedIn ? <SellerHome/> : <Navigate to="/restaurant/login"/>}>
+         <Route index element={isSellerLoggedIn ? <SellerDashBoard/> : <Navigate to="/restaurant/login"/>} />
+         <Route path='/restaurant/reservations' element={isSellerLoggedIn ? <Reservation/> : <Navigate to="/restaurant/login"/> } />
+         <Route path='/restaurant/table' element={ isSellerLoggedIn ? <Table/> : <Navigate to="/restaurant/login"/>  } />
+         <Route path='/restaurant/time-slots' element={ isSellerLoggedIn ?  <TimeSlots/> : <Navigate to="/restaurant/login"/> } />
+         <Route path='/restaurant/menu' element={ isSellerLoggedIn ? <Menu/> : <Navigate to="/restaurant/login"/> } />
+         <Route path='/restaurant/order-history' element={isSellerLoggedIn ? <Orders/> : <Navigate to="/restaurant/login"/>} />
          <Route path='/restaurant/restaurant-details' element={isSellerLoggedIn ? <RestaurantDetails/> : <Navigate to="/login"/>} />
         </Route>
 

@@ -1,22 +1,10 @@
-import { credentials } from "../services/SellerApiClient";
 import * as Yup from  "yup";
+import { otpType, userType } from "../types/userTypes";
 
-
-export interface UserType {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  role?: string;
-  _id?: string;
-}
-export interface OtpType {
-   otp:string;
-}
 
 /** Login Validation */
-export const loginValidation = (values: Partial<UserType>) => {
-  const errors: Partial<UserType> = {};
+export const loginValidation = (values: Partial<userType>) => {
+  const errors: Partial<userType> = {};
 
   if (!values.email) {
     errors.email = "Email is required";
@@ -35,8 +23,8 @@ export const loginValidation = (values: Partial<UserType>) => {
 
 
 /** Validation for registeration */
-export const registerValidation = (values: Partial<UserType>) => {
-  const errors: Partial<UserType> = {};
+export const registerValidation = (values: Partial<userType>) => {
+  const errors: Partial<userType> = {};
   if (!values.username || !values.username.trim()) {
     errors.username = "Please enter your full name!";
 } else if (!/^[A-Za-z]/.test(values.username)) {
@@ -70,8 +58,8 @@ export const registerValidation = (values: Partial<UserType>) => {
 };
 
 /** Otp Validation */
-export const validateOtp = (value : OtpType) => {
-    const error : Partial<OtpType>  = {}
+export const validateOtp = (value : otpType) => {
+    const error : Partial<otpType>  = {}
     if(!value.otp){
         error.otp = "Otp is required";
     }else if(value.otp.length < 6){

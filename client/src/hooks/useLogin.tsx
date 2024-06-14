@@ -8,14 +8,13 @@ import { localStorageSetItem } from "../utils/localStorageImpl";
 interface credentials {
   email: string;
   password: string;
-  role: string;
-}
+};
 
 interface LoginReturnType {
-  loginFn: (data: credentials , role : string) => void;
+  loginFn: (data: credentials) => void;
   loading: boolean;
   error: string | null;
-}
+};
 
 const useLogin = (): LoginReturnType => {
   const queryClient = useQueryClient();
@@ -24,7 +23,6 @@ const useLogin = (): LoginReturnType => {
   const navigate = useNavigate();
   const loginFn = async (datas: credentials) => {
     setLoading(true);
-    setError(null);
     try{
       await login(datas).then((res)=>{
       console.log(res.data.user);
@@ -32,8 +30,10 @@ const useLogin = (): LoginReturnType => {
       localStorageSetItem("%%register%%","true");
       queryClient.invalidateQueries("validateToken");
       navigate("/");
-      }).catch((error)=>{
+      }).catch((error : any)=>{
       console.log(error)
+      setLoading(false);
+      setError(error.response.data.message)
       });
     }catch(error: any) {
       setLoading(false);

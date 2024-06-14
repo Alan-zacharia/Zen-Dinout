@@ -11,7 +11,6 @@ import { Toaster } from "react-hot-toast";
 interface UserType {
   email: string;
   password: string;
-  role: string;
 };
 
 const LoginForm: React.FC = () => {
@@ -22,15 +21,14 @@ const LoginForm: React.FC = () => {
     initialValues: {
       email: "",
       password: "",
-      role: "",
     },
     validate: loginValidation,
     onSubmit: async (credentials: UserType) => {
       console.log(credentials);
       try {
-        loginFn(credentials, credentials.role);
+        loginFn(credentials);
       } catch (error) {
-        console.log(error);
+        console.log((error as Error).message);
       }
     },
   });
@@ -95,47 +93,14 @@ const LoginForm: React.FC = () => {
               </p>
              
             </div>
-            <div className="flex items-center mb-6">
-              {isLoggedIn ? (
-                <>
-                  {formik.errors.role &&
-                  formik.submitCount > 0 &&
-                  formik.touched.role ? (
-                    <select
-                      {...formik.getFieldProps("role")}
-                      className="font-bold focus:outline-none text-red-500"
-                    >
-                      <option value="choose">Please choose role</option>
-                      <option value="seller">Seller</option>
-                    </select>
-                  ) : (
-                    <select
-                      {...formik.getFieldProps("role")}
-                      className="font-bold focus:outline-none text-gray-700"
-                    >
-                      <option value="choose">Choose role</option>
-                      <option value="seller">Seller</option>
-                    </select>
-                  )}
-                </>
-              ) : (
-                <select
-                  {...formik.getFieldProps("role")}
-                  className="font-bold focus:outline-none text-gray-700"
-                >
-                  <option value="choose">Choose user or seller</option>
-                  <option value="user">User</option>
-                  <option value="seller">Seller</option>
-                </select>
-              )}
-            </div>
+          
             <div className="flex flex-col mb-4">
               <button
-                disabled={false}
                 className="w-full bg-black text-white rounded-md py-3 text-center font-bold cursor-pointer mb-2"
                 type="submit"
+                disabled={loading}
               >
-                {loading ? "Loading" : "Login"}
+              {loading ? "Loading" : "Login"}
               </button>
               <Link to={"/register"}>
                 <button className="w-full bg-white border border-black rounded-md py-3 text-center font-semibold cursor-pointer">

@@ -4,16 +4,26 @@ import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 import { useFormik } from "formik";
 import { loginValidation } from "../../utils/validations";
+import useRestaurantLogin from "../../hooks/useRestaurantLogin";
 
+interface SellerType {
+  email : string;
+  password : string;
+}
 const SellerLogin: React.FC = () => {
+  const {error , loading , restaurantLogin} = useRestaurantLogin();
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
-    validate : loginValidation,
-    onSubmit: async (values) => {
-       console.log(values)
+    validate: loginValidation,
+    onSubmit: async (values : SellerType) => {
+     try{
+      restaurantLogin(values);
+     }catch(error){
+      console.log((error as Error).message)
+     }
     },
   });
   return (
@@ -22,7 +32,10 @@ const SellerLogin: React.FC = () => {
         <h1 className="text-xl font-bold leading-tight tracking-tight md:text-3xl text-orange-500 ">
           Restaurant Login
         </h1>
-        <form className="mt-32 space-y-6 pt-2" onSubmit={formik.handleSubmit}>
+        <form className="mt-28 space-y-6" onSubmit={formik.handleSubmit}>
+        {error && (
+            <p className="text-red-500 font-bold text-lg">{error}</p>
+        )}
           <div className="flex flex-col gap-5 w-[400px] fixed ">
             <div className="relative">
               <input
@@ -32,9 +45,13 @@ const SellerLogin: React.FC = () => {
                 {...formik.getFieldProps("email")}
               />
               <FaUser className="absolute top-3.5 left-3 " size={18} />
-              {formik.touched.email && formik.submitCount > 0 && formik.errors.email && (
-                <p className="text-red-500 font-semibold">{formik.errors.email}</p>
-              )}
+              {formik.touched.email &&
+                formik.submitCount > 0 &&
+                formik.errors.email && (
+                  <p className="text-red-500 font-semibold">
+                    {formik.errors.email}
+                  </p>
+                )}
             </div>
             <div className="relative">
               <input
@@ -44,19 +61,25 @@ const SellerLogin: React.FC = () => {
                 {...formik.getFieldProps("password")}
               />
               <FaLock className="absolute top-3.5 left-3 " size={17} />
-              {formik.touched.password && formik.submitCount > 0 && formik.errors.password && (
-                <p className="text-red-500 font-semibold">{formik.errors.password}</p>
-              )}
+              {formik.touched.password &&
+                formik.submitCount > 0 &&
+                formik.errors.password && (
+                  <p className="text-red-500 font-semibold">
+                    {formik.errors.password}
+                  </p>
+                )}
             </div>
-            
+
             <button
               className="w-full bg-blue-500 p-2 text-white font-semibold hover:bg-blue-600 text-lg"
               type="submit"
+              disabled={loading}
             >
-              LOG IN
+              {loading ? "LOADING" : " LOG IN" }
+             
             </button>
             <div className="flex justify-between items-center">
-              <Link to={"/Forgot-password"}>             
+              <Link to={"/Forgot-password"}>
                 <p className="text-xs font-semibold font-sans cursor-pointer text-white">
                   FORGOT PASSWORD ?
                 </p>
