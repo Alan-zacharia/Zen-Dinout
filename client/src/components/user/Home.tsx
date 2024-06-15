@@ -11,14 +11,10 @@ const Home: React.FC = () => {
   localStorageRemoveItem("&reset%pas%%")
   return (
     <>
-    <div className="h-[500px] pt-8 overflow-y-hidden">
+    <div className="h-[300px] pt-8 overflow-y-hidden">
       <div className="mx-auto items-center flex justify-center pb-10">
         <h1 className="text-3xl font-sans font-bold">Explore Restaurants</h1>
       </div>
-      <div className="mx-auto text-center w-auto  xl:w-[1250px]  " >
-        <Carousel />
-      </div>
-     
     </div>
    
     </>

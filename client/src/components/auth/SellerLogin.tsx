@@ -19,6 +19,7 @@ const SellerLogin: React.FC = () => {
     },
     validate: loginValidation,
     onSubmit: async (values : SellerType) => {
+      console.log(values)
      try{
       restaurantLogin(values);
      }catch(error){

@@ -26,16 +26,16 @@ const Hero : React.FC<HeroProps> = ({ handleSearch }) => {
           </h1>
           <div className='p-5 pt-6'>
           </div>
-          <div className="bg-white rounded-sm flex items-center px-2 xl:mx-40 mx-5  w-[300px] sm:w-[400px] lg:w-[400px] xl:w-[500px]">
+          <div className="bg-white  flex items-center px-2 xl:mx-40 mx-5  w-[300px] sm:w-[400px] lg:w-[400px] xl:w-[1000px]  rounded-xl">
             <AiOutlineSearch className='text-black' size={30} />
             <input
               type="text"
-              placeholder="Search Restaurants....."
+              placeholder="Search for Restaurants....."
               name='search'
-              className="bg-transparent text-sm p-3 focus:outline-none w-full text-black placeholder-black"
+              className="bg-transparent text-sm p-4 focus:outline-none w-full text-black placeholder-black" 
               onChange={handleChange}
             />
-            <Button title='Search' classN=' bg-red-600 border-none h-10 w-28 hover:text-black hover:bg-red-600 text-white rounded-none ' />
+            <Button title='Search' classN=' bg-red-500 border-none h-10 w-28 hover:text-black hover:bg-red-600 text-white rounded-none rounded-xl hover:bg-red-600 ' />
           </div>
         </div>
         <img src={HomeBackGroundImg} alt="img" className='w-full max-h-[400px] object-cover ' />
