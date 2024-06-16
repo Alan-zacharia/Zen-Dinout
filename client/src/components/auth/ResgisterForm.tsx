@@ -8,7 +8,7 @@ import OtpForm from "../layouts/OtpForm";
 import axios from "axios";
 import { localStorageRemoveItem, localStorageSetItem } from "../../utils/localStorageImpl";
 import GoogleLoginButton from "../auth/GooglLoginButton";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from 'react-hot-toast';
 
 interface credentials {
   username: string;           
@@ -17,12 +17,12 @@ interface credentials {
   confirmPassword: string;
 } 
 const SignupForm: React.FC = () => {
-
   localStorageRemoveItem("&reset%pas%%")
   const navigate = useNavigate()
   const [otpFormModal , setOtpFormModal] = useState(false);
   const [otpData , setOtp] = useState<string | null >(null);
   const [error , setError] = useState<string | null >(null);
+  const [loading , setLoading] = useState<boolean>(false);
 
   const { errors, loadings, registerFn } = useRegister();
   const formik = useFormik({
@@ -34,14 +34,16 @@ const SignupForm: React.FC = () => {
     },
     validate: registerValidation,
     onSubmit: async (credentials: credentials) => {
+      setLoading(true)
       try{
         const response = await axios.post('http://localhost:3000/api/generate-otp', {email : credentials.email});
-        localStorageSetItem("remainingSeconds", "30");
+        setLoading(false)
         setOtpFormModal(true);
-        console.log(response.data);
+        localStorageSetItem("remainingSeconds", "35");
         setOtp(response.data.otp);
       }catch(error : any){
-        console.log(error)
+        setLoading(false)
+        console.log(error) 
         if (error && error.response && error.response.data) {
           setError(error.response.data.message);
        }
@@ -49,14 +51,18 @@ const SignupForm: React.FC = () => {
     },
   });
   const resendOtp = async() =>{
+    setOtp(null)
     const response = await axios.post('http://localhost:3000/api/generate-otp', {email : formik.values.email});
     setOtp(response.data.otp)
   }
 
-  const handleOtpVerification = ()=>{
+  const handleOtpVerification = async()=>{
      try {
-        registerFn(formik.values);
-        navigate('/login')
+       registerFn(formik.values);
+       toast.success("Registeration completed....." , { id: 'register-toast' })
+        setTimeout(()=>{
+          navigate('/login')
+        },1000)
       } catch (error) {
         console.log(error);
       }
@@ -64,7 +70,7 @@ const SignupForm: React.FC = () => {
 
   return (
     <>
-     <Toaster position="top-center" />
+      <Toaster position="top-center" />
       <div className="w-full lg:w-1/2 bg-white flex flex-col p-8 lg:p-20 justify-between ">
       {otpFormModal && (
         <OtpForm otpData={otpData} onOtpVerified={handleOtpVerification} resendOtp={resendOtp}/>
@@ -134,9 +140,9 @@ const SignupForm: React.FC = () => {
               <button
                 className="w-full bg-black text-white rounded-md py-3 text-center font-bold cursor-pointer"
                 type="submit"
-                disabled={loadings}
+                disabled={loading}
               >
-                {loadings ? "Loading" : "Register"}
+                {loading ? "Submitting....." : "Register"}
               </button>
             </div>
           </form>

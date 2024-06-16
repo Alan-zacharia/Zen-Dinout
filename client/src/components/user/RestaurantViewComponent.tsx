@@ -10,7 +10,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { SiGooglecalendar } from "react-icons/si";
-import { PiTimerFill } from "react-icons/pi";
+import SlotConfrimationModal from "./shared/SlotConfrimationModal";
 
 interface RestaurantType {
   email: string;
@@ -40,7 +40,8 @@ const settings = {
 
 const RestaurantViewComponent = () => {
   const [restaurantDetails, setRestaurantDetails] = useState<RestaurantType>();
-  const [isSaved, setIsSave] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isSaved, setIsSave] = useState<boolean>(true);
   const { restaurantId } = useParams();
 
   useEffect(() => {
@@ -59,9 +60,22 @@ const RestaurantViewComponent = () => {
   const toggleSave = () => {
     setIsSave(!isSaved);
   };
+
+  const toggeleModal = (id: string) => {
+    setIsModalOpen(!isModalOpen);
+  };
+  const array = ["1", "2"];
+
   return (
     <>
       <div className="mx-16 mt-16 mb-4  h-[750px] w-full flex flex-row gap-3 ">
+        <div>
+          <SlotConfrimationModal
+            setShowModal={toggeleModal}
+            isModalOpen={isModalOpen}
+            restaurantDetails={restaurantDetails}
+          />
+        </div>
         {restaurantDetails && (
           <>
             <div className="h-full w-[70%] bg-white shadow-lg  rounded-xl">
@@ -138,51 +152,80 @@ const RestaurantViewComponent = () => {
                 </div>
 
                 <form>
-                <div className="flex px-5 pt-5 flex-col gap-5 border w-[380px]  rounded-xl bg-white shadow-2xl">
-                  <div>
-                    <h4 className="text-xl font-bold pb-2">Select a Deal</h4>
-                    <div className="flex flex-col gap-2 w-80">
-                      <p className="text-sm font-semibold text-gray-600">
-                        Select Date
-                      </p>
-                      <div className="flex">
-                        <p className="bg-blue-500 h-14 w-14 items-center flex justify-center shadow-xl  rounded-l-lg shadow-neutral-200">
-                          <SiGooglecalendar className="text-white " size={30} />
+                  <div className="flex px-5 pt-5 flex-col gap-5 border w-[380px] max-h-auto  rounded-xl bg-white shadow-2xl">
+                    <div>
+                      <h4 className="text-xl font-bold pb-2">Select a Deal</h4>
+                      <div className="flex flex-col gap-2 w-80">
+                        <p className="text-sm font-semibold text-gray-600">
+                          Select Date
                         </p>
-                        <input
-                          type="date"
-                          className="w-full rounded-r-lg h-14 p-5 bg-white-300 shadow-xl shadow-neutral-300 outline-none"
-                        />
+                        <div className="flex">
+                          <p className="bg-blue-500 h-14 w-14 items-center flex justify-center shadow-xl  rounded-l-lg shadow-neutral-200">
+                            <SiGooglecalendar
+                              className="text-white "
+                              size={30}
+                            />
+                          </p>
+                          <input
+                            type="date"
+                            className="w-full rounded-r-lg h-14 p-5 bg-white-300 shadow-xl shadow-neutral-300 outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex flex-col gap-2 w-80">
+                        <p className="text-sm font-semibold text-gray-600">
+                          No of Guests
+                        </p>
+                        <div className="flex">
+                          <select
+                            id="table-slots"
+                            className="bg-gray-50 border border-gray-300  font-semibold text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none"
+                          >
+                            <option selected disabled>
+                              No of Guests
+                            </option>
+                            <option value="second">2 Guests</option>
+                            <option value="third"> 4 Guests</option>
+                            <option value="fourth">6 Guests</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-3 pb-5">
+                      <p className="text-sm font-semibold text-gray-600">
+                        Select Time
+                      </p>
+                      <div className="flex flex-wrap gap-5 w-80 h-36 overflow-auto ">
+                        {array && array.length > 1 ? (
+                          array.map((value, index) => {
+                            return (
+                              <p
+                                className="bg-blue-500 p-1 h-8 w-20 text-center font-bold cursor-pointer text-white rounded-md "
+                                key={index}
+                                onClick={() => toggeleModal(value)}
+                              >
+                                {value}:00PM
+                              </p>
+                            );
+                          })
+                        ) : (
+                          <div className="flex flex-col">
+                            <div className="mx-16 m-6">
+                              <p className="text-center text-xl font-bold">
+                                No slots available
+                              </p>
+                              <span className="text-gray-500 text-sm px-4">
+                                Please try again later
+                              </span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-3">
-                    <p className="text-sm font-semibold text-gray-600">
-                      Select Time
-                    </p>
-                    <div className="flex flex-wrap gap-5 w-80 h-36 overflow-auto">
-                      {[1,2,3,4,5,6,7,8,9,10].map((value , index )=>{
-                        return (
-                          <p className="bg-blue-500 p-1 h-8 w-20 text-center font-bold cursor-pointer text-white rounded-md " key={index}>{value}:00PM</p>
-                        )
-                      })}
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2 w-80 ">
-                    
-                      <label htmlFor="guestName" className="block text-sm font-bold">Guest name</label>
-                      <input type="text" className="rounded-lg bg-white shadow-lg shadow-gray-300 outline-none p-2 px-3" placeholder="Guest name" />
-                      <label htmlFor="contact" className="block text-sm font-bold">Contact</label>
-                      <input type="text" className="rounded-lg bg-white shadow-lg shadow-gray-300 outline-none p-2 px-3" placeholder="Mobile no" />
-                      <label htmlFor="number" className="block text-sm font-bold">No of Guests</label>
-                      <input type="text" className="rounded-lg bg-white shadow-lg shadow-gray-300 outline-none p-2 px-3" placeholder="Guest count" />
-                      <button type="submit" className="rounded-lg text-white font-bold shadow-lg shadow-gray-300 outline-none p-2 px-3 bg-red-500 mt-2 hover:bg-red-600 mb-3" >
-                       continue
-                      </button>
-                  </div>
-                  
-                </div>
-                    </form>
+                </form>
               </div>
             </div>
             <div className="h-full w-1/3 bg-white rounded-xl shadow-lg ">

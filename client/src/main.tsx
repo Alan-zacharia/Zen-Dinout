@@ -7,7 +7,8 @@ import { AppContextProvider } from "./Contexts/AppContext.tsx";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { AppAContextProvider } from "./Contexts/AdminAppContext.tsx";
 import { AppSContextProvider } from "./Contexts/SellerAppContext.tsx";
-import { useAuth } from "./Contexts/OtpContext.tsx";
+import {store} from "./app/store.ts"
+import { Provider } from "react-redux";
 
 const GoogleAPI = import.meta.env.VITE_API_CLOUD_URL 
 const queryClient = new QueryClient({
@@ -19,18 +20,18 @@ const queryClient = new QueryClient({
 })
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <Provider store={store}>
     <GoogleOAuthProvider clientId={GoogleAPI}>
       <QueryClientProvider client={queryClient}>
       <AppContextProvider>
         <AppAContextProvider>
           <AppSContextProvider>
-            <useAuth>
               <App />
-            </useAuth>
         </AppSContextProvider>
         </AppAContextProvider>
       </AppContextProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>
+    </Provider>
   </React.StrictMode>
 );

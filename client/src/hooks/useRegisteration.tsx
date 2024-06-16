@@ -21,12 +21,16 @@ interface LoginReturnType {
 const useRegister = (): LoginReturnType => {
   const [errors, setError] = useState<string | null>(null);
   const [loadings, setLoading] = useState<boolean>(false);
-  const navigate = useNavigate();
   const registerFn = async (datas: credentials | {}) => {
     setLoading(true);
     setError(null);
     try{    
-        const {data} = await register(datas);  
+        await register(datas).then((res)=>{
+         console.log(res)
+        }).catch((error)=>{
+          setLoading(false);
+          console.log(error)
+        });
         setLoading(false);
     }catch(error : any){
         setLoading(false);

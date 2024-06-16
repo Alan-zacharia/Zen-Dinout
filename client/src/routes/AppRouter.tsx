@@ -27,6 +27,8 @@ import RestaurantApprovalForm from '../components/admin/RestaurantApprovalForm'
 import ForgotPasswordPageRecieveEmail from '../pages/user/ForgotPasswordPageRecieveEmail'
 import { localStorageGetItem } from '../utils/localStorageImpl'
 import SellerLoginPage from '../pages/seller/SellerLoginPage'
+import ReserveTableConfirmation from '../components/user/ReserveTableConfirmation'
+import BookingSuccess from '../components/layouts/BookingSuccess'
 const HomePage = React.lazy(() => import('../pages/user/Home'));
 const DashBoard = React.lazy(() => import('../components/admin/DashBoard'));
 const RestaurantMangement = React.lazy(() => import('../components/admin/RestaurantManagement'));
@@ -50,13 +52,15 @@ const AppRouter : React.FC = () => {
         {/* Auth routes */}
      
         <Route path="/login" element={ <Login/> } />
-        <Route path="/register" element={!registerHide ? <Signup/> : <Navigate to="/"/>} />
+        <Route path="/register" element={ <Signup/>} />
        
          
         <Route path="/" element={<HomePage />} >
          <Route index element={ <HomeLayout/> } />
          <Route path="/account" element={ <UserProfile/> } />
          <Route path="/restaurant-view/:restaurantId" element={ <RestaurantViewDetails/> } />
+         <Route path="/reserve-table" element={ <ReserveTableConfirmation/> } />
+         <Route path="/success" element={<BookingSuccess/>} />
         </Route>
         <Route path='/reset-password' element={<ForgotPasswordPageRecieveEmail />}/>
 
@@ -94,6 +98,7 @@ const AppRouter : React.FC = () => {
          <Route path='/restaurant/restaurant-details' element={isSellerLoggedIn ? <RestaurantDetails/> : <Navigate to="/login"/>} />
         </Route>
 
+        
         <Route path="*" element={<PageNotFound/>} />
         
       </Routes>
