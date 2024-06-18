@@ -14,9 +14,9 @@ const Hero : React.FC<HeroProps> = ({ handleSearch }) => {
   };
 
   return (
-    <div className='mx-auto'>
+    <div className='mx-auto '>
       <div className='max-h-[500px] relative'>
-        <div className='absolute w-full h-full text-gray-200 max-h-[400px] backdrop-blur-sm bg-black/20 flex flex-col justify-center p-4 sm:p-10 lg:p-20 xl:p-40'>
+        <div className='absolute w-full h-full text-gray-200 max-h-[500px] flex flex-col justify-center p-4 sm:p-10 lg:p-20 xl:p-40'>
           <h1 className='text-xl  sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl font-bold  xl:px-40'>
             Book Table
             at  Your<span className='text-blue-500'> Favourite Restaurants </span>

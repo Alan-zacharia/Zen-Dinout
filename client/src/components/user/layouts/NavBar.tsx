@@ -3,9 +3,15 @@ import NavLeftSide from "./NavLeftSide";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../../Contexts/AppContext";
 import SignOutButton from "../../auth/SignOutButton";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+
+
+
 
 const NavBar: React.FC = () => {
-  const { isLoggedIn } = useAppContext();
+   const {currentUser} = useSelector((state : RootState)=> state.user)
+
   return (
     <div className="navbar bg-base-100 shadow-lg shadow-neutral-400 h-20">
       <div className="navbar-start ">
@@ -31,15 +37,15 @@ const NavBar: React.FC = () => {
             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-80  "
           >
             <li className="m-5 ">
-              <a className="text-2xl font-bold">Home</a>
+              <p className="text-2xl font-bold">Home</p>
             </li>
             <li  className="m-5">
-              <a className="text-2xl font-bold">Book a Table</a>
+              <p className="text-2xl font-bold">Book a Table</p>
             </li >
             <li  className="m-5">
-              <a className="text-2xl font-bold">Item 3</a>
+              <p className="text-2xl font-bold">Item 3</p>
             </li>
-            {isLoggedIn && (
+            {currentUser && (
                 <ul
                 tabIndex={0}
                 className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-80  "
@@ -51,19 +57,19 @@ const NavBar: React.FC = () => {
                <p className="text-2xl font-bold">profile</p>
              </div>
             <li className="m-5 ">
-              <a className="text-2xl font-bold">Home</a>
+              <p className="text-2xl font-bold">Home</p>
             </li>
             <li  className="m-5">
-              <a className="text-2xl font-bold">Book a Table</a>
+              <p className="text-2xl font-bold">Book a Table</p>
             </li >
             <li  className="m-5">
-              <a className="text-2xl font-bold">Item 3</a>
+              <p className="text-2xl font-bold">Item 3</p>
             </li>
             <li  className="m-5">
-              <a className="text-2xl font-bold">Bookings</a>
+              <p className="text-2xl font-bold">Bookings</p>
             </li>
             <li  className="m-5">
-              <a className="text-2xl font-bold">Help</a>
+              <p className="text-2xl font-bold">Help</p>
             </li>
             </ul>
             )}
@@ -71,53 +77,52 @@ const NavBar: React.FC = () => {
           </ul>
         </div>
         <div className=" xl:px-80 text-3xl font-bold flex items-center">
-          <a className="">
+          <div className="">
             Zen<span className="text-orange-600">Dinout</span>
-          </a>
-          <a className="hidden md:flex">
+          </div>
+          <div className="hidden md:flex">
             <NavLeftSide />
-          </a>
+          </div>
         </div>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu-horizontal px-1 font-semibold text-base gap-20 cursor-pointer ">
-          <Link to={'/'}><li className="hover:text-red-500">
-            <a>Home</a>
-          </li>
-          </Link>
-          <Link to={'/'}>
           <li className="hover:text-red-500">
-            <a>Book a Table</a>
+          <Link to={'/'}>Home</Link>
           </li>
-          </Link>
-          <Link to={'/'}>
+      
+          
           <li className="hover:text-red-500">
-            <a>Blog</a>
+          <Link to={'/'}>Book a Table</Link>
           </li>
-          </Link>
+          
+        
+          <li className="hover:text-red-500">
+          <Link to={'/'}>Blog</Link>
+          </li>
+         
         </ul>
       </div>
       <div className="navbar-end xl:mr-72">
-        {isLoggedIn ? (
+        {currentUser ? (
           <>
-              <Link to={'/account'}>
-            <div className="avatar cursor-pointer">
+            <div className="avatar cursor-pointer"> 
               <div className="w-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+            <Link to={'/account'}>
                 <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+            </Link>
               </div>
             </div>
-              </Link>
             <div>
             <SignOutButton />
             </div>
           </>
         ) : (
           <>
-            <Link to="login">
               <h1 className="text-lg font-bold font-sans text-red-600 cursor-pointer">
-                <a>Login</a>
+              <Link to="login">Login</Link>
               </h1>
-            </Link>
+            
           </>
         )}
       </div>

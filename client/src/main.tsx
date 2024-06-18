@@ -7,31 +7,26 @@ import { AppContextProvider } from "./Contexts/AppContext.tsx";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { AppAContextProvider } from "./Contexts/AdminAppContext.tsx";
 import { AppSContextProvider } from "./Contexts/SellerAppContext.tsx";
-import {store} from "./app/store.ts"
 import { Provider } from "react-redux";
+import { store, persistor } from "./redux/store.ts";
+import { PersistGate } from "redux-persist/integration/react";
 
-const GoogleAPI = import.meta.env.VITE_API_CLOUD_URL 
+const GoogleAPI = import.meta.env.VITE_API_CLOUD_URL;
 const queryClient = new QueryClient({
-  defaultOptions:{
-    queries:{
-      retry : 0,
-    }
-  }
-})
+  defaultOptions: {
+    queries: {
+      retry: 0,
+    },
+  },
+});
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Provider store={store}>
-    <GoogleOAuthProvider clientId={GoogleAPI}>
-      <QueryClientProvider client={queryClient}>
-      <AppContextProvider>
-        <AppAContextProvider>
-          <AppSContextProvider>
-              <App />
-        </AppSContextProvider>
-        </AppAContextProvider>
-      </AppContextProvider>
-      </QueryClientProvider>
-    </GoogleOAuthProvider>
-    </Provider>
-  </React.StrictMode>
+  <GoogleOAuthProvider clientId={GoogleAPI}>
+    <PersistGate persistor={persistor}>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </Provider>
+    </PersistGate>
+  </GoogleOAuthProvider>
 );

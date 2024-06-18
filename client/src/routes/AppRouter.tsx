@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import Login from '../pages/user/Login'
 import Signup from '../pages/user/Register'
@@ -29,6 +29,8 @@ import { localStorageGetItem } from '../utils/localStorageImpl'
 import SellerLoginPage from '../pages/seller/SellerLoginPage'
 import ReserveTableConfirmation from '../components/user/ReserveTableConfirmation'
 import BookingSuccess from '../components/layouts/BookingSuccess'
+import PrivateRoute from "./PrivateRoute"
+
 const HomePage = React.lazy(() => import('../pages/user/Home'));
 const DashBoard = React.lazy(() => import('../components/admin/DashBoard'));
 const RestaurantMangement = React.lazy(() => import('../components/admin/RestaurantManagement'));
@@ -36,15 +38,15 @@ const Customers = React.lazy(() => import('../components/admin/UserManagement'))
 
 
 const AppRouter : React.FC = () => {
-  const {isLoggedIn} = useAppContext();
-  const { isAdminLoggedIn } = useAdminAppContext();
-  const { isSellerLoggedIn } = useSellerAppContext();
-  
+  const isLoggedIn =true
+  const  isAdminLoggedIn = true
+  const  isSellerLoggedIn = true
   const resetPassword = localStorageGetItem("&reset%pas%%"); 
   const registerHide = localStorageGetItem("%%register%%"); 
   const sellerHIde = localStorageGetItem("%%sellregis%%"); 
 
-  
+
+
   return (
     <Router>
        <Suspense fallback={<div className='flex items-center justify-center h-screen'> <span className="loading loading-spinner loading-lg"></span></div>}>
@@ -57,11 +59,17 @@ const AppRouter : React.FC = () => {
          
         <Route path="/" element={<HomePage />} >
          <Route index element={ <HomeLayout/> } />
-         <Route path="/account" element={ <UserProfile/> } />
          <Route path="/restaurant-view/:restaurantId" element={ <RestaurantViewDetails/> } />
-         <Route path="/reserve-table" element={ <ReserveTableConfirmation/> } />
-         <Route path="/success" element={<BookingSuccess/>} />
+         {/* PrivateRoute routes */}
+         <Route  element={ <PrivateRoute/> } >
+         <Route path="account" element={ <UserProfile/> } />
+         <Route path="reserve-table" element={ <ReserveTableConfirmation/> } />
+         <Route path="success" element={<BookingSuccess/>} />
+         </Route>
         </Route>
+
+
+        
         <Route path='/reset-password' element={<ForgotPasswordPageRecieveEmail />}/>
 
         <Route path="/reset-password/fps/:id" element={resetPassword ? <ForgotPassword  /> : <Navigate to="*"/> } />

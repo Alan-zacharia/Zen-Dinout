@@ -3,10 +3,13 @@ import { useFormik } from "formik";
 import GoogleLoginButton from "../auth/GooglLoginButton";
 import useLogin from "../../hooks/useLogin";
 import { loginValidation } from "../../utils/validations";
-import { Link } from "react-router-dom";
-import { localStorageRemoveItem } from "../../utils/localStorageImpl";
-import { useAppContext } from "../../Contexts/AppContext";
-import { Toaster } from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
+import { localStorageRemoveItem, localStorageSetItem } from "../../utils/localStorageImpl";
+import { useEffect, useRef , useState } from "react";
+import {useDispatch, useSelector} from "react-redux";
+import { signInFailure ,SignInStart ,signInSuccess } from "../../redux/user/UserSlice";
+import { login } from "../../services/api";
+import { RootState } from "../../redux/store";
 
 interface UserType {
   email: string;
@@ -15,8 +18,18 @@ interface UserType {
 
 const LoginForm: React.FC = () => {
   localStorageRemoveItem("&reset%pas%%");
-  const { isLoggedIn } = useAppContext();
-  const { loading, loginFn, error } = useLogin();
+  // const { loading, loginFn } = useLogin();
+  const userRef = useRef<HTMLInputElement>(null);
+
+  // const [errorMessage , setErrorMessage] = useState<string>("");
+  useEffect(()=>{
+    userRef.current?.focus() 
+  },[]);
+
+  const dispatch = useDispatch();
+  const {loading , error : errorMessage} = useSelector((state : RootState ) => state.user);
+  const navigate = useNavigate();
+
   const formik = useFormik<UserType>({
     initialValues: {
       email: "",
@@ -24,18 +37,30 @@ const LoginForm: React.FC = () => {
     },
     validate: loginValidation,
     onSubmit: async (credentials: UserType) => {
+      dispatch(SignInStart());
       console.log(credentials);
-      try {
-        loginFn(credentials);
-      } catch (error) {
-        console.log((error as Error).message);
-      }
+      await login(credentials).then((res)=>{
+      console.log(res.data.user);
+      dispatch(signInSuccess(res.data));
+      localStorageSetItem("%%register%%","true");
+      navigate("/");
+    }).catch((error : any)=>{
+      console.log(error)
+      dispatch(signInFailure(error.response.data.message ));
+    });
+    // queryClient.invalidateQueries("validateToken");
+      // try {
+      //   loginFn(credentials);
+      // } catch (error : any) {
+      //   setErrorMessage(error.data.message)
+      // }
     },
   });
+ 
 
   return (
     <>
-      <Toaster position="top-center" />
+      
       <div className="relative w-full lg:w-1/2 h-96 lg:h-screen lg:block hidden md:block">
         <div className="absolute top-1/4 left-10 flex flex-col">
           <h1 className="text-4xl text-white font-bold mb-4">
@@ -63,10 +88,11 @@ const LoginForm: React.FC = () => {
           </div>
           <form onSubmit={formik.handleSubmit}>
             <div className="mb-6">
-              {error && <div className="text-red-500">{error}</div>}
+              {errorMessage && <div className="text-red-500 font-bold">{errorMessage}</div>}
               <input
                 type="text"
                 placeholder="Email"
+                ref={userRef}
                 className="w-full py-2 px-2 my-2 bg-transparent text-black border-black border-b outline-none focus:outline-none"
                 {...formik.getFieldProps("email")}
               />

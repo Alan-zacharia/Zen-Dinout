@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {  login } from "../services/api";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "react-query";
+// import { useQueryClient } from "react-query";
 import { sellerLogin } from "../services/SellerApiClient";
 import { localStorageSetItem } from "../utils/localStorageImpl";
 
@@ -17,7 +17,7 @@ interface LoginReturnType {
 };
 
 const useLogin = (): LoginReturnType => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const useLogin = (): LoginReturnType => {
       console.log(res.data.user);
       setLoading(false);
       localStorageSetItem("%%register%%","true");
-      queryClient.invalidateQueries("validateToken");
+      // queryClient.invalidateQueries("validateToken");
       navigate("/");
       }).catch((error : any)=>{
       console.log(error)

@@ -15,6 +15,15 @@ export interface credentials {
   username: string;
   email: string;
   password: string;
+};
+
+/** User type */
+export interface userTypesCredentials {
+  username: string;
+  email: string;
+  password: string;
+  contact?:string;
+  _id?: string;
 }
 
 /** return api response */
