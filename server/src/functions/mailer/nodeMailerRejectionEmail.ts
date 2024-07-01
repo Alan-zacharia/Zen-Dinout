@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-const nodeMaile_confirmationEmail = async(email:string ) : Promise <{success : boolean}> =>{
+const nodeMailerRejectionEmail = async(email:string , rejectReason :string) : Promise <{success : boolean}> =>{
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
@@ -15,9 +15,9 @@ const mailOptions: nodemailer.SendMailOptions = {
   to: `${email}`,
   subject: "Zen-Dinout",
   html:`<p>Dear Restaurant,</p>
-  <p>Thank you for using our service. As requested , your restaurant is confirmed</p>
-  <h2 style="color : green"><strong><a href='http://localhost:4000/login'>Login Your account</a></strong></h2>
-  <p>If you did not request have any concerns, please contact our support team immediately.</p>
+  <p>As requested, your restaurant request has been rejected.</p>
+  <p>Reason : ${rejectReason}</p>
+  <p>If you did not request this or have any concerns, please contact our support team immediately.</p>
   <p>Thank you,</p>
   <p>Zen Dinout</p>`,
 };
@@ -33,6 +33,6 @@ try {
 
 }
 
-export default nodeMaile_confirmationEmail;
+export default nodeMailerRejectionEmail;
 
 

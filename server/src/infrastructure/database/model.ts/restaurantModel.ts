@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 
 const restaurantSchema = new mongoose.Schema(
   {
@@ -18,15 +18,18 @@ const restaurantSchema = new mongoose.Schema(
     contact: {
       type: String,
     },
-    password :{
-       type:String,
-       required:true
+    password: {
+      type: String,
+      required: true,
     },
     address: String,
     description: String,
     TableRate: {
       type: Number,
       default: 200,
+    },
+    place_name: {
+      type: String,
     },
     location: {
       type: {
@@ -63,17 +66,16 @@ const restaurantSchema = new mongoose.Schema(
       default: false,
     },
   },
-  
+
   { timestamps: true }
 );
 
-restaurantSchema.index({ location: "2dsphere" }); 
-restaurantSchema.pre("save",async function (next) {
+restaurantSchema.index({ location: "2dsphere" });
+restaurantSchema.pre("save", async function (next) {
   this.updatedAt = new Date();
   const hashedPassword = await bcrypt.hash(this.password, 10);
   this.password = hashedPassword;
   next();
 });
- const restaurantModel = mongoose.model("Restaurant", restaurantSchema);
- export default restaurantModel;
-
+const restaurantModel = mongoose.model("Restaurant", restaurantSchema);
+export default restaurantModel;

@@ -4,6 +4,7 @@ export function setAuthTokenCookie(res: Response, token_name : string ,  token: 
   res.cookie(token_name, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 86400000,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
-}
+};
+ 

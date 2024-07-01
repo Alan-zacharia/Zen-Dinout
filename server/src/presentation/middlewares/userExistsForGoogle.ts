@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import UserModel from "../../infrastructure/database/model.ts/userModel";
 import { jwtGenerateToken } from "../../functions/auth/jwtTokenFunctions";
+import { hashedPasswordCompare, hashedPasswordFunction } from "../../functions/bcryptFunctions";
 
 /**
  * Checking user already existed
@@ -13,17 +14,20 @@ export const userExistGoogle = async (
   next: NextFunction
 ) => {
   try {
-    const { email } = req.body;
+    const { email , password } = req.body;
     const user = await UserModel.findOne({ email: email });
     if (user) {
-        console.log(user + "Middleware");
-        const token =  jwtGenerateToken(user._id as string);
-        res.cookie('Uauth_token',token, {
+        const hashedCompared = await hashedPasswordCompare(password,user?.password);
+        if(hashedCompared){
+          console.log(user + "Middleware");
+          const token =  jwtGenerateToken(user._id as string , "user");
+          res.cookie('Uauth_token',token, {
             httpOnly : true,
             secure : process.env.NODE_ENV === "production",
             maxAge : 86400000
           });
-          return res.status(201).json({message : "Successfull.."});
+          return res.status(201).json({message : "Login Successfull.." , token , user});
+        }
     }
     next();
   } catch (error) {
