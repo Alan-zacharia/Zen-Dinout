@@ -5,9 +5,9 @@ import { Toaster } from 'react-hot-toast'
 const App : React.FC = () => {
   return (
    <>
-       <Toaster position="top-center" />
-        <AppRouter/>
-        </>
+      <Toaster position="top-center" />
+      <AppRouter/>
+  </>
   )
 }
 

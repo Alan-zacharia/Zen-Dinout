@@ -1,72 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRestaurants, updateSearchQuery, filterRestaurants } from '../../../redux/restaurant/restaurantSearchSlice';
 import Home from "../Home";
 import Card from "../../layouts/Card";
 import Hero from "./Hero";
-import axios from "axios";
-import Footer from "./Footer";
-import SectionHomeDetails from "./SectionHomeDetails";
+import { RootState , useAppDispatch } from '../../../redux/store';
+import SectionHomeDetails from './SectionHomeDetails';
 
-interface RestaurantType {
-  _id: string;
-  email: string;
-  contact: string;
-  restaurantName: string;
-  address: string;
-  location: {
-    types: string;
-    coordinates: [string, string];
-  };
-  description: string;
-  closingTime: string;
-  openingTime: string;
-  TableRate: string;
-  secondaryImages: string;
-  featuredImage: string;
-}
 
 const HomeLayout = () => {
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [restaurants, setRestaurants] = useState<RestaurantType[]>([]);
-  const [filteredRestaurants, setFilteredRestaurants] = useState<RestaurantType[]>([]);
+  const dispatch = useAppDispatch();
+  const searchQuery = useSelector((state : RootState) => state.restaurant.searchQuery);
+  const restaurants = useSelector((state :  RootState) => state.restaurant.restaurants);
+  const filteredRestaurants = useSelector((state :  RootState) => state.restaurant.filteredRestaurants);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/api/get-restaurants");
-        setRestaurants(response.data.restaurant);
-      } catch (error) {
-        console.error("Error fetching restaurants:", error);
-      }
-    };
-
-    fetchData();
+       dispatch(fetchRestaurants()); 
   }, []);
 
-  useEffect(() => {
-    const filtered = restaurants.filter((restaurant) => {
-      const { restaurantName  } = restaurant;
-      const searchTerm = searchQuery.toLowerCase();
-
-      return (
-        restaurantName.toLowerCase().includes(searchTerm) 
-      );
-    });
-    setFilteredRestaurants(filtered);
-  }, [searchQuery, restaurants]);
-
   const handleSearch = (query: string) => {
-    setSearchQuery(query);
+    dispatch(updateSearchQuery(query));
   };
+
+  useEffect(() => {
+    dispatch(filterRestaurants());
+  }, [searchQuery, restaurants]);
 
   return (
     <>
-      <Hero handleSearch={handleSearch} />
+      <Hero handleSearch={handleSearch}  />
       <Home />
-      <div className="flex flex-wrap lg:justify-normal lg:ml-20 mb-20 xl:px-60 gap-5 lg:gap-5">
+      <div className="flex flex-wrap lg:justify-normal lg:ml-20 mb-20 justify-center sm:px-20  xl:px-60 gap-5 lg:gap-5">
         <Card restaurants={filteredRestaurants} />
       </div>
-      <div className="h-[200px]">
-        <SectionHomeDetails/>
+      <div className=" hidden  lg:flex lg:flex-col lg:h-[300px]">
+       <SectionHomeDetails/>
       </div>
     </>
   );

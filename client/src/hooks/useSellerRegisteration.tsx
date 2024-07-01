@@ -3,7 +3,7 @@ import { sellerRegisteration } from "../services/SellerApiClient";
 import { credentials } from "../services/SellerApiClient";
 
 interface LoginReturnType {
-  registerFn: (data: credentials) => void;
+  registerFn: (data: credentials , restaurantId : string) => void;
   
   error: string | null;
 }
@@ -11,10 +11,10 @@ interface LoginReturnType {
 const useSellerRegisteration = (): LoginReturnType => {
   const [error, setError] = useState<string | null>(null);
 
-  const registerFn = async (datas: credentials) => {
+  const registerFn = async (datas: credentials , restaurantId : string) => {
     
     try {
-      const { data } = await sellerRegisteration(datas);
+      const { data } = await sellerRegisteration(datas , restaurantId);
       console.log(data.message)
       
     } catch (error: any) {

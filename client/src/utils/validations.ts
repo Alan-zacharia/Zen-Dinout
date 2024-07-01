@@ -115,38 +115,56 @@ export const sellerRegiseterationValidation = ()=>{
     address : Yup.string().required("Address is required !"),
     description : Yup.string().required("Description is required !"),
     // location : Yup.string().required("Location is required !"),
-    location: Yup.object().shape({
-    type: Yup.string().required("Location is required"),
-    }),
+    place_name: Yup.string().required("Location required.."), 
     openingTime : Yup.string().required("Opening time is required !"),
     closingTime : Yup.string().required("Closing time is required !"),
-    TableRate : Yup.number().required("Table rate is required !").min(1,"Table Rate must be valid !").max(1000,"Table rate limit is 1000"),
+    TableRate : Yup.number().required("Table rate is required !").min(100,"Table Rate must be standard rate !").max(1000,"Table rate limit is 1000"),
     featuredImage: Yup.mixed()
-      .required("Image is required !")
-      .test(
-        "FILE_SIZE",
-        "Too big!",
-        (value: any) => value && value.size < 1024 * 1024
-      )
-      .test(
-        "FILE_TYPE",
-        "Invalid!",
-        (value: any) =>
-          value && ["image/png", "image/jpeg"].includes(value.type)
-      ),
+    .required("Image is required!")
+    .test(
+      "is-url-or-file",
+      "Invalid image URL or file",
+      function(value : any) {
+        if (!value) {
+          return false;
+        }
+        if (typeof value === 'string' && value.startsWith("https://res.cloudinary.com/")) {
+          return true;
+        }
+        return (
+          value.size < 1024 * 1024 &&
+          ["image/png", "image/jpeg"].includes(value.type)
+        );
+      }
+    ),
       secondaryImages: Yup.mixed()
-      .required("Image is required !")
-      .test(
-        "FILE_SIZE",
-        "Too big!",
-        (value: any) => value && value.size < 1024 * 1024
-      )
-      .test(
-        "FILE_TYPE",
-        "Invalid!",
-        (value: any) =>
-          value && ["image/png", "image/jpeg"].includes(value.type)
-      ),
+      .required("Image is required!")
+    .test("is-url-or-file","Invalid image URL or file",
+      function(value : any) {
+        if (!value) {
+          return false;
+        }
+        if (typeof value[0] === 'string' && value[0].startsWith("https://res.cloudinary.com/")) {
+          return true;
+        }
+        return (
+          value.size < 1024 * 1024 &&
+          ["image/png", "image/jpeg"].includes(value.type)
+        );
+      }
+    ),
+  })
+};
+export const validateTableSlot = ()=>{
+  return Yup.object().shape({
+    tableNumber : Yup.string().required("Table number is required.").matches(/^[A-Z](?=.*\d).+$/,"Table name must start with a letter and one number."),
+    tableLocation : Yup.string().required("Please select table location.")
+  })
+}
+export const validateTableSlotTimes = ()=>{
+  return Yup.object().shape({
+    tableSlotDate : Yup.string().required("Date is required."),
+    tableSlotTime : Yup.string().required("Time is required.")
   })
 }
 

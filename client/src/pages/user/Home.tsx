@@ -6,9 +6,10 @@ import { Outlet } from "react-router-dom";
 const HomePage: React.FC = () => {
   return (
     <div className="h-screen ">
-      <div className="fixed z-50 top-0 left-0 w-full">
+      <div className="fixed z-50 top-0  left-0 w-full">
       <NavBar /> 
       </div>
+      
       <div className="">
       <Outlet />
       </div>

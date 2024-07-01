@@ -1,184 +1,252 @@
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useFormik } from "formik";
-import React, { ChangeEvent, useEffect, useRef, useState  } from "react";
-import { toast  , Toaster} from 'react-hot-toast';
+import { toast, Toaster } from "react-hot-toast";
 import PreviewImage from "../layouts/PreviewImage";
+import SecondaryImages from "../layouts/SecondaryImages";
 import { imageCloudUpload } from "../../services/SellerApiClient";
 import useSellerRegisteration from "../../hooks/useSellerRegisteration";
 import { sellerRegiseterationValidation } from "../../utils/validations";
 import GoogleMap from "../GoogleMap";
-import getLocations from "../../services/getPlaceApi";
+import axios from "../../api/axios";
 import { CiCircleRemove } from "react-icons/ci";
-import axios from "axios";
-import SecondaryImages from "../layouts/SecondaryImages";
+import getLocations from "../../services/getPlaceApi";
+import { RestaurantType } from "../../types/restaurantTypes";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
-
-
-interface RestaurantType {
-  email : string ;
-  contact : string ;
-  restaurantName : string;
-  address : string;
-  location : {
-    types : string;
-    coordinates:[string,string]
-  };
-  description : string;
-  closingTime:string;
-  openingTime : string;
-  TableRate:string;
-  secondaryImages:string;
-  featuredImage:string;
-}
 const RestaurantDetails = () => {
-  const [restaurantDetails, setRestaurantDetails] = useState<RestaurantType >({
-    email : "" ,
-    contact : "" ,
-    restaurantName : "",
-    address : "",
-    description:"",
-    location : {
-      types : "",
-      coordinates:["",""]
+  const { isAuthenticated, role, id } = useSelector(
+    (state: RootState) => state.user
+  );
+  const [restaurantDetails, setRestaurantDetails] = useState<RestaurantType>({
+    email: "",
+    contact: "",
+    restaurantName: "",
+    address: "",
+    description: "",
+    location: {
+      type: "",
+      coordinates: [0, 0],
     },
-    closingTime:"",
-    openingTime : "",
-    TableRate:"",
-    secondaryImages:"",
-    featuredImage:"",
+    closingTime: "",
+    openingTime: "",
+    TableRate: "",
+    secondaryImages: "",
+    featuredImage: "",
   });
-  useEffect(()=>{
-    const fetchData = async()=>{
-      await axios.get("http://localhost:3000/restaurant/restaurant-details").then((res)=>{
-        setRestaurantDetails(res.data.restaurantDetails);
-        formik.setValues({
-          ...formik.values,
-          email : res.data.restaurantDetails.email,
-          contact:res.data.restaurantDetails.contact,
-          restaurantName: res.data.restaurantDetails.restaurantName
-        });
-      }).catch((error)=>{
-        console.log(error)    
-      })
-    }
-    fetchData()
-  },[]);
 
-  const [suggestion, setSuggestions] = useState([]);
-  const [lat, setLat] = useState(10.0);
-  const [lng, setLng] = useState(76.5);
-  const [location, setLocation] = useState("");
-  const [image, setImage] = useState({});
-  const [secondaryImage, setSecondaryImage] = useState({});
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (isAuthenticated && role == "seller") {
+          const res = await axios.get(`/restaurant/restaurant-details/${id}`);
+          if (res.data.restaurantDetails) {
+            setRestaurantDetails(res.data.restaurantDetails);
+            formik.setValues({
+              ...formik.values,
+              email: res.data.restaurantDetails.email,
+              contact: res.data.restaurantDetails.contact,
+              restaurantName: res.data.restaurantDetails.restaurantName,
+              address: res.data.restaurantDetails.address,
+              description: res.data.restaurantDetails.description,
+              TableRate: res.data.restaurantDetails.TableRate,
+              openingTime: res.data.restaurantDetails.openingTime,
+              closingTime: res.data.restaurantDetails.closingTime,
+              featuredImage: res.data.restaurantDetails.featuredImage,
+              secondaryImages: res.data.restaurantDetails.secondaryImages,
+              location: {
+                type: res.data.restaurantDetails.location.type,
+                coordinates: res.data.restaurantDetails.location.coordinates,
+              },
+              place_name: res.data.restaurantDetails.place_name,
+            });
+            setLat(res.data.restaurantDetails.location.coordinates[1]);
+            setLng(res.data.restaurantDetails.location.coordinates[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching restaurant details:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const [suggestion, setSuggestions] = useState<any[]>([]);
+  const [lat, setLat] = useState<number>(10.0);
+  const [lng, setLng] = useState<number>(76.5);
+  const [location, setLocation] = useState<string>("");
+  const [image, setImage] = useState<File | null>(null);
+  const [secondaryImage, setSecondaryImage] = useState<File | null>(null);
   const { error, registerFn } = useSellerRegisteration();
   const [loadings, setLoadings] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      restaurantName: "",
-      email: "",
-      contact: "",
-      address: "",
-      description: "",
-      openingTime: "",
-      location:  {
-        type: "",
-        coordinates: ["", ""],
+      restaurantName: restaurantDetails.restaurantName,
+      email: restaurantDetails.email,
+      contact: restaurantDetails.contact,
+      address: restaurantDetails.address,
+      description: restaurantDetails.description,
+      openingTime: restaurantDetails.openingTime,
+      closingTime: restaurantDetails.closingTime,
+      TableRate: restaurantDetails.TableRate,
+      location: {
+        type: restaurantDetails.location.type,
+        coordinates: restaurantDetails.location.coordinates,
       },
-      closingTime: "",
-      TableRate: "",
       featuredImage: "",
       secondaryImages: "",
+      place_name: "",
     },
     validationSchema: sellerRegiseterationValidation,
     onSubmit: async (data) => {
-      setLoadings(true);
-      console.log(data)
-      await imageCloudUpload(data.featuredImage).then((res) => {
-        data.featuredImage = res;
-      });
-      await imageCloudUpload(data.secondaryImages).then((res) => {
-        data.secondaryImages = res;
-      });
-      console.log(data)   
-      registerFn(data);
-      setLoadings(false);
-      toast.success("Restaurant Updated ")
+      console.log(data.featuredImage)
+      try {
+        setLoadings(true);
+        await imageCloudUpload(data.featuredImage).then((res) => {
+          data.featuredImage = res;
+        });
+        await imageCloudUpload(data.secondaryImages).then((res) => {
+          data.secondaryImages = res;
+        });
+        registerFn(data, id as string);
+        toast.success("Restaurant Updated");
+      } catch (error) {
+        console.error("Error updating restaurant:", error);
+        toast.error("Failed to update restaurant");
+      } finally {
+        setLoadings(false);
+      }
     },
   });
 
-  const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    setLocation(e.target.value);
-    const data = await getLocations(e.target.value);
-    setSuggestions(data);
-  };
-  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) =>{
-    const {files} = e.target;
-    if(files){
-      setImage(files[0])
+  // Handle changing featured image
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      formik.setFieldValue("featuredImage", file);
     }
-    formik.setFieldValue("featuredImage", e.target.files?.[0])
   };
 
-  const handleSecondaryImageChange = async (e: ChangeEvent<HTMLInputElement>) =>{
-    const {files} = e.target;
-    if(files){
-      setSecondaryImage(files[0])
+  // Handle changing secondary image
+  const handleSecondaryImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSecondaryImage(file);
+      formik.setFieldValue("secondaryImages", file);
     }
-    formik.setFieldValue("secondaryImages", e.target.files?.[0])
   };
 
- 
-  const handleSuggestions = async (suggestion: any) => {
+  // Handle selecting a location suggestion
+  const handleSuggestions = (suggestion: any) => {
     const lat = suggestion.center[1];
     const lng = suggestion.center[0];
-    const search = suggestion.place_name.split(",")[0];
-    // formik.setFieldValue("location", search);
+    const search = suggestion.place_name;
     formik.setValues({
       ...formik.values,
+      place_name: search,
       location: {
         type: "Point",
         coordinates: [lng, lat],
-      }
+      },
     });
+    setRestaurantDetails({ ...restaurantDetails, ["place_name"]: search });
     setLat(lat);
     setLng(lng);
     setLocation(search);
     setSuggestions([]);
   };
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const fileInputFeaturedRef = useRef<HTMLInputElement>(null); 
 
-  const handleRemoveImage = () => {
-    formik.setFieldValue("secondaryImages", null); 
-    setSecondaryImage({})
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  }
-    
+  // Reference for file input to clear value
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputFeaturedRef = useRef<HTMLInputElement>(null);
+
+  // Clear featured image
   const handleRemoveFeaturedImage = () => {
-    formik.setFieldValue("featuredImage", null);  
-    setImage({})
+    formik.setFieldValue("featuredImage", null);
+    setImage(null);
     if (fileInputFeaturedRef.current) {
-      fileInputFeaturedRef.current.value = '';
+      fileInputFeaturedRef.current.value = "";
     }
-  }
-  const handleInputContactChange = (e : React.ChangeEvent<HTMLInputElement>)=>{
-    const {name , value} = e.target;
-    setRestaurantDetails({...restaurantDetails,[name] : value});
-    formik.setFieldValue("contact" ,value);
   };
 
-  const handleInputRestaurantNameChange = (e : React.ChangeEvent<HTMLInputElement>)=>{
-    const {name , value} = e.target;
-    setRestaurantDetails({...restaurantDetails,[name] : value});
-    formik.setFieldValue("restaurantName" ,value);
-  }
-  
-  
+  // Clear secondary image
+  const handleRemoveImage = () => {
+    formik.setFieldValue("secondaryImages", null);
+    setSecondaryImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // Handle change of contact input
+  const handleInputContactChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setRestaurantDetails({ ...restaurantDetails, [name]: value });
+    formik.setFieldValue(name, value);
+  };
+
+  // Handle change of restaurant name input
+  const handleInputRestaurantNameChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    setRestaurantDetails({ ...restaurantDetails, [name]: value });
+    formik.setFieldValue(name, value);
+  };
+
+  // Handle change of table rate input
+  const handleTableRate = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setRestaurantDetails({ ...restaurantDetails, [name]: value });
+    formik.setFieldValue(name, value);
+  };
+
+  // Handle change of address input
+  const handleAddress = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setRestaurantDetails({ ...restaurantDetails, [name]: value });
+    formik.setFieldValue(name, value);
+  };
+
+  // Handle change of description input
+  const handleDescription = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setRestaurantDetails({ ...restaurantDetails, [name]: value });
+    formik.setFieldValue(name, value);
+  };
+
+  // Handle change of opening time input
+  const handleOpeningTime = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setRestaurantDetails({ ...restaurantDetails, [name]: value });
+    formik.setFieldValue(name, value);
+  };
+
+  // Handle change of closing time input
+  const handleClosingTime = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setRestaurantDetails({ ...restaurantDetails, [name]: value });
+    formik.setFieldValue(name, value);
+  };
+
+  const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLocation(value);
+    setRestaurantDetails({ ...restaurantDetails, [name]: value });
+    try {
+      const data = await getLocations(e.target.value);
+      setSuggestions(data);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    }
+  };
+
   return (
     <div className="h-full pt-7 mt-32  mx-auto">
-      <Toaster position="top-center"/>
+      <Toaster position="top-center" />
       <div className="flex justify-center pb-10">
         <div className="w-full md:w-[800px] bg-white shadow-lg shadow-red-200 rounded-lg pb-10">
           <h1 className="p-5 text-2xl font-bold text-center flex px-16 ">
@@ -190,7 +258,7 @@ const RestaurantDetails = () => {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block ">Restaurant name</label>
+                <label className="block">Restaurant name</label>
                 <input
                   type="text"
                   placeholder="Restaurant name"
@@ -244,7 +312,8 @@ const RestaurantDetails = () => {
                   type="text"
                   placeholder="Address"
                   className="input input-bordered input-warning w-full max-w-xs"
-                  {...formik.getFieldProps("address")}
+                  name="address"
+                  onChange={handleAddress}
                   value={restaurantDetails.address}
                 />
                 {formik.touched.address && formik.errors.address && (
@@ -260,7 +329,8 @@ const RestaurantDetails = () => {
                 type="text"
                 placeholder="Description"
                 className="input input-bordered input-warning w-full max-w-[720px]"
-                {...formik.getFieldProps("description")}
+                name="description"
+                onChange={handleDescription}
                 value={restaurantDetails.description}
               />
               {formik.touched.description && formik.errors.description && (
@@ -275,14 +345,15 @@ const RestaurantDetails = () => {
                 <div className="flex flex-col lg:w-[500px] w-[300px]">
                   <input
                     type="text"
-                    value={location}
-                    placeholder="Location"
+                    value={restaurantDetails.place_name}
+                    placeholder="place_name"
                     className="input input-bordered input-warning w-[300px] max-w-sm lg:max-w-[500px]"
+                    name="place_name"
                     onChange={handleChange}
                   />
-                  {formik.touched.location && formik.errors.location && (
+                  {formik.touched.place_name && formik.errors.place_name && (
                     <div className="text-red-500 text-sm pt-2">
-                      {formik.errors.location.type}
+                      {formik.errors.place_name}
                     </div>
                   )}
                   {suggestion && (
@@ -310,7 +381,8 @@ const RestaurantDetails = () => {
                   <input
                     type="time"
                     className="input input-bordered input-error h-10"
-                    {...formik.getFieldProps("openingTime")}
+                    name="openingTime"
+                    onChange={handleOpeningTime}
                     value={restaurantDetails.openingTime}
                   />
                   {formik.touched.openingTime && formik.errors.openingTime && (
@@ -324,7 +396,8 @@ const RestaurantDetails = () => {
                   <input
                     type="time"
                     className="input input-bordered input-error h-10 pt-2"
-                    {...formik.getFieldProps("closingTime")}
+                    name="closingTime"
+                    onChange={handleClosingTime}
                     value={restaurantDetails.closingTime}
                   />
                   {formik.touched.closingTime && formik.errors.closingTime && (
@@ -341,7 +414,8 @@ const RestaurantDetails = () => {
                 type="text"
                 placeholder="399"
                 className="input input-bordered input-warning w-44 max-w-xs"
-                {...formik.getFieldProps("TableRate")}
+                name="TableRate"
+                onChange={handleTableRate}
                 value={restaurantDetails.TableRate}
               />
               {formik.touched.TableRate && formik.errors.TableRate && (
@@ -353,23 +427,30 @@ const RestaurantDetails = () => {
             <div className="pt-5 pb-5 relative">
               <label>Featured image</label>
               <br />
-              <img className='w-[300px]' src={restaurantDetails.featuredImage} alt="" />
-              {formik.values.featuredImage && !formik.errors.featuredImage && (
-                <>
-                <PreviewImage file={image} />
-                <div className="absolute top-8 left-[285px]">
-                <button onClick={handleRemoveFeaturedImage}>
-                  <CiCircleRemove
-                    size={25}
-                    className="text-white bg-red-500 rounded-2xl"
-                  />
-                </button>
-              </div>
-                </>
+              {restaurantDetails.featuredImage && (
+                <img
+                  className="w-[300px]"
+                  src={restaurantDetails.featuredImage}
+                  alt="Featured"
+                />
               )}
-
+              {formik.values.featuredImage &&
+                !restaurantDetails.featuredImage &&
+                !formik.errors.featuredImage && (
+                  <>
+                    <PreviewImage file={image} />
+                    <div className="absolute top-8 left-[285px]">
+                      <button onClick={handleRemoveFeaturedImage}>
+                        <CiCircleRemove
+                          size={25}
+                          className="text-white bg-red-500 rounded-2xl"
+                        />
+                      </button>
+                    </div>
+                  </>
+                )}
               <input
-               ref={fileInputFeaturedRef} 
+                ref={fileInputFeaturedRef}
                 type="file"
                 name="featuredImage"
                 className="file-input file-input-bordered file-input-accent w-full max-w-xs mt-3"
@@ -384,28 +465,34 @@ const RestaurantDetails = () => {
             <div className="pt-5 pb-5 relative">
               <label>Secondary image</label>
               <br />
-              <img className='w-[300px]' src={restaurantDetails.secondaryImages} alt="" />
+              {restaurantDetails.secondaryImages && (
+                <img
+                  className="w-[300px]"
+                  src={restaurantDetails.secondaryImages}
+                  alt="Secondary"
+                />
+              )}
               {formik.values.secondaryImages &&
-                !formik.errors.secondaryImages && (
+                !formik.errors.secondaryImages &&
+                !restaurantDetails.featuredImage && (
                   <>
-                  <SecondaryImages files={secondaryImage} />
-                  <div className="absolute top-8 left-[285px]">
-                  <button onClick={handleRemoveImage}>
-                  <CiCircleRemove
-                    size={25}
-                    className="text-white bg-red-500 rounded-2xl"
-                  />
-                </button>
-              </div>
-              </>
+                    <SecondaryImages files={secondaryImage} />
+                    <div className="absolute top-8 left-[285px]">
+                      <button onClick={handleRemoveImage}>
+                        <CiCircleRemove
+                          size={25}
+                          className="text-white bg-red-500 rounded-2xl"
+                        />
+                      </button>
+                    </div>
+                  </>
                 )}
               <input
-               ref={fileInputRef}
+                ref={fileInputRef}
                 type="file"
                 className="file-input file-input-bordered file-input-accent w-full max-w-xs mt-3"
                 onChange={handleSecondaryImageChange}
               />
-              
               {formik.touched.secondaryImages &&
                 formik.errors.secondaryImages && (
                   <div className="text-red-500 pt-2 text-sm">
@@ -413,7 +500,6 @@ const RestaurantDetails = () => {
                   </div>
                 )}
             </div>
-
             <div className="flex justify-center">
               <button
                 type="submit"

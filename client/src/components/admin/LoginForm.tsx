@@ -1,19 +1,25 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import loginImageAdmin from "../../assets/login-admin.jpg";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { adminLogin } from "../../services/api";
+import {useDispatch} from "react-redux";
 import useAdminLogin from "../../hooks/useAdminLogin";
+import { setUser } from "../../redux/user/userSlice";
+import { localStorageSetItem } from "../../utils/localStorageImpl";
 
 
 interface Credentials {
   email: string;
   password: string;
-}
+}   
 
 const AdminLogin: FC = () => {
+  // const {error , login , loading} = useAdminLogin();
   const navigate = useNavigate();
-  const {error , login , loading} = useAdminLogin();
+  const dispatch = useDispatch();
+  const [erroMessage , setError] = useState<string>("")
+  const [loading , setLoading] = useState<boolean>(false)
   const validate = (values: Credentials) => {
     const errors: Partial<Credentials> = {};
 
@@ -41,7 +47,24 @@ const AdminLogin: FC = () => {
     },
     validate,
     onSubmit: async (credentials) => {
-      await login(credentials)
+      setLoading(true)
+       adminLogin(credentials).then((res)=>{
+        const {username , _id , role} = res.data.user;
+        const {refreshToken , token} = res.data;
+        dispatch(setUser({
+          isAuthenticated : true,
+          name : username,
+          role : role,
+          id : _id
+        }))
+        localStorageSetItem("accessToken",token);
+        setLoading(false);
+        navigate("/admin/")
+       }).catch((response)=>{
+        console.log(response)   
+        setLoading(false)
+        setError(response?.data?.message)
+       })
     },
   });
 
@@ -57,8 +80,8 @@ const AdminLogin: FC = () => {
           <h1 className="text-3xl font-bold text-white pb-24">
             Welcome Admin
           </h1>
-         {error && (
-          <div className="text-red-500">{error}</div>
+         {erroMessage && (
+          <div className="text-red-500">{erroMessage}</div>
          )}
           <form className="pb-16" onSubmit={formik.handleSubmit}>
             <label className="block pb-2 text-white font-bold text-lg">

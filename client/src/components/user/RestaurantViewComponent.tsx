@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import GoogleMap from "../GoogleMap";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { IoMdTimer } from "react-icons/io";
 import { FaLocationDot } from "react-icons/fa6";
 import { BsBookmarkCheckFill } from "react-icons/bs";
@@ -11,6 +11,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { SiGooglecalendar } from "react-icons/si";
 import SlotConfrimationModal from "./shared/SlotConfrimationModal";
+import { getRestaurantTableSlot } from "../../services/api";
+import { tableTimeSlots } from "../../types/restaurantTypes";
+import { getTodayDate } from "../../utils/dateValidateFunctions";
 
 interface RestaurantType {
   email: string;
@@ -27,6 +30,7 @@ interface RestaurantType {
   TableRate: string;
   secondaryImages: string;
   featuredImage: string;
+  _id?: string;
 }
 const settings = {
   dots: true,
@@ -42,6 +46,15 @@ const RestaurantViewComponent = () => {
   const [restaurantDetails, setRestaurantDetails] = useState<RestaurantType>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSaved, setIsSave] = useState<boolean>(true);
+  const [selectedGuests, setSelectedGuests] = useState<string>("");
+  const [timeSlot, setTimeSlots] = useState<tableTimeSlots[]>([]);
+  const [tableId, setTableId] = useState<string>();
+  const [timeSlotId, setTImeSlotId] = useState<string>();
+  const [time, setTime] = useState<string>("");
+  const [date, setDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  });
   const { restaurantId } = useParams();
 
   useEffect(() => {
@@ -61,19 +74,51 @@ const RestaurantViewComponent = () => {
     setIsSave(!isSaved);
   };
 
-  const toggeleModal = (id: string) => {
+  const toggleModal = (
+    slotStartTime: string,
+    tableId: string,
+    slotId: string
+  ) => {
+    setTime(slotStartTime);
+    setTableId(tableId);
     setIsModalOpen(!isModalOpen);
+    setTImeSlotId(slotId);
   };
-  const array = ["1", "2"];
+
+  const handleDate = (e: ChangeEvent<HTMLInputElement>) => {
+    setDate(e.target.value);
+  };
+  const handleGuests = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedGuests(e.target.value);
+  };
+
+  useEffect(() => {
+    if (selectedGuests && date) {
+      getRestaurantTableSlot(restaurantId, date, selectedGuests)
+        .then((res) => {
+          console.log(res.TimeSlots);
+
+          setTimeSlots(res.TimeSlots);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [date, selectedGuests, restaurantId]);
 
   return (
     <>
       <div className="mx-16 mt-16 mb-4  h-[750px] w-full flex flex-row gap-3 ">
         <div>
           <SlotConfrimationModal
-            setShowModal={toggeleModal}
+            setShowModal={toggleModal}
             isModalOpen={isModalOpen}
             restaurantDetails={restaurantDetails}
+            time={time}
+            selectedGuests={selectedGuests}
+            date={date}
+            tableId={tableId}
+            timeSlotId={timeSlotId}
           />
         </div>
         {restaurantDetails && (
@@ -84,15 +129,16 @@ const RestaurantViewComponent = () => {
                   <Slider {...settings}>
                     <img
                       src={restaurantDetails.featuredImage}
-                      alt=""
-                      className="w-[700px] h-[400px]"
+                      alt="restaurantImage"
+                      className="w-[700px] h-[400px]  transition duration-500 ease-in-out hover:scale-105  cursor-pointer"
                     />
+
                     {restaurantDetails.secondaryImages && (
                       <div className="bg-white">
                         <img
                           src={restaurantDetails.secondaryImages}
                           alt=""
-                          className="w-full h-[400px]"
+                          className="w-full h-[400px] transition duration-500 ease-in-out hover:scale-105  cursor-pointer"
                         />
                       </div>
                     )}
@@ -116,7 +162,7 @@ const RestaurantViewComponent = () => {
                     </div>
                     <p className=" font-medium text-neutral-800 flex gap-2">
                       <FaLocationDot size={20} />
-                      {restaurantDetails.address}, {restaurantDetails.address}
+                      {restaurantDetails.address}
                     </p>
                     <div className="font-medium text-neutral-800 items-center flex gap-2">
                       <IoMdTimer size={20} />
@@ -146,8 +192,7 @@ const RestaurantViewComponent = () => {
                     Description{" "}
                   </p>
                   <p className=" font-medium text-neutral-700 pl-10">
-                    Villagio restaurant is the one and only serving the best
-                    cuisines
+                    {restaurantDetails.description}
                   </p>
                 </div>
 
@@ -169,6 +214,9 @@ const RestaurantViewComponent = () => {
                           <input
                             type="date"
                             className="w-full rounded-r-lg h-14 p-5 bg-white-300 shadow-xl shadow-neutral-300 outline-none"
+                            value={date}
+                            onChange={handleDate}
+                            min={getTodayDate()}
                           />
                         </div>
                       </div>
@@ -182,13 +230,16 @@ const RestaurantViewComponent = () => {
                           <select
                             id="table-slots"
                             className="bg-gray-50 border border-gray-300  font-semibold text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none"
+                            value={selectedGuests}
+                            onChange={handleGuests}
                           >
-                            <option selected disabled>
+                            <option selected disabled value="">
                               No of Guests
                             </option>
-                            <option value="second">2 Guests</option>
-                            <option value="third"> 4 Guests</option>
-                            <option value="fourth">6 Guests</option>
+                            <option value="2">2 Guests</option>
+                            <option value="4"> 4 Guests</option>
+                            <option value="6">6 Guests</option>
+                            <option value="8">8 Guests</option>
                           </select>
                         </div>
                       </div>
@@ -198,18 +249,22 @@ const RestaurantViewComponent = () => {
                         Select Time
                       </p>
                       <div className="flex flex-wrap gap-5 w-80 h-36 overflow-auto ">
-                        {array && array.length > 1 ? (
-                          array.map((value, index) => {
-                            return (
-                              <p
-                                className="bg-blue-500 p-1 h-8 w-20 text-center font-bold cursor-pointer text-white rounded-md "
-                                key={index}
-                                onClick={() => toggeleModal(value)}
-                              >
-                                {value}:00PM
-                              </p>
-                            );
-                          })
+                        {timeSlot && timeSlot.length > 0 ? (
+                          timeSlot.map((value, index: number) => (
+                            <p
+                              key={index}
+                              className="bg-blue-500 p-1 h-8 w-20 text-center font-bold cursor-pointer text-white rounded-md"
+                              onClick={() =>
+                                toggleModal(
+                                  value.slotStartTime,
+                                  value.tableId,
+                                  value._id
+                                )
+                              }
+                            >
+                              {value.slotStartTime}
+                            </p>
+                          ))
                         ) : (
                           <div className="flex flex-col">
                             <div className="mx-16 m-6">
@@ -228,7 +283,7 @@ const RestaurantViewComponent = () => {
                 </form>
               </div>
             </div>
-            <div className="h-full w-1/3 bg-white rounded-xl shadow-lg ">
+            <div className="max-h-auto  bg-white rounded-xl shadow-lg flex flex-col">
               <div className="w-[400px] p-5 flex flex-col">
                 <h1 className="text-2xl font-bold pb-5">
                   Here to find location
@@ -239,15 +294,15 @@ const RestaurantViewComponent = () => {
                   longitude={restaurantDetails.location.coordinates[0]}
                 />
 
-                <div className="flex flex-col justify-center pt-10">
+                <div className="flex flex-col  justify-center pt-10">
                   <p className="text-blue-500 font-semibold underline">
                     Get Direction
                   </p>
                   <p className="text-blue-500 font-semibold underline">
-                    Contact : 66782618260
+                    Contact : {restaurantDetails.contact}
                   </p>
                   <p className="text-blue-500 font-semibold underline">
-                    Email : ZenDinout@gmail.com
+                    Email : {restaurantDetails.email}
                   </p>
                 </div>
               </div>
@@ -260,23 +315,3 @@ const RestaurantViewComponent = () => {
 };
 
 export default RestaurantViewComponent;
-
-{
-  /* <p className="pt-8 pl-10 text-base font-bold pb-2">Menu</p>
-
-<a
-href="#"
-className="p-3 py-10 bg-local bg-gray-500 bg-center bg-no-repeat bg-cover rounded-lg bg-blend-multiply  hover:bg-blend-darken"
-style={{
-  backgroundImage:
-    "url(https://im1.dineout.co.in/images/uploads/restaurant/sharpen/2/h/g/m23709-15549843245caf2d8465312.jpg?tr=tr:n-xlarge)",
-}}
->
-<button
-  type="button"
-  className="inline-flex items-center px-2 py-1.5 text-xs font-medium text-center text-orange rounded-lg text-white   focus:ring-4 focus:outline-none focus:ring-gray-700"
->
-  menu
-</button>
-</a> */
-}

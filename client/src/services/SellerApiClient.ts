@@ -1,6 +1,5 @@
-import axios from "axios";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-axios.defaults.baseURL = API_BASE_URL;
+import axios from "../api/axios";
+import { tableSlotTypes } from "../types/restaurantTypes";
 
 export interface credentials {
   restaurantName: string;
@@ -15,9 +14,9 @@ export interface credentials {
   secondaryImages: string;
 }
 
-export const sellerRegisteration = async (datas : credentials )=>{
+export const sellerRegisteration = async (datas : credentials , restaurantId : string )=>{
      try{
-       const {data : {  message}} = await axios.put('/restaurant/restaurant-updation',{datas});
+       const {data : {  message}} = await axios.put('/restaurant/restaurant-updation',{datas , restaurantId});
        return {data :{ message}}
       } catch (error) {
         console.log(error);
@@ -47,6 +46,7 @@ export const imageCloudUpload = async (Image : string) =>{
       formData.append("file", Image);
       formData.append("upload_preset", "xkitcf7p");
       try {
+        console.log(formData);
         const res = await fetch(
           "https://api.cloudinary.com/v1_1/dneezqmgu/image/upload",
           {
@@ -62,9 +62,7 @@ export const imageCloudUpload = async (Image : string) =>{
         }
       } catch (error) {
         console.error("Upload error:", error);
-      }
-
-      
+      }   
 }
 
 export const sellerLogin = async (data: Partial<credentials>) => {
@@ -78,3 +76,51 @@ export const sellerLogin = async (data: Partial<credentials>) => {
     throw error;
   }
 };
+
+
+export const tablesSlotCreationApi = async(tableAddingDatas : tableSlotTypes , restaurantId : string)=>{
+  try{
+    const {data : {message , status}} = await axios.post("/restaurant/add-table" , {tableAddingDatas , restaurantId }); 
+    return {data : {message , status}};
+  }catch(error){
+    console.log(error);
+    throw error;
+  }
+}
+
+export const getTablesSlots = async(restaurantId : string)=>{
+  try{
+    const {data : {message , tableSlotDatas}} = await axios.get(`/restaurant/table-lists/${restaurantId}`); 
+    return {data : {message , tableSlotDatas}};
+  }catch(error){
+    console.log(error);  
+    throw error;
+  }
+}
+export const getAddedSlots = async(tableId : string)=>{
+  try{
+    const {data : {message , tableSlotDatas}} = await axios.get(`/restaurant/table-slot-list/${tableId}`); 
+    return {data : {message , tableSlotDatas}};
+  }catch(error){
+    console.log(error);    
+    throw error;
+  }
+}
+export const tablesSlotTimeCreatingApi = async(tableSlotTimeData : object , tableId : string | undefined)=>{
+  try{
+    const {data : {message , addedTableSlotTime}} = await axios.post(`/restaurant/table-slot-add/`,{tableSlotTimeData , tableId}); 
+    return {data : {message , addedTableSlotTime}};
+  }catch(error){
+    console.log(error);   
+    throw error;
+  }
+}
+export const deleteTableTimeSlot = async(tableId : string)=>{
+  try{
+    const {data : {message , addedTableSlotTime}} = await axios.put(`/restaurant/table-slot-delete/`,{tableId}); 
+    return {data : {message , addedTableSlotTime}};
+  }catch(error){
+    console.log(error);    
+    throw error;
+  }
+}

@@ -1,5 +1,5 @@
 // import axios from "axios";
-import axios from "axios";
+import axios from "../../api/axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 axios.defaults.withCredentials = true;
@@ -8,7 +8,7 @@ const RestaurantMangement: React.FC = () => {
   const [restaurant, setRestaurant] = useState([]);
   useEffect(() => {  
     const fetchData = async () => {  
-    await axios.get("http://localhost:3000/admin/restaurants-approval-lists").then((response)=>{
+    await axios.get("/admin/restaurants-approval-lists").then((response)=>{
       setRestaurant(response.data.restaurants)
     }).catch((error)=>{
       console.log(error); 

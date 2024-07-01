@@ -2,6 +2,9 @@ import React from 'react';
 import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { adminLogout } from '../../../services/adminApiClient';
+import { useDispatch } from "react-redux";
+import { clearUser } from '../../../redux/user/userSlice';
+import logout from '../../../utils/Logout';
 
 
 
@@ -9,12 +12,14 @@ import { adminLogout } from '../../../services/adminApiClient';
 const LogoutButton : React.FC = ()=>{
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     function hanldeLogin() {
-        adminLogout().then(()=>{
+      dispatch(clearUser());
+      logout("admin logout")
+      adminLogout().then(()=>{
             queryClient.invalidateQueries("validateAToken");
-
-        }).catch((error)=>{
+      }).catch((error)=>{
 console.log(error)
         })
         navigate("/admin/login");

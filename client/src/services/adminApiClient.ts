@@ -1,16 +1,10 @@
-import axios from "axios";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-axios.defaults.baseURL = API_BASE_URL;
+import axios from "../api/axios";
 axios.defaults.withCredentials = true;
-
-
-
-
 
 export const axiosGetUser = async()=>{
     try{
         const {data : {users , message}} = await axios.get("/admin/users-list");
-         console.log({users , message})
+         console.log({users , message}) 
           return { users , message};
     }catch(error : any){
         console.log(error.message); 

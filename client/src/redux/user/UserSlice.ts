@@ -1,32 +1,32 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
-    currentUser : null ,
-    error : null,
-    loading : false
+interface userState {
+  name: string | null;
+  isAuthenticated: boolean | null;
+  role: string | null;
+  id?: string | null;
 }
 
+const initialState: userState = {
+  name: null,
+  isAuthenticated: null,
+  role: null,
+  id: null,
+};
+
 const userSlice = createSlice({
-    name : "user",
-    initialState,   
-    reducers :{
-      SignInStart : (state)=>{
-        state.loading = true;
-        state.error = null
-      },
-      signInSuccess : (state , action)=>{
-        state.currentUser = action.payload;
-        state.loading = false;
-        state.error = null;
-      },
-      signInFailure : (state , action)=>{
-        state.loading = false;
-        state.error = action.payload;
-      }
-    }
+  name: "userSlice",
+  initialState,
+  reducers: {
+    setUser: (state, action: PayloadAction<userState>) => {
+      return { ...state, ...action.payload };
+    },
+
+    clearUser: (state) => {
+      return initialState
+    },
+  },
 });
 
-export const {SignInStart , signInFailure , signInSuccess} = userSlice.actions;
-
-
+export const { setUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;

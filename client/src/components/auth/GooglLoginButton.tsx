@@ -1,13 +1,15 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
+import axiosInstance from "../../api/axios";
 axios.defaults.withCredentials = true;
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { localStorageSetItem } from "../../utils/localStorageImpl";
 import {toast} from 'react-hot-toast';
 import { useDispatch } from "react-redux";
-import { signInFailure, signInSuccess } from "../../redux/user/UserSlice";
+import { setUser } from "../../redux/user/userSlice";
+
 const PASS_KEY = import.meta.env.VITE_API_BCRYPT_PASS_KEY;
 
 
@@ -25,27 +27,36 @@ const GoogleLoginButton = ({label}:{label : string}) => {
           withCredentials: false,
         })
         if(label === "In"){
-          await axios.post("http://localhost:3000/api/login",{email : res.data.email , password : res.data.sub + PASS_KEY , username : res.data.given_name }).then((res)=>{
+          await axiosInstance.post("/api/login",{email : res.data.email , password : res.data.sub + PASS_KEY , username : res.data.given_name }).then((res)=>{
             console.log(res)
-            localStorageSetItem("%%register%%" , "true");
-            dispatch(signInSuccess(res.data));
-            queryClient.invalidateQueries("validateToken");
+            const {username , role , _id} = res.data.user
+            const {token , refreshToken } = res.data
+            dispatch(setUser({
+              isAuthenticated : true,
+              name : username,
+              role : role,
+              id: _id,
+            }));
+            localStorageSetItem("accessToken", token);
             navigate("/");
             }).catch((error)=>{
               console.log(error);
-              dispatch(signInFailure(error.response.data.message));
-              toast.error(error.response.data.message);
             })
         }else{
-          await axios.post("http://localhost:3000/api/google-login",{username : res.data.given_name , email : res.data.email , password : res.data.sub + PASS_KEY}).then((res)=>{
+          await axiosInstance.post("/api/google-login",{username : res.data.given_name , email : res.data.email , password : res.data.sub + PASS_KEY}).then((res)=>{
             console.log(res)
-            dispatch(signInSuccess(res.data));
-            queryClient.invalidateQueries("validateToken");
+            const {token , refreshToken } = res.data
+            const {username , role , _id} = res.data.user
+            dispatch(setUser({
+              isAuthenticated : true,
+              name : username,
+              role : role,
+              id: _id,
+            }));
+            localStorageSetItem("accessToken", token);
             navigate("/");
             }).catch((error)=>{
               console.log(error)
-              dispatch(signInFailure(error.response.data.message));
-              toast.error(error.response.data.message);
             })
         }
       }catch(error){

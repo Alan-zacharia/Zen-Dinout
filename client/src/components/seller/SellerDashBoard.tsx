@@ -1,8 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SellerChartOne from "./SellerChartOne";
 import ChartTwo from "./ChartTwo";
+import { BookingDetailsType } from "../../types/restaurantTypes";
+import axiosInstance from "../../api/axios";
+import { Link } from "react-router-dom";
 
 const SellerDashBoard = () => {
+  const bookigId = "1234555566";
+  const [bookingDetails, setBookingDetails] = useState<BookingDetailsType[]>(
+    []
+  );
+  useEffect(() => {
+    axiosInstance
+      .get(`/restaurant/reservations/${bookigId}`)
+      .then((res) => {
+        console.log(res);
+        setBookingDetails(res.data.bookingDetails);
+      })
+      .catch(({ response }) => {
+        console.log(response);
+      });
+  }, [bookigId]);
   return (
     <div className="container px-4 py-8 mt-10 lg:mt-20">
       <div className="overflow-hidden">
@@ -22,7 +40,9 @@ const SellerDashBoard = () => {
           </div>
         </div>
         <div className="pt-5">
-          <h1 className="text-xl font-bold text-center flex justify-start pt-5">Recent bookings</h1>
+          <h1 className="text-xl font-bold text-center flex justify-start pt-5">
+            Recent bookings
+          </h1>
           <div className="pt-4 overflow-x-auto shadow- shadow-black">
             <table className="table border-2 mx-auto">
               <thead>
@@ -37,28 +57,37 @@ const SellerDashBoard = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b-2 border-b-blue-200">
-                  <td>name</td>
-                  <td>Wyman-Ledner</td>
-                  <td>2:00 PM</td>
-                  <td>5/11/2024</td>
-                  <td>2</td>
-                  <td>Confirmed</td>
-                  <th>
-                    <button className="btn btn-ghost btn-xs">details</button>
-                  </th>
-                </tr>
-                <tr className="border-b-2 border-b-blue-200">
-                  <td>name</td>
-                  <td>Wyman-Ledner</td>
-                  <td>2:00 PM</td>
-                  <td>5/11/2024</td>
-                  <td>2</td>
-                  <td>Confirmed</td>
-                  <th>
-                    <button className="btn btn-ghost btn-xs">details</button>
-                  </th>
-                </tr>
+                {bookingDetails && bookingDetails.length > 0 ? (
+                  bookingDetails.map((bookingDetails) => {
+                    return (
+                      <tr className="border-b-2 border-b-blue-200">
+                        <td>{bookingDetails.bookingId}</td>
+                        <td>{bookingDetails.email}</td>
+                        <td>{bookingDetails.bookingTime}</td>
+                        <td>{bookingDetails.bookingDate}</td>
+                        <td>{bookingDetails.tableSize}</td>
+                        <td>{bookingDetails.bookingStatus}</td>
+                        <th>
+                          <Link
+                            to={`/restaurant/reservations/view/${bookingDetails.bookingId}`}
+                          >
+                            <button className="btn btn-ghost btn-xs">
+                              details
+                            </button>
+                          </Link>
+                        </th>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="text-center">
+                      <h1 className="text-xl font-bold text-gray-600">
+                        No Reservations Available
+                      </h1>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

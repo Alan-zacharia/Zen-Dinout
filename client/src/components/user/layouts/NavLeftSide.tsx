@@ -2,22 +2,29 @@ import React, { useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import getLocations from "../../../services/getPlaceApi";
 import classNames from "classnames";
+import { filterRestaurantsByLocation } from "../../../redux/restaurant/restaurantSearchSlice";
+import { useAppDispatch } from "../../../redux/store";
 
 
 const NavLeftSide = () => {
   const [suggestion, setSuggestions] = useState([]);
   const [searchItem, setSearchItem] = useState<string>("");
-
+   const dispatch = useAppDispatch();
   const handleLocationSearch = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    try{
     const searchedTerm = e.target.value;
     setSearchItem(searchedTerm);
     const data = await getLocations(searchedTerm);
     setSuggestions(data);
+  }catch(error){
+    console.log(error)
+  }
   };
   const handleInput = (suggestion : any)=>{
     setSearchItem(suggestion.place_name);
+    dispatch(filterRestaurantsByLocation(suggestion.center[1]))
     setSuggestions([])
   }
 
@@ -27,7 +34,7 @@ const NavLeftSide = () => {
      onChange={handleLocationSearch} 
      value={searchItem} 
      placeholder="Location......."/>
-    <FaLocationDot size={23} className="absolute right-12 top-2"/>
+     <FaLocationDot size={23} className="absolute right-12 top-2"/>
      {suggestion &&  (
      <ul className={classNames( suggestion.length > 1 ? "bg-white absolute w-[200px] top-12 overflow-x-auto h-52" : "" ) } >      
       {suggestion.map((suggestion : any , index : number)=>(

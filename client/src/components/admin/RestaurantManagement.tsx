@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../api/axios";
 import React, { useEffect, useState } from "react";
 import { HiOutlineSearch } from "react-icons/hi";
 
@@ -7,7 +7,7 @@ const RestaurantMangement: React.FC = () => {
   const [searchItem , setSearchItem] = useState('');
   useEffect(() => {
     axios
-      .get("http://localhost:3000/admin/restaurants-list")
+      .get("/admin/restaurants-list")
       .then((res) => {
         setRestaurant(res.data.restaurants);
       })

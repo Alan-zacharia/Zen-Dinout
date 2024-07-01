@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { Link } from "react-router-dom";
+import {useSelector} from "react-redux";
+import {RootState} from "../../redux/store";
 import axios from "../../api/axios";
 import { userTypesCredentials } from "../../types/userTypes";
 
@@ -11,19 +13,23 @@ const UserProfile: React.FC = () => {
   const [name, setName] = useState<string | undefined>(undefined);
   const [email, setEmail] = useState<string | undefined>(undefined);
   const [contact, setContact] = useState<string | undefined>(undefined);
-
+  const {isAuthenticated , role ,id} = useSelector((state : RootState)=> state.user) 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/user-profile/666ec3c4971da755495ea9bd");
-        setUserDetails(response.data.userData);
-        if (response.data.userData) {
-          setName(response.data.userData.username);
-          setEmail(response.data.userData.email);
-          setContact(response.data.userData.phone);
+        console.log(id)
+        if(isAuthenticated && role == "user"){
+          const response = await axios.get(`/api/user-profile/${id}`);
+          setUserDetails(response.data.userData);
+          if (response.data.userData) {
+            setName(response.data.userData.username);
+            setEmail(response.data.userData.email);
+            setContact(response.data.userData.phone);
+          }
         }
       } catch (error) {
-        toast.error('Something went wrong');
+        console.log(error)   
+        // toast.error(error?.response?.data?.message);
       }
     };
     fetchData();

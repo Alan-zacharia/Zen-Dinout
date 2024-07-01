@@ -1,20 +1,26 @@
 import React from 'react'
 import { Logout } from '../../services/api'
-
-
-import toast from 'react-hot-toast';
+import {useDispatch} from "react-redux";
+import {clearUser} from "../../redux/user/userSlice"
+import logout from '../../utils/Logout';
 import { useNavigate } from 'react-router-dom';
 import { localStorageRemoveItem } from '../../utils/localStorageImpl';
+
+
 const SignOutButton : React.FC = () => {
+  const dispatch = useDispatch();
     const navigate = useNavigate();
     const handleClick = ()=>{
+        dispatch(clearUser());
+        logout("You are Logouted");
+        localStorage.removeItem('accessToken');
+        navigate("/login");
         Logout().then((res)=>{
             localStorageRemoveItem("%%register%%");
             // queryClient.invalidateQueries('validateToken');
         }).catch((err)=>{
             console.log(err)
         })
-        toast.success("User Logout successfully");
         navigate("/login")
     }
   return (

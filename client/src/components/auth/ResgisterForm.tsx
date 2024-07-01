@@ -36,14 +36,14 @@ const SignupForm: React.FC = () => {
     onSubmit: async (credentials: credentials) => {
       setLoading(true)
       try{
-        const response = await axios.post('http://localhost:3000/api/generate-otp', {email : credentials.email});
+        const response = await axios.post('http://localhost:3000/api/generate-otp', {email : credentials.email , username : credentials.username , password : credentials.password});
         setLoading(false)
         setOtpFormModal(true);
         localStorageSetItem("remainingSeconds", "35");
         setOtp(response.data.otp);
       }catch(error : any){
         setLoading(false)
-        console.log(error) 
+        console.log(error)  
         if (error && error.response && error.response.data) {
           setError(error.response.data.message);
        }

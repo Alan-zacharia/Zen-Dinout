@@ -1,17 +1,22 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link , useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
+import {useDispatch, useSelector} from "react-redux";
 import { useFormik } from "formik";
 import { loginValidation } from "../../utils/validations";
-import useRestaurantLogin from "../../hooks/useRestaurantLogin";
-
+import { localStorageRemoveItem, localStorageSetItem } from "../../utils/localStorageImpl";
+import { setUser } from "../../redux/user/userSlice";
+import {restaurantLoginApi} from "../../services/api"
 interface SellerType {
   email : string;
   password : string;
 }
 const SellerLogin: React.FC = () => {
-  const {error , loading , restaurantLogin} = useRestaurantLogin();
+  const [loading , setLoading] = useState<boolean>(false);
+  const [errorMessage , setError] = useState<string>("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -19,9 +24,29 @@ const SellerLogin: React.FC = () => {
     },
     validate: loginValidation,
     onSubmit: async (values : SellerType) => {
+      setLoading(true)
       console.log(values)
      try{
-      restaurantLogin(values);
+      // restaurantLogin(values);
+      await restaurantLoginApi(values).then((res)=>{
+        const {token , refreshToken} = res.data
+        console.log(res)  
+        const {restaurantName , _id} = res.data.user
+        dispatch(setUser({
+          isAuthenticated : true,
+          name : restaurantName,
+          role : "seller",
+          id: _id,
+        }))
+        setLoading(false);
+        localStorageSetItem("accessToken", token as string);
+        navigate("/restaurant/");
+      }).catch(({response})=>{
+        console.log(response)
+        setLoading(false)
+        console.log(response?.data?.message)
+        setError(response?.data?.message);
+      })
      }catch(error){
       console.log((error as Error).message)
      }
@@ -30,12 +55,12 @@ const SellerLogin: React.FC = () => {
   return (
     <section className="h-full flex justify-center items-center ">
       <div className="w-full max-w-md p-6 bg-black h-[500px] rounded-lg shadow-md opacity-70 ">
-        <h1 className="text-xl font-bold leading-tight tracking-tight md:text-3xl text-orange-500 ">
+        <h1 className="text-xl font-bold leading-tight tracking-tight md:text-3xl text-white ">
           Restaurant Login
         </h1>
         <form className="mt-28 space-y-6" onSubmit={formik.handleSubmit}>
-        {error && (
-            <p className="text-red-500 font-bold text-lg">{error}</p>
+        {errorMessage && (
+            <p className="text-red-500 font-bold text-lg">{errorMessage}</p>
         )}
           <div className="flex flex-col gap-5 w-[400px] fixed ">
             <div className="relative">

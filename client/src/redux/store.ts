@@ -1,26 +1,34 @@
-import {combineReducers, configureStore} from "@reduxjs/toolkit";
-import userReducer from "./user/UserSlice"
-import {persistReducer , persistStore} from "redux-persist"
-import storage from "redux-persist/lib/storage"
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import restaurantsReducer from "./restaurant/restaurantSearchSlice";
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import userReducer from "./user/userSlice";
+import tableBookingReducer from "./user/tableBookingSlice";
+import { useDispatch } from "react-redux";
 
 const rootReducer = combineReducers({
-    user : userReducer
+  user: userReducer,
+  restaurant: restaurantsReducer,
+  booking: tableBookingReducer,
 });
 
-const persistConfig  = {
-    key :"root",
-    storage,
-    version : 1,
+const persistConfig = {
+  key: "root",
+  storage,
+  version: 1,
 };
 
-const  persistedReducer = persistReducer(persistConfig , rootReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-export const store = configureStore({
-  reducer : persistedReducer,
-  middleware : (getDefaultMiddleware) =>
-    getDefaultMiddleware({serializableCheck : false}),
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }),
 });
 
 export const persistor = persistStore(store);
 
-export type RootState = ReturnType<typeof store.getState>
+export default store;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();

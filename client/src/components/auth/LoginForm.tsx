@@ -1,15 +1,13 @@
 import loginImage from "../../assets/Login-image.jpg";
 import { useFormik } from "formik";
 import GoogleLoginButton from "../auth/GooglLoginButton";
-import useLogin from "../../hooks/useLogin";
 import { loginValidation } from "../../utils/validations";
 import { Link, useNavigate } from "react-router-dom";
 import { localStorageRemoveItem, localStorageSetItem } from "../../utils/localStorageImpl";
 import { useEffect, useRef , useState } from "react";
 import {useDispatch, useSelector} from "react-redux";
-import { signInFailure ,SignInStart ,signInSuccess } from "../../redux/user/UserSlice";
 import { login } from "../../services/api";
-import { RootState } from "../../redux/store";
+import { setUser } from "../../redux/user/userSlice";
 
 interface UserType {
   email: string;
@@ -18,16 +16,14 @@ interface UserType {
 
 const LoginForm: React.FC = () => {
   localStorageRemoveItem("&reset%pas%%");
-  // const { loading, loginFn } = useLogin();
   const userRef = useRef<HTMLInputElement>(null);
-
-  // const [errorMessage , setErrorMessage] = useState<string>("");
+  const [loading , setLoading] = useState<boolean>(false);
+  const [errorMessage , setError] = useState<string>("");
   useEffect(()=>{
     userRef.current?.focus() 
   },[]);
 
   const dispatch = useDispatch();
-  const {loading , error : errorMessage} = useSelector((state : RootState ) => state.user);
   const navigate = useNavigate();
 
   const formik = useFormik<UserType>({
@@ -37,23 +33,26 @@ const LoginForm: React.FC = () => {
     },
     validate: loginValidation,
     onSubmit: async (credentials: UserType) => {
-      dispatch(SignInStart());
+      setLoading(true)
       console.log(credentials);
       await login(credentials).then((res)=>{
       console.log(res.data.user);
-      dispatch(signInSuccess(res.data));
-      localStorageSetItem("%%register%%","true");
+      const {username , role , _id} = res.data.user
+      const {token , refreshToken } = res.data
+      dispatch(setUser({
+        isAuthenticated : true,
+        name : username,
+        role : role,
+        id: _id,
+      }));
+      setLoading(false)
+      localStorageSetItem("accessToken", token);
       navigate("/");
-    }).catch((error : any)=>{
-      console.log(error)
-      dispatch(signInFailure(error.response.data.message ));
+    }).catch(({response})=>{
+      setLoading(false)
+      console.log(response?.data?.message)
+      setError(response?.data?.message);
     });
-    // queryClient.invalidateQueries("validateToken");
-      // try {
-      //   loginFn(credentials);
-      // } catch (error : any) {
-      //   setErrorMessage(error.data.message)
-      // }
     },
   });
  
@@ -88,7 +87,7 @@ const LoginForm: React.FC = () => {
           </div>
           <form onSubmit={formik.handleSubmit}>
             <div className="mb-6">
-              {errorMessage && <div className="text-red-500 font-bold">{errorMessage}</div>}
+              <div className="text-red-500">{errorMessage}</div>
               <input
                 type="text"
                 placeholder="Email"
@@ -124,9 +123,9 @@ const LoginForm: React.FC = () => {
               <button
                 className="w-full bg-black text-white rounded-md py-3 text-center font-bold cursor-pointer mb-2"
                 type="submit"
-                disabled={loading}
+               disabled={loading}
               >
-              {loading ? "Loading" : "Login"}
+              {loading ? "loading" : "Login"}
               </button>
               <Link to={"/register"}>
                 <button className="w-full bg-white border border-black rounded-md py-3 text-center font-semibold cursor-pointer">

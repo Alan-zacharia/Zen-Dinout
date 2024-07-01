@@ -1,19 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import NavLeftSide from "./NavLeftSide";
 import { Link } from "react-router-dom";
-import { useAppContext } from "../../../Contexts/AppContext";
 import SignOutButton from "../../auth/SignOutButton";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 
-
-
-
 const NavBar: React.FC = () => {
-   const {currentUser} = useSelector((state : RootState)=> state.user)
-
+  const {isAuthenticated , role} = useSelector((state : RootState)=> state.user);
   return (
-    <div className="navbar bg-base-100 shadow-lg shadow-neutral-400 h-20">
+    <div className="navbar bg-base-100  shadow-neutral-400 h-20">
       <div className="navbar-start ">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -45,7 +40,7 @@ const NavBar: React.FC = () => {
             <li  className="m-5">
               <p className="text-2xl font-bold">Item 3</p>
             </li>
-            {currentUser && (
+            {isAuthenticated && (
                 <ul
                 tabIndex={0}
                 className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-80  "
@@ -104,7 +99,7 @@ const NavBar: React.FC = () => {
         </ul>
       </div>
       <div className="navbar-end xl:mr-72">
-        {currentUser ? (
+        {isAuthenticated && role == "user" ? (
           <>
             <div className="avatar cursor-pointer"> 
               <div className="w-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">

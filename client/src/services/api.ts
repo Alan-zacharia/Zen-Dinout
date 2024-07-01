@@ -1,4 +1,5 @@
 import axios from '../api/axios'
+import axiosApi from "axios";
 import { APIresponse, credentials, otpType } from '../types/userTypes';
 
 
@@ -11,7 +12,7 @@ const register = async (credentials: credentials | {}) => {
   try {
     const {
       data: { message, user, token },
-    } = await axios.post("/api/register", credentials);
+    } = await axiosApi.post("http://localhost:3000/api/register", credentials);
     return { data: { message, user, token } };
   } catch (error) {
     console.log(error);
@@ -24,12 +25,12 @@ const register = async (credentials: credentials | {}) => {
  * @param data - Object containing email and password for login
  * @returns Promise that resolves to an object containing the logged-in  user , mesage , jwt, or null if login fails
  */
-const login = async (data: Partial<credentials>): Promise<APIresponse> => {
+const login = async (data: Partial<credentials>) => {
   try {
     const {
-      data: { message, user, token },
-    } = await axios.post("/api/login", data);
-    return { data: { message, user, token } };
+      data: { message, user, token , refreshToken },
+    } = await axiosApi.post("http://localhost:3000/api/login", data);
+    return { data: { message, user, token , refreshToken } };
   } catch (error) {
     console.log(error);
     throw error;
@@ -40,12 +41,12 @@ const login = async (data: Partial<credentials>): Promise<APIresponse> => {
  * @param data - Object containing email and password for login
  * @returns Promise that resolves to an object containing the logged-in  user , mesage , jwt, or null if login fails
  */
-const restaurantLoginApi = async (data: Partial<credentials>): Promise<APIresponse> => {
+const restaurantLoginApi = async (data: Partial<credentials>) => {
   try {
     const {
-      data: { message, user, token },
+      data: { message, user, token  , refreshToken },
     } = await axios.post("/restaurant/restaurant-login", data);
-    return { data: { message, user, token } };
+    return { data: { message, user, token , refreshToken } };
   } catch (error) {
     console.log(error); 
     throw error;
@@ -57,14 +58,14 @@ const restaurantLoginApi = async (data: Partial<credentials>): Promise<APIrespon
  * @param data - Object containing email and password for login
  * @returns Promise that resolves to an object containing the logged-in  admin , mesage , jwt, or null if login fails
  */
-const adminLogin = async (data: Partial<credentials>): Promise<APIresponse> => {
+const adminLogin = async (data: Partial<credentials>) => {
   try {
     const {
-      data: { message, user, token },
+      data: { message, user, token ,  refreshToken },
     } = await axios.post("/admin/login", data);
-    return { data: { message, user, token } };
+    return { data: { message, user, token , refreshToken} };
   } catch (error) {
-    console.log(error);
+    console.log(error); 
     throw error;
   }
 };
@@ -114,6 +115,18 @@ const validateToken = async () => {
     }
     return response;
 };
+
+const getRestaurantTableSlot = async (restaurantId : string | undefined , date : string , selectedGuests : string)=>{
+  try {
+    const { data: { TimeSlots },} = await axios.post("/api/restaurant-slots",{restaurantId , date , selectedGuests});
+    console.log(TimeSlots);
+    return { TimeSlots };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 const Logout = async () => {
   const response = await axios.post("/api/logout");
   if (response.status !== 200) {
@@ -131,5 +144,6 @@ export {
   resendOtp,
   OtpSend,
   validateToken,
+  getRestaurantTableSlot,
   Logout
 };

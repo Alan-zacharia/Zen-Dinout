@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
-import { Link } from "react-router-dom";
+import { Link , useNavigate } from "react-router-dom";
 import signupLogo from "../../assets/SignupPage.jpg";
 import { SellerRegisterationValidate } from "../../utils/validations";
 import useRegister from "../../hooks/useRegisteration";
-import axios from "axios";
+import axios from "../../api/axios";
 import {Toaster , toast} from "react-hot-toast"
 
 const SellerRegistration: React.FC = () => {
+  const navigate = useNavigate();
   const [error , setError] = useState('')
   const formik = useFormik({
     initialValues: {
@@ -19,13 +20,15 @@ const SellerRegistration: React.FC = () => {
     validationSchema: SellerRegisterationValidate,
     onSubmit: async (credentials) => {
       try {
-        console.log(credentials); 
+
         const data = await axios
           .post("/restaurant/restaurant-regiseteration", { credentials })
           .then((res) => {
             
             toast.success("Message sent to your email");
-  
+            setTimeout(()=>{
+              navigate("/restaurant/login");
+            },2000)
           })
           .catch((error : any) => {
             setError(error.response.data.message)
