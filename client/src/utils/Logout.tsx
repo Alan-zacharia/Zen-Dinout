@@ -2,8 +2,8 @@ import store from "../redux/store";
 import { clearUser } from "../redux/user/userSlice";
 import toast from "react-hot-toast"
 
-const logout = (message: string): void => {
+const  logout = (message: string): void => {
   store.dispatch(clearUser());
-  toast.error(message)
+  toast.success(message)
 };
 export default logout;

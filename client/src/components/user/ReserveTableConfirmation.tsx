@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { HiUsers } from "react-icons/hi";
 import { RiCalendar2Fill } from "react-icons/ri";
 import { loadStripe } from "@stripe/stripe-js";
@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { IoTimeSharp } from "react-icons/io5";
 import { MdTableRestaurant } from "react-icons/md";
+import { localStorageSetItem } from "../../utils/localStorageImpl";
 interface userDatatype {
   email: string;
   username: string;
@@ -14,19 +15,21 @@ interface userDatatype {
 }
 
 const ReserveTableConfirmation = () => {
-  const { id  } = useSelector((state: RootState) => state.user);
+  const { id } = useSelector((state: RootState) => state.user);
   const { bookingDetails } = useSelector((state: RootState) => state.booking);
+  const [paymentMethod, setPaymentMethod] = useState("Online");
   const [userData, setUser] = useState<userDatatype | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [tableData, setTableData] = useState<{
-    tableNumber : string;
-    tableCapacity : number;
-    restaurantId : string;
+    tableNumber: string;
+    tableCapacity: number;
+    restaurantId: string;
   }>();
   useEffect(() => {
     axios
-      .get(`/api/user-details/${id}`)
+      .get(`/api/user-profile/${id}`)
       .then((res) => {
-        console.log(res.data.userData);
+        console.log(res.data.userData); 
         setUser(res.data.userData);
       })
       .catch(({ response }) => {
@@ -38,49 +41,54 @@ const ReserveTableConfirmation = () => {
     axios
       .get(`/api/restaurant-table-details/${bookingDetails?.tableId}`)
       .then((res) => {
-        console.log(res.data.restaurantTable);
+        console.log(res.data.restaurantTable); 
         setTableData(res.data.restaurantTable);
       })
       .catch(({ response }) => {
         console.log(response?.data?.message);
       });
   }, []);
-  
+
   const restaurantDatas = {
     restaurantId: bookingDetails?.restaurantId,
     price: bookingDetails?.tableRate,
-    Quantity: "1",
+    Capacity: tableData?.tableCapacity,
     table: tableData?.tableNumber,
   };
   const makePayment = async () => {
-    const stripe = await loadStripe(
-     import.meta.env.VITE_API_STRIPE_KEY 
-    );
+    const stripe = await loadStripe(import.meta.env.VITE_API_STRIPE_KEY);
     await axios
       .post("/api/create-payment", {
         restaurantDatas,
-        userEmail: userData?.email,
-        userUsername: userData?.username,
-        restaurantId : tableData?.restaurantId,
-        tableSlotId  : bookingDetails?.timeSlotId 
+        email: userData?.email,
+        name: userData?.username,
+        restaurantId: tableData?.restaurantId,
+        tableSlotId: bookingDetails?.timeSlotId,
+        paymentMethod : paymentMethod
       })
       .then((res) => {
+        localStorage.removeItem("%statphdyw%");
+        localStorage.setItem("%stat%","true");
         console.log(res);
         stripe?.redirectToCheckout({
           sessionId: res.data.sessionId,
         });
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error); 
       });
   };
-  const calculatedAmount = () =>{
-    let amount : number = 199;
-    if(bookingDetails){
-       amount = parseInt(bookingDetails.tableRate) * bookingDetails.guests
+  const calculatedAmount = () => {
+    let amount: number = 199;
+    if (bookingDetails) {
+      amount = parseInt(bookingDetails.tableRate) * bookingDetails.guests;
     }
     return amount;
-  }
+  };
+  const handleMethodChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
+    setPaymentMethod(e.target.value)
+  };
   return (
     <div className="h-screen flex">
       <div className="m-auto shadow-2xl h-auto w-[50%]">
@@ -89,12 +97,13 @@ const ReserveTableConfirmation = () => {
 
           <div className="h-[1px] w-full bg-gray-400" />
           <div className="flex items-center gap-2 font-semibold">
-            <MdTableRestaurant/>
-              <span className="text-lg font-bold">{bookingDetails?.restaurantName}</span>
-            </div>
-         
+            <MdTableRestaurant />
+            <span className="text-lg font-bold">
+              {bookingDetails?.restaurantName}
+            </span>
+          </div>
+
           <div className="flex flex-col  gap-1 ">
-            
             <div className="flex items-center gap-2 font-semibold">
               <RiCalendar2Fill />
               <span>{bookingDetails?.date}</span>
@@ -102,27 +111,19 @@ const ReserveTableConfirmation = () => {
             <div className="flex items-center gap-2 font-semibold">
               <HiUsers />
               {bookingDetails?.guests} Guests
-              
             </div>
             <div className="flex items-center gap-2 font-semibold">
               <IoTimeSharp />
               {bookingDetails?.time}
             </div>
+            <div className="flex items-center gap-2 font-semibold">
+            <MdTableRestaurant />
+              {tableData?.tableNumber}
+            </div>
           </div>
-          <div className="flex gap-60 ">
-            <div className="w-[30%] flex flex-col gap-3 pt-7">
-              <label
-                htmlFor="Full_name"
-                className="block font-bold text-sm text-gray-700"
-              >
-                Name
-              </label>
 
-              <input
-                type="text"
-                className="p-2 px-3  bg-gray-50 w-72 outline-none font-bold pointer-events-none"
-                value={userData?.username}
-              />
+          <div className="flex gap-60 ">
+            <div className="w-[30%] flex flex-col gap-4 pt-7">
               <label
                 htmlFor="Full_name"
                 className="block font-bold text-sm text-gray-700"
@@ -134,6 +135,33 @@ const ReserveTableConfirmation = () => {
                 className="p-2  bg-gray-50 w-72 outline-none pointer-events-none font-bold"
                 value={userData?.email}
               />
+              
+              <label
+                htmlFor="Full_name"
+                className="block font-bold text-sm text-gray-700 pt-6"
+              >
+                Payment Method
+              </label>
+                <div className="flex gap-3 font-bold items-center">
+                  Online
+                  <input
+                    type="radio"
+                    name="radio-2"
+                    value="Online"
+                    className="radio radio-primary size-5 "
+                    onChange={handleMethodChange}
+                    defaultChecked
+                  />
+                  {/* Wallet
+                  <input
+                    type="radio"
+                    name="radio-2"
+                    value="Wallet"
+                    onChange={handleMethodChange}
+                    className="radio radio-primary size-5"
+                  /> */}
+              
+              </div>
             </div>
 
             <div className="flex flex-col w-[40%] h-[200px] gap-3 shadow-xl shadow-gray-300 bg-gray-50">
@@ -145,10 +173,12 @@ const ReserveTableConfirmation = () => {
               </div>
               <div className="p-5 flex flex-col gap-2">
                 <div className="flex justify-between">
-                  <p className=" text-sm font-semibold">{bookingDetails?.guests} Person X {bookingDetails?.tableRate}</p>
+                  <p className=" text-sm font-semibold">
+                    {bookingDetails?.guests} Person X{" "}
+                    {bookingDetails?.tableRate}
+                  </p>
                   <p className="text-sm">₹ {calculatedAmount()}</p>
                 </div>
-              
               </div>
               <div className="flex justify-between">
                 <p className="px-5 font-bold">Total</p>

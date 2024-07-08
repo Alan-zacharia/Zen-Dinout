@@ -4,7 +4,6 @@ import axios from "axios";
 import axiosInstance from "../../api/axios";
 axios.defaults.withCredentials = true;
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "react-query";
 import { localStorageSetItem } from "../../utils/localStorageImpl";
 import {toast} from 'react-hot-toast';
 import { useDispatch } from "react-redux";
@@ -14,7 +13,6 @@ const PASS_KEY = import.meta.env.VITE_API_BCRYPT_PASS_KEY;
 
 
 const GoogleLoginButton = ({label}:{label : string}) => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const login = useGoogleLogin({
@@ -28,9 +26,8 @@ const GoogleLoginButton = ({label}:{label : string}) => {
         })
         if(label === "In"){
           await axiosInstance.post("/api/login",{email : res.data.email , password : res.data.sub + PASS_KEY , username : res.data.given_name }).then((res)=>{
-            console.log(res)
             const {username , role , _id} = res.data.user
-            const {token , refreshToken } = res.data
+            const {token  } = res.data
             dispatch(setUser({
               isAuthenticated : true,
               name : username,
@@ -39,13 +36,13 @@ const GoogleLoginButton = ({label}:{label : string}) => {
             }));
             localStorageSetItem("accessToken", token);
             navigate("/");
-            }).catch((error)=>{
-              console.log(error);
+            }).catch(({response})=>{
+              toast.error(response.data.message)
             })
         }else{
-          await axiosInstance.post("/api/google-login",{username : res.data.given_name , email : res.data.email , password : res.data.sub + PASS_KEY}).then((res)=>{
+          await axiosInstance.post("/api/google-register",{username : res.data.given_name , email : res.data.email , password : res.data.sub + PASS_KEY}).then((res)=>{
             console.log(res)
-            const {token , refreshToken } = res.data
+            const {token } = res.data
             const {username , role , _id} = res.data.user
             dispatch(setUser({
               isAuthenticated : true,

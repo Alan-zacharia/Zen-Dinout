@@ -1,24 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axiosInstance from "../../api/axios";
-import { BookingDetailsType } from "../../types/restaurantTypes";
+import { textColours } from "../../utils/dateValidateFunctions";
+
+interface Booking {
+  _id: string;
+  bookingId: string;
+  userId: {
+    _id: string;
+    username: string;
+    email: string;
+  };
+  tableSlotId: string;
+  restaurantId: {
+    _id: string;
+    restaurantName: string;
+  };
+  bookingTime: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  bookingStatus: string;
+  totalAmount: number;
+  bookingDate: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 
 const Reservation: React.FC = () => {
-  const bookingId = "1234555566";
-  const [bookingDetails, setBookingDetails] = useState<BookingDetailsType[]>(
-    []
-  );
+  const [bookingDetails, setBookingDetails] = useState<Booking[]>([]);
   useEffect(() => {
-    axiosInstance
-      .get(`/restaurant/reservations/${bookingId}`)
-      .then((res) => {
-        console.log(res);
-        setBookingDetails(res.data.bookingDetails);
-      })
-      .catch(({ response }) => {
-        console.log(response);
-      });
-  }, [bookingId]);
+    const fetchReservations = () => {
+      axiosInstance
+        .get("/restaurant/reservations/")
+        .then((res) => {
+          console.log(res.data.Reservations);
+          setBookingDetails(res.data.Reservations);
+        })
+        .catch(({ response }) => {
+          console.log(response);
+        });
+    };
+    fetchReservations();
+    // const intervalId = setInterval(fetchReservations, 3000);
+    // return () => clearInterval(intervalId);
+  }, []);
   return (
     <div className="pt-32 ">
       <div className="">
@@ -42,14 +68,30 @@ const Reservation: React.FC = () => {
               bookingDetails.map((bookingDetails) => {
                 return (
                   <tr className="border-b-2 border-b-blue-200">
-                    <td>{bookingDetails.bookingId}</td>
-                    <td>{bookingDetails.email}</td>
+                    <td>
+                      <p>{bookingDetails.bookingId.substring(0, 12)}...</p>
+                    </td>
+                    <td>{bookingDetails.userId.username}</td>
                     <td>{bookingDetails.bookingTime}</td>
-                    <td>{bookingDetails.bookingDate}</td>
-                    <td>{bookingDetails.tableSize}</td>
-                    <td>{bookingDetails.bookingStatus}</td>
+                    <td>
+                      {
+                        new Date(bookingDetails.bookingDate)
+                          .toISOString()
+                          .split("T")[0]
+                      }
+                    </td>
+                    <td>{bookingDetails.restaurantId.restaurantName}</td>
+                    <td
+                      className={`font-bold ${textColours(
+                        bookingDetails.bookingStatus
+                      )}`}
+                    >
+                      {bookingDetails.bookingStatus.toLocaleLowerCase()}
+                    </td>
                     <th>
-                      <Link to={`/restaurant/reservations/view/${bookingDetails.bookingId}`}>
+                      <Link
+                        to={`/restaurant/reservations/view/${bookingDetails.bookingId}`}
+                      >
                         <button className="btn btn-ghost btn-xs">
                           details
                         </button>

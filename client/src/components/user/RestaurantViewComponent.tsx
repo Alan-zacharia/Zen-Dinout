@@ -1,7 +1,8 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import GoogleMap from "../GoogleMap";
-import axios from "axios";
-import { Link, useParams } from "react-router-dom";
+import axios, { AxiosError } from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 import { IoMdTimer } from "react-icons/io";
 import { FaLocationDot } from "react-icons/fa6";
 import { BsBookmarkCheckFill } from "react-icons/bs";
@@ -12,26 +13,29 @@ import "slick-carousel/slick/slick-theme.css";
 import { SiGooglecalendar } from "react-icons/si";
 import SlotConfrimationModal from "./shared/SlotConfrimationModal";
 import { getRestaurantTableSlot } from "../../services/api";
-import { tableTimeSlots } from "../../types/restaurantTypes";
+import { RestaurantType, tableTimeSlots } from "../../types/restaurantTypes";
 import { getTodayDate } from "../../utils/dateValidateFunctions";
+import { BsChatDotsFill } from "react-icons/bs";
+import axiosInstance from "../../api/axios";
+import { RootState } from "../../redux/store";
 
-interface RestaurantType {
-  email: string;
-  contact: string;
-  restaurantName: string;
-  address: string;
-  location: {
-    types: string;
-    coordinates: [number, number];
-  };
-  description: string;
-  closingTime: string;
-  openingTime: string;
-  TableRate: string;
-  secondaryImages: string;
-  featuredImage: string;
-  _id?: string;
-}
+// interface RestaurantType {
+//   email: string;
+//   contact: string;
+//   restaurantName: string;
+//   address: string;
+//   location: {
+//     types: string;
+//     coordinates: [number, number];
+//   };
+//   description: string;
+//   closingTime: string;
+//   openingTime: string;
+//   TableRate: string;
+//   secondaryImages: string;
+//   featuredImage: string;
+//   _id?: string;
+// }
 const settings = {
   dots: true,
   infinite: true,
@@ -42,8 +46,9 @@ const settings = {
   autoplaySpeed: 3000,
 };
 
-const RestaurantViewComponent = () => {
-  const [restaurantDetails, setRestaurantDetails] = useState<RestaurantType>();
+const RestaurantViewComponent = ({restaurantDetails}:{restaurantDetails : RestaurantType | undefined}) => {
+  const { id, isAuthenticated } = useSelector((state: RootState) => state.user);
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSaved, setIsSave] = useState<boolean>(true);
   const [selectedGuests, setSelectedGuests] = useState<string>("");
@@ -57,19 +62,6 @@ const RestaurantViewComponent = () => {
   });
   const { restaurantId } = useParams();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/restaurant-view/${restaurantId}`
-        );
-        setRestaurantDetails(response.data.restaurant);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, [restaurantId]);
   const toggleSave = () => {
     setIsSave(!isSaved);
   };
@@ -105,7 +97,17 @@ const RestaurantViewComponent = () => {
         });
     }
   }, [date, selectedGuests, restaurantId]);
-
+  const handleChatSetup = async (restaurantId: string) => {
+    try {
+      const res = await axiosInstance.post("/chat/", {
+        senderId: id,
+        receiverId: restaurantId,
+      });
+      navigate("/chat");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <div className="mx-16 mt-16 mb-4  h-[750px] w-full flex flex-row gap-3 ">
@@ -123,7 +125,7 @@ const RestaurantViewComponent = () => {
         </div>
         {restaurantDetails && (
           <>
-            <div className="h-full w-[70%] bg-white shadow-lg  rounded-xl">
+            <div className="h-full w-[70%] bg-white shadow-lg  rounded-xl relative">
               <div className="w-full h-[400px] flex gap-7">
                 <div className="bg-white w-[800px] h-[400px] border border-gray-200 ">
                   <Slider {...settings}>
@@ -191,9 +193,24 @@ const RestaurantViewComponent = () => {
                     {" "}
                     Description{" "}
                   </p>
+
                   <p className=" font-medium text-neutral-700 pl-10">
                     {restaurantDetails.description}
-                  </p>
+                  </p>  
+                  {isAuthenticated && (
+                    <div
+                      className="tooltip absolute right-[37%] bottom-[28%]  border border-gray-200 shadow-lg bg-blue-400 rounded-full p-2.5 font-bold  flex items-center gap-2 cursor-pointer"
+                      data-tip="Chat with restaurant"
+                      onClick={() =>
+                        handleChatSetup(restaurantDetails?._id as string)
+                      }
+                    >
+                      <BsChatDotsFill
+                        size={18}
+                        className="font-bold text-white"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <form>

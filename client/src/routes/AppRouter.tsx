@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense } from "react";
 import {
   Navigate,
   Route,
@@ -19,7 +19,6 @@ import TimeSlots from "../components/seller/TimeSlots";
 import Orders from "../components/seller/Orders";
 import RestaurantDetails from "../components/seller/RestaurantDetails";
 import PageNotFound from "../pages/PageNotFound";
-import SellerRegisteration from "../components/seller/SellerRegisteration";
 import RestaurantViewDetails from "../pages/user/RestaurantViewDetails";
 import SellerRegisterationPage from "../pages/seller/SellerRegisterationPage";
 import UserProfile from "../components/user/UserProfile";
@@ -30,7 +29,7 @@ import ForgotPasswordPageRecieveEmail from "../pages/user/ForgotPasswordPageReci
 import { localStorageGetItem } from "../utils/localStorageImpl";
 import SellerLoginPage from "../pages/seller/SellerLoginPage";
 import ReserveTableConfirmation from "../components/user/ReserveTableConfirmation";
-import BookingSuccess from "../components/layouts/BookingSuccess";
+import BookingPaymentStatus from "../components/layouts/BookingPaymentStatus";
 import AddTableSlots from "../components/seller/AddTableSlots";
 import {
   PrivateRoute,
@@ -38,8 +37,9 @@ import {
   AdminPrivateRoute,
 } from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
-import BookingCancel from "../components/layouts/BookingCancel";
-import RestaurantImagesListed from "../components/user/shared/RestaurantImageListed";
+import SingleReservationDetailedView from "../components/seller/SingleReservationDetailedView";
+import Chat from "../components/chat/Chat";
+
 
 const HomePage = React.lazy(() => import("../pages/user/Home"));
 const DashBoard = React.lazy(() => import("../components/admin/DashBoard"));
@@ -70,24 +70,30 @@ const AppRouter: React.FC = () => {
             <Route path="/register" element={<Signup />} />
           </Route>
 
-         {/* !------> USER ROUTES <------! */}
+          {/* !------> USER ROUTES <------! */}
           <Route path="/" element={<HomePage />}>
             <Route index element={<HomeLayout />} />
             <Route
               path="/restaurant-view/:restaurantId"
               element={<RestaurantViewDetails />}
-          />
-
-          {/* !------> PRIVATE ROUTE <------! */}
-
-          <Route element={<PrivateRoute />}>
-            <Route path="account" element={<UserProfile />} />
-            <Route
-              path="/reserve-table"
-              element={<ReserveTableConfirmation />}
             />
-            <Route path="success" element={<BookingSuccess />} />
+
+            {/* !------> PRIVATE ROUTE <------! */}
+
+            <Route element={<PrivateRoute />}>
+              
+              <Route
+                path="/reserve-table"
+                element={<ReserveTableConfirmation />}
+              />
+              <Route path="/payment-status/:id" element={<BookingPaymentStatus />} />
+            </Route>
           </Route>
+          <Route element={<PrivateRoute />}>
+          <Route path="account" element={<UserProfile />} />
+          </Route>
+          <Route element={<PrivateRoute />}>
+              <Route path="/chat" element={<Chat/>}/>
           </Route>
           <Route
             path="/reset-password"
@@ -97,7 +103,6 @@ const AppRouter: React.FC = () => {
             path="/reset-password/fps/:id"
             element={resetPassword ? <ForgotPassword /> : <Navigate to="*" />}
           />
-          <Route path="/cancel" element={<BookingCancel />} />
           <Route path="*" element={<PageNotFound />} />
 
           {/** <------ USER ROUTES END -----> */}
@@ -127,9 +132,9 @@ const AppRouter: React.FC = () => {
               />
             </Route>
           </Route>
-         {/* <------ ADMIN ROUTES END  ----->  */}
+          {/* <------ ADMIN ROUTES END  ----->  */}
 
-         {/* <------ SELLER AUTH ROUTES  ----->  */}
+          {/* <------ SELLER AUTH ROUTES  ----->  */}
           <Route element={<PublicRoute />}>
             <Route path="/restaurant/login" element={<SellerLoginPage />} />
             <Route
@@ -147,6 +152,10 @@ const AppRouter: React.FC = () => {
                 path="/restaurant/reservations"
                 element={<Reservation />}
               />
+              <Route
+                path="/restaurant/reservations/view/:bookingId"
+                element={<SingleReservationDetailedView />}
+              />
               <Route path="/restaurant/table" element={<Table />} />
               <Route path="/restaurant/time-slots" element={<TimeSlots />} />
               <Route path="/restaurant/menu" element={<Menu />} />
@@ -155,15 +164,18 @@ const AppRouter: React.FC = () => {
                 path="/restaurant/restaurant-details"
                 element={<RestaurantDetails />}
               />
+              
               <Route
                 path="/restaurant/view-table/:tableId"
                 element={<AddTableSlots />}
               />
             </Route>
+            <Route
+                path="/restaurant/chat"
+                element={<Chat />}
+              />
           </Route>
           {/* <------ SELLER ROUTES END  ----->  */}
-
-          
         </Routes>
       </Suspense>
     </Router>

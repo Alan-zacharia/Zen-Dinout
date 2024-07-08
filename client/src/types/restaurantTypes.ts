@@ -15,7 +15,9 @@ export interface RestaurantType {
   featuredImage: string;
   _id?: string;
   place_name?: string;
-}
+};
+
+
 
 export interface tableSlotTypes {
   tableNumber: string;
@@ -44,4 +46,23 @@ export interface BookingDetailsType {
   bookingStatus: string;
   totalAmount: number;
   paymentMethod: string;
+}
+export interface BookingsHistory {
+  _id : string;
+  userId: {
+    username : string;
+    email : string;
+  };
+  tableSlotId: string;
+  restaurantId: {
+    _id : string;
+    restaurantName : string;
+    featuredImage : string;
+  };
+  bookingTime: number;
+  bookingDate: string;
+  bookingStatus: string;
+  totalAmount: number;
+  paymentMethod: string;
+  createdAt : string;
 }

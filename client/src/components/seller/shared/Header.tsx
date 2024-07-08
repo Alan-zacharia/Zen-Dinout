@@ -4,7 +4,6 @@ import { FaSearch } from "react-icons/fa";
 import MobileViewSideBar from "./MobileViewSideBar";
 import {
   HiOutlineBell,
-  HiOutlineChatAlt,
   HiOutlineSearch,
 } from "react-icons/hi";
 import classNames from "classnames";
@@ -16,9 +15,12 @@ import {
   Transition,
   Popover,
 } from "@headlessui/react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
 
 const Header = () => {
   const navigate = useNavigate();
+  const {name} = useSelector((state : RootState)=>state.user)
   return (
     <header className="fixed top-0 left-0 w-full bg-white shadow-sm shadow-slate-100 z-50">
       <div className="hidden lg:flex bg-blue-500 rounded-tr-2xl w-[192px] h-[100px] absolute">
@@ -27,7 +29,7 @@ const Header = () => {
        <MobileViewSideBar />
       <div className="h-24">
         <h1 className="hidden lg:flex lg:absolute lg:left-56 lg:top-10 text-2xl font-bold font-serif">
-          Restaurant name
+          {name} Restaurant
         </h1>
         <div className="flex justify-end pr-10">
           <section className="flex items-center pt-6 sm:pt-0">

@@ -6,8 +6,13 @@ import { HiOutlineSearch } from "react-icons/hi";
 axios.defaults.withCredentials = true;
 const Customer: React.FC = () => {
   const [users, setUser] = useState([]);
-  const [searchItem, setSearchItem] = useState('');
-  
+  const [searchItem, setSearchItem] = useState("");
+  interface UserType {
+    _id: string;
+    username: string;
+    email: string;
+    isBlocked: boolean;
+  }
   useEffect(() => {
     const fetchData = async () => {
       const { users, message } = await axiosGetUser();
@@ -16,26 +21,26 @@ const Customer: React.FC = () => {
     fetchData();
   }, []);
 
-    const blockUser = (id : string , block:boolean) => {
-      axiosActionsUser(id,block)
-       setUser((prevUser : any)=>
-        prevUser.map((user:any)=>
-          user._id == id ? {...user , isBlocked : !user.isBlocked} : user
-        )
-        )
-    };
- const handleSearchInput = ( e : React.ChangeEvent<HTMLInputElement>)=>{
-  const searchTerm = e.target.value;
-  setSearchItem(searchTerm);
- };
- const filteredUsers = users.filter((datas : any)=>{
-    const {username , email } = datas;
+  const blockUser = (id: string, block: boolean) => {
+    axiosActionsUser(id, block);
+    setUser((prevUser: any) =>
+      prevUser.map((user: any) =>
+        user._id == id ? { ...user, isBlocked: !user.isBlocked } : user
+      )
+    );
+  };
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = e.target.value;
+    setSearchItem(searchTerm);
+  };
+  const filteredUsers = users.filter((datas: any) => {
+    const { username, email } = datas;
     const searchTerm = searchItem.toLowerCase();
     return (
       username.toLowerCase().includes(searchTerm) ||
-      email.toLowerCase().includes(searchTerm) 
-    )
- })
+      email.toLowerCase().includes(searchTerm)
+    );
+  });
   return (
     <div className="text-gray-900  ">
       <div className="p-4 flex justify-between">
@@ -61,11 +66,13 @@ const Customer: React.FC = () => {
               <th className="text-left p-3 px-5 text-lg">Name</th>
               <th className="text-left p-3 px-5 text-lg">Email</th>
               <th className="text-left p-3 px-5 text-lg">Phone</th>
-              <th className="text-left p-3 px-5 flex justify-end text-lg">Status</th>
+              <th className="text-left p-3 px-5 flex justify-end text-lg">
+                Status
+              </th>
               <th></th>
             </tr>
-            { filteredUsers.length > 0 ? (
-              filteredUsers.map((user: any) => {
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user: UserType) => {
                 return (
                   <tr className="border-b hover:bg-orange-100 bg-gray-100">
                     <td className="p-3 px-5">
@@ -88,11 +95,17 @@ const Customer: React.FC = () => {
                     <td className="p-3 px-6">nill</td>
                     <td className="p-3 px-5 flex justify-end">
                       {user.isBlocked ? (
-                        <button onClick={()=>blockUser(user._id , user.isBlocked)} className="bg-red-500 p-2 rounded-xl hover:bg-red-600 text-white font-bold w-20">
+                        <button
+                          onClick={() => blockUser(user._id, user.isBlocked)}
+                          className="bg-red-500 p-2 rounded-xl hover:bg-red-600 text-white font-bold w-20"
+                        >
                           Unblock
                         </button>
                       ) : (
-                        <button onClick={()=>blockUser(user._id , user.isBlocked)} className="bg-green-500 p-2 rounded-xl hover:bg-green-600 text-white font-bold w-20">
+                        <button
+                          onClick={() => blockUser(user._id, user.isBlocked)}
+                          className="bg-green-500 p-2 rounded-xl hover:bg-green-600 text-white font-bold w-20"
+                        >
                           Block
                         </button>
                       )}

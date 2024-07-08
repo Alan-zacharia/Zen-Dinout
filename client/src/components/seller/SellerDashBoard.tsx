@@ -4,23 +4,45 @@ import ChartTwo from "./ChartTwo";
 import { BookingDetailsType } from "../../types/restaurantTypes";
 import axiosInstance from "../../api/axios";
 import { Link } from "react-router-dom";
+import { textColours } from "../../utils/dateValidateFunctions";
 
+interface Booking {
+  _id: string;
+  bookingId: string;
+  userId: {
+    _id: string;
+    username: string;
+    email: string;
+  };
+  tableSlotId: string;
+  restaurantId: {
+    _id: string;
+    restaurantName: string;
+  };
+  bookingTime: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  bookingStatus: string;
+  totalAmount: number;
+  bookingDate: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 const SellerDashBoard = () => {
-  const bookigId = "1234555566";
-  const [bookingDetails, setBookingDetails] = useState<BookingDetailsType[]>(
-    []
-  );
+  const [bookingDetails, setBookingDetails] = useState<Booking[]>([]);
   useEffect(() => {
     axiosInstance
-      .get(`/restaurant/reservations/${bookigId}`)
+      .get("/restaurant/reservations/")
       .then((res) => {
-        console.log(res);
-        setBookingDetails(res.data.bookingDetails);
+        console.log(res.data.Reservations);
+        setBookingDetails(res.data.Reservations);
       })
       .catch(({ response }) => {
         console.log(response);
       });
-  }, [bookigId]);
+  }, []);
+ 
   return (
     <div className="container px-4 py-8 mt-10 lg:mt-20">
       <div className="overflow-hidden">
@@ -61,12 +83,21 @@ const SellerDashBoard = () => {
                   bookingDetails.map((bookingDetails) => {
                     return (
                       <tr className="border-b-2 border-b-blue-200">
-                        <td>{bookingDetails.bookingId}</td>
-                        <td>{bookingDetails.email}</td>
+                        <td>
+                          <p>{bookingDetails.bookingId.substring(0, 12)}...</p>
+                        </td>
+                        <td>{bookingDetails.userId.username}</td>
                         <td>{bookingDetails.bookingTime}</td>
                         <td>{bookingDetails.bookingDate}</td>
-                        <td>{bookingDetails.tableSize}</td>
-                        <td>{bookingDetails.bookingStatus}</td>
+                        <td>{bookingDetails.restaurantId.restaurantName}</td>
+
+                        <td
+                          className={`font-bold ${textColours(
+                            bookingDetails.bookingStatus                            
+                          )}`}
+                        >
+                          {bookingDetails.bookingStatus.toLocaleLowerCase()}
+                        </td>
                         <th>
                           <Link
                             to={`/restaurant/reservations/view/${bookingDetails.bookingId}`}

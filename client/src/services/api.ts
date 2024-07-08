@@ -122,7 +122,7 @@ const getRestaurantTableSlot = async (restaurantId : string | undefined , date :
     console.log(TimeSlots);
     return { TimeSlots };
   } catch (error) {
-    console.log(error);
+    console.log(error);  
     throw error;
   }
 };

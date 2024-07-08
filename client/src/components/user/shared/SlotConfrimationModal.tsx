@@ -3,24 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useSelector , useDispatch } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { confirmBooking } from "../../../redux/user/tableBookingSlice";
-
-interface RestaurantType {
-  email: string;
-  contact: string;
-  restaurantName: string;
-  address: string;
-  location: {
-    types: string;
-    coordinates: [number, number];
-  };
-  description: string;
-  closingTime: string;
-  openingTime: string;
-  TableRate: string;
-  secondaryImages: string;
-  featuredImage: string;
-  _id ?:string;
-}
+import { RestaurantType } from "../../../types/restaurantTypes";
 
 const SlotConfrimationModal = ({
   setShowModal,

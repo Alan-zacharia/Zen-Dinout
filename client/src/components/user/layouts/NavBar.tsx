@@ -8,7 +8,7 @@ import { RootState } from "../../../redux/store";
 const NavBar: React.FC = () => {
   const {isAuthenticated , role} = useSelector((state : RootState)=> state.user);
   return (
-    <div className="navbar bg-base-100  shadow-neutral-400 h-20">
+    <div className="navbar bg-base-100  shadow-neutral-500 h-20">
       <div className="navbar-start ">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -72,9 +72,9 @@ const NavBar: React.FC = () => {
           </ul>
         </div>
         <div className=" xl:px-80 text-3xl font-bold flex items-center">
-          <div className="">
+          <Link to={'/'}><div className="">
             Zen<span className="text-orange-600">Dinout</span>
-          </div>
+          </div></Link>
           <div className="hidden md:flex">
             <NavLeftSide />
           </div>

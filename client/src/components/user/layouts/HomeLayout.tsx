@@ -30,7 +30,7 @@ const HomeLayout = () => {
     <>
       <Hero handleSearch={handleSearch}  />
       <Home />
-      <div className="flex flex-wrap lg:justify-normal lg:ml-20 mb-20 justify-center sm:px-20  xl:px-60 gap-5 lg:gap-5">
+      <div className="flex flex-wrap lg:justify-normal lg:ml-20 mb-20 justify-center sm:px-20  xl:px-60 gap-5 lg:gap-5 ">
         <Card restaurants={filteredRestaurants} />
       </div>
       <div className=" hidden  lg:flex lg:flex-col lg:h-[300px]">
