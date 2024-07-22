@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { IoTimeSharp } from "react-icons/io5";
 import { MdTableRestaurant } from "react-icons/md";
-import { localStorageSetItem } from "../../utils/localStorageImpl";
 interface userDatatype {
   email: string;
   username: string;
@@ -19,7 +18,6 @@ const ReserveTableConfirmation = () => {
   const { bookingDetails } = useSelector((state: RootState) => state.booking);
   const [paymentMethod, setPaymentMethod] = useState("Online");
   const [userData, setUser] = useState<userDatatype | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [tableData, setTableData] = useState<{
     tableNumber: string;
     tableCapacity: number;
@@ -29,7 +27,7 @@ const ReserveTableConfirmation = () => {
     axios
       .get(`/api/user-profile/${id}`)
       .then((res) => {
-        console.log(res.data.userData); 
+        console.log(res.data.userData);
         setUser(res.data.userData);
       })
       .catch(({ response }) => {
@@ -41,7 +39,6 @@ const ReserveTableConfirmation = () => {
     axios
       .get(`/api/restaurant-table-details/${bookingDetails?.tableId}`)
       .then((res) => {
-        console.log(res.data.restaurantTable); 
         setTableData(res.data.restaurantTable);
       })
       .catch(({ response }) => {
@@ -64,18 +61,18 @@ const ReserveTableConfirmation = () => {
         name: userData?.username,
         restaurantId: tableData?.restaurantId,
         tableSlotId: bookingDetails?.timeSlotId,
-        paymentMethod : paymentMethod
+        paymentMethod: paymentMethod,
       })
       .then((res) => {
         localStorage.removeItem("%statphdyw%");
-        localStorage.setItem("%stat%","true");
+        localStorage.setItem("%stat%", "true");
         console.log(res);
         stripe?.redirectToCheckout({
           sessionId: res.data.sessionId,
         });
       })
       .catch((error) => {
-        console.log(error); 
+        console.log(error);
       });
   };
   const calculatedAmount = () => {
@@ -87,7 +84,7 @@ const ReserveTableConfirmation = () => {
   };
   const handleMethodChange = (e: ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value);
-    setPaymentMethod(e.target.value)
+    setPaymentMethod(e.target.value);
   };
   return (
     <div className="h-screen flex">
@@ -117,7 +114,7 @@ const ReserveTableConfirmation = () => {
               {bookingDetails?.time}
             </div>
             <div className="flex items-center gap-2 font-semibold">
-            <MdTableRestaurant />
+              <MdTableRestaurant />
               {tableData?.tableNumber}
             </div>
           </div>
@@ -135,24 +132,24 @@ const ReserveTableConfirmation = () => {
                 className="p-2  bg-gray-50 w-72 outline-none pointer-events-none font-bold"
                 value={userData?.email}
               />
-              
+
               <label
                 htmlFor="Full_name"
                 className="block font-bold text-sm text-gray-700 pt-6"
               >
                 Payment Method
               </label>
-                <div className="flex gap-3 font-bold items-center">
-                  Online
-                  <input
-                    type="radio"
-                    name="radio-2"
-                    value="Online"
-                    className="radio radio-primary size-5 "
-                    onChange={handleMethodChange}
-                    defaultChecked
-                  />
-                  {/* Wallet
+              <div className="flex gap-3 font-bold items-center">
+                Online
+                <input
+                  type="radio"
+                  name="radio-2"
+                  value="Online"
+                  className="radio radio-primary size-5 "
+                  onChange={handleMethodChange}
+                  defaultChecked
+                />
+                {/* Wallet
                   <input
                     type="radio"
                     name="radio-2"
@@ -160,7 +157,6 @@ const ReserveTableConfirmation = () => {
                     onChange={handleMethodChange}
                     className="radio radio-primary size-5"
                   /> */}
-              
               </div>
             </div>
 

@@ -1,7 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import GoogleMap from "../GoogleMap";
-import axios, { AxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { IoMdTimer } from "react-icons/io";
 import { FaLocationDot } from "react-icons/fa6";
@@ -13,11 +12,16 @@ import "slick-carousel/slick/slick-theme.css";
 import { SiGooglecalendar } from "react-icons/si";
 import SlotConfrimationModal from "./shared/SlotConfrimationModal";
 import { getRestaurantTableSlot } from "../../services/api";
-import { RestaurantType, tableTimeSlots } from "../../types/restaurantTypes";
+import { RestaurantType, TimeSlots } from "../../types/restaurantTypes";
 import { getTodayDate } from "../../utils/dateValidateFunctions";
 import { BsChatDotsFill } from "react-icons/bs";
 import axiosInstance from "../../api/axios";
 import { RootState } from "../../redux/store";
+
+const formatTime = (time: string): string => {
+  const date = new Date(time);
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+};
 
 // interface RestaurantType {
 //   email: string;
@@ -46,16 +50,22 @@ const settings = {
   autoplaySpeed: 3000,
 };
 
-const RestaurantViewComponent = ({restaurantDetails}:{restaurantDetails : RestaurantType | undefined}) => {
+const RestaurantViewComponent = ({
+  restaurantDetails,
+}: {
+  restaurantDetails: RestaurantType | undefined;
+}) => {
   const { id, isAuthenticated } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSaved, setIsSave] = useState<boolean>(true);
   const [selectedGuests, setSelectedGuests] = useState<string>("");
-  const [timeSlot, setTimeSlots] = useState<tableTimeSlots[]>([]);
+  const [timeSlot, setTimeSlots] = useState<TimeSlots[]>([]);
   const [tableId, setTableId] = useState<string>();
   const [timeSlotId, setTImeSlotId] = useState<string>();
   const [time, setTime] = useState<string>("");
+  const [guestCount, setGuestCount] = useState<number>(0);
+  const [timeSlotSelect, setTimeSlotSelect] = useState<string>("");
   const [date, setDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split("T")[0];
@@ -80,34 +90,44 @@ const RestaurantViewComponent = ({restaurantDetails}:{restaurantDetails : Restau
   const handleDate = (e: ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value);
   };
-  const handleGuests = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedGuests(e.target.value);
+  const handleGuestCount = () => {
+    if(guestCount < 15){
+      setGuestCount((count)=>count + 1);
+    }
+  };
+  const handleGuestsCountReduce = () => {
+    if(guestCount > 0){
+      setGuestCount((count)=>count - 1);
+    }
+
   };
 
   useEffect(() => {
-    if (selectedGuests && date) {
-      getRestaurantTableSlot(restaurantId, date, selectedGuests)
+    if (date) {
+      getRestaurantTableSlot(restaurantId, date)
         .then((res) => {
-          console.log(res.TimeSlots);
-
-          setTimeSlots(res.TimeSlots);
+          setTimeSlots(res.data.TimeSlots);
         })
         .catch((error) => {
           console.log(error);
         });
     }
-  }, [date, selectedGuests, restaurantId]);
+  }, [date, restaurantId]);
   const handleChatSetup = async (restaurantId: string) => {
     try {
       const res = await axiosInstance.post("/chat/", {
         senderId: id,
         receiverId: restaurantId,
       });
-      navigate("/chat");
+      const conversationId = res.data.savedConversation._id;
+      navigate(`/chat?conversation=${conversationId}`);
     } catch (error) {
       console.log(error);
     }
   };
+  const handleTimeSlot = (time : string)=>{
+    setTimeSlotSelect(formatTime(time));
+  }
   return (
     <>
       <div className="mx-16 mt-16 mb-4  h-[750px] w-full flex flex-row gap-3 ">
@@ -117,7 +137,7 @@ const RestaurantViewComponent = ({restaurantDetails}:{restaurantDetails : Restau
             isModalOpen={isModalOpen}
             restaurantDetails={restaurantDetails}
             time={time}
-            selectedGuests={selectedGuests}
+            selectedGuests={guestCount}
             date={date}
             tableId={tableId}
             timeSlotId={timeSlotId}
@@ -196,7 +216,7 @@ const RestaurantViewComponent = ({restaurantDetails}:{restaurantDetails : Restau
 
                   <p className=" font-medium text-neutral-700 pl-10">
                     {restaurantDetails.description}
-                  </p>  
+                  </p>
                   {isAuthenticated && (
                     <div
                       className="tooltip absolute right-[37%] bottom-[28%]  border border-gray-200 shadow-lg bg-blue-400 rounded-full p-2.5 font-bold  flex items-center gap-2 cursor-pointer"
@@ -238,48 +258,26 @@ const RestaurantViewComponent = ({restaurantDetails}:{restaurantDetails : Restau
                         </div>
                       </div>
                     </div>
+                    
                     <div>
-                      <div className="flex flex-col gap-2 w-80">
-                        <p className="text-sm font-semibold text-gray-600">
-                          No of Guests
-                        </p>
-                        <div className="flex">
-                          <select
-                            id="table-slots"
-                            className="bg-gray-50 border border-gray-300  font-semibold text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none"
-                            value={selectedGuests}
-                            onChange={handleGuests}
-                          >
-                            <option selected disabled value="">
-                              No of Guests
-                            </option>
-                            <option value="2">2 Guests</option>
-                            <option value="4"> 4 Guests</option>
-                            <option value="6">6 Guests</option>
-                            <option value="8">8 Guests</option>
-                          </select>
-                        </div>
-                      </div>
+                     
                     </div>
+                        {!timeSlotSelect ? (
                     <div className="flex flex-col gap-3 pb-5">
                       <p className="text-sm font-semibold text-gray-600">
                         Select Time
                       </p>
                       <div className="flex flex-wrap gap-5 w-80 h-36 overflow-auto ">
+
+                      
                         {timeSlot && timeSlot.length > 0 ? (
                           timeSlot.map((value, index: number) => (
                             <p
                               key={index}
                               className="bg-blue-500 p-1 h-8 w-20 text-center font-bold cursor-pointer text-white rounded-md"
-                              onClick={() =>
-                                toggleModal(
-                                  value.slotStartTime,
-                                  value.tableId,
-                                  value._id
-                                )
-                              }
+                              onClick={() =>handleTimeSlot(value.startTime) }
                             >
-                              {value.slotStartTime}
+                              {formatTime(value.startTime)}
                             </p>
                           ))
                         ) : (
@@ -296,6 +294,54 @@ const RestaurantViewComponent = ({restaurantDetails}:{restaurantDetails : Restau
                         )}
                       </div>
                     </div>
+                        ):(
+                    <div className="flex flex-col gap-3 pb-5 ">
+                      <p className=" text-gray-700 text-base font-bold ">
+                        Selected Time &nbsp;&nbsp;:&nbsp; &nbsp;<span className="text-white bg-blue-500 p-1 text-sm rounded-md">{timeSlotSelect}</span>
+                      </p>
+                      <div className="flex flex-wrap gap-5 w-80 h-[220px] overflow-auto ">
+
+                      {timeSlotSelect && (
+                      <div className="flex flex-col gap-2 w-80">
+                        <p className="text-sm font-semibold text-gray-600">
+                          No of Guests
+                        </p>
+                        <div className="flex  items-center border shadow-lg h-10 gap-3  rounded-lg p-5">
+                          <p className="text-gray-600 font-semibold">Guests :</p>
+                          <button
+                            className="border border-blue-500  rounded-full  w-5 h-5 flex items-center  justify-center focus:outline-none"
+                            onClick={handleGuestCount}
+                            type="button"
+                          >
+                            <span className="text-xl pb-1 text-blue-500 font-bold">
+                            +
+                            </span>
+                          </button>
+                          <p className="text-base font-medium ">{guestCount}</p>
+                          <button
+                            className="border border-blue-500  rounded-full pb-0.5  w-5 h-5 flex items-center  justify-center focus:outline-none"
+                            onClick={handleGuestsCountReduce}
+                            type="button"
+                            
+                          >
+                            <span className="text-xl pb-1 text-blue-500 font-bold">
+                            -
+                            </span>
+                          </button>
+                        </div>
+                        <label htmlFor="GuestName" className="text-gray-700 font-bold">Guest name</label>
+                        <input type="text" className="shadow-lg p-2 border border-gray-300 rounded-md outline-none" placeholder="Enter guest name..."/>
+
+                      </div>
+                      )}
+                      {guestCount >0 && (
+                        <button className="w-full btn bg-red-500 text-white font-semibold rounded-md hover:bg-red-600"
+                        type="button"
+                        onClick={()=>toggleModal(timeSlotSelect,"T1","sdf")}>Continue</button>
+                      )}
+                      </div>
+                    </div>
+                        )}
                   </div>
                 </form>
               </div>

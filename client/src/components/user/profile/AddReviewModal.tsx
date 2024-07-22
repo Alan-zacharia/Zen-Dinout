@@ -1,12 +1,13 @@
 import axiosInstance from "../../../api/axios";
 import React, { useState } from "react";
 import ReactStars from "react-rating-stars-component";
+import toast from "react-hot-toast";
 
 interface AddReviewModalProps {
   onClose: () => void;
   userId: string | null | undefined;
   restaurantId: string;
-}
+};
 
 const AddReviewModal: React.FC<AddReviewModalProps> = ({
   onClose,
@@ -17,23 +18,25 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
   const [rating, setRating] = useState<number>(0);
 
   const handleReviewSubmit = async () => {
-    if(reviewText && rating){
-        console.log("Review")
-    try {
-      const response = await axiosInstance.post("/api/reviews", {
-        userId,
-        restaurantId,
-        reviewText,
-        rating,
-      });
-
-      console.log("Review submitted:", response.data); 
-
-      onClose();
-    } catch (error) {
-      console.error("Error submitting review:", error);
+    if (reviewText && rating) {
+      try {
+        await axiosInstance.post("/api/reviews", {
+          userId,
+          restaurantId,
+          reviewText,
+          rating,
+        });
+        toast.success("Thank you so much. Your review has been saved.",{
+          style :{
+            minWidth : "400px",
+            maxWidth : "600px"
+          }
+        })
+        onClose();
+      } catch (error) {
+        console.error("Error submitting review:", error);
+      }
     }
-   }
   };
 
   return (
@@ -53,7 +56,7 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({
               count={5}
               size={24}
               activeColor="#ffd700"
-              onChange={(newRating: any) => setRating(newRating)}
+              onChange={(newRating: number) => setRating(newRating)}
             />
           </p>
         </div>

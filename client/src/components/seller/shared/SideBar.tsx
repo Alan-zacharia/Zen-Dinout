@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { SELLER_SIDEBAR_LINKS } from "../../../lib/constants/SellerNavigation";
 import axios from "axios";
 import {useDispatch} from "react-redux";
-import { useQueryClient } from "react-query";
+
 import { localStorageRemoveItem } from "../../../utils/localStorageImpl";
 import { clearUser } from "../../../redux/user/userSlice";
 import logout from "../../../utils/Logout";
@@ -19,14 +19,13 @@ interface SidebarLink {
 }
 
 const SideBar = () => {
-  const QueryClient = useQueryClient();
+
   const dispatch = useDispatch();
   const handleLogout = async()=>{
     dispatch(clearUser());
     logout("Seller Logout")
     await axios.put("http://localhost:3000/restaurant/restaurant-logout");
     localStorageRemoveItem("%%sellregis%%")
-    QueryClient.invalidateQueries('validateSellerToken');
   }
   return (
     <div>

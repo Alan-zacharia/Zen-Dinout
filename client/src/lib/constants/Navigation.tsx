@@ -1,7 +1,6 @@
 import { HiOutlineCog, HiOutlineQuestionMarkCircle, HiOutlineUsers } from 'react-icons/hi';
-import { MdTableRestaurant , MdDashboard } from "react-icons/md";
-import { SiImessage } from "react-icons/si";
-
+import { MdTableRestaurant , MdDashboard , MdCardMembership } from "react-icons/md";
+import { RiCoupon3Fill } from "react-icons/ri";
 
 
 export const DASHBOARD_SIDEBAR_LINKS = [
@@ -31,10 +30,16 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     icon: <MdTableRestaurant />
   },
   {
-    key: "messages",
-    label: "messages",
-    path: "/admin/messages",
-    icon: <SiImessage />
+    key: "coupons",
+    label: "Copouns",
+    path: "/admin/coupons",
+    icon: <RiCoupon3Fill />
+  },
+  {
+    key: "membership",
+    label: "Memberships",
+    path: "/admin/memberships",
+    icon: <MdCardMembership />
   },
   
 ]

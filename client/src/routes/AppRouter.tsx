@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import Login from "../pages/user/Login";
 import Signup from "../pages/user/Register";
-import AdminLogin from "../components/admin/LoginForm";
+const AdminLogin = React.lazy(() => import("../pages/admin/AdminLogin"));
 import AdminLayout from "../pages/admin/AdminHome";
 import NewRestaurants from "../components/admin/RestaurantRegistrationMan";
 import SellerHome from "../pages/seller/SellerHome";
@@ -39,8 +39,10 @@ import {
 import PublicRoute from "./PublicRoute";
 import SingleReservationDetailedView from "../components/seller/SingleReservationDetailedView";
 import Chat from "../components/chat/Chat";
-
-
+import Coupons from "../components/admin/Coupons";
+import MemberShip from "../components/admin/MemberShip";
+import Loading from "../components/layouts/Loading";
+import ChatPage from "../pages/ChatPage";
 const HomePage = React.lazy(() => import("../pages/user/Home"));
 const DashBoard = React.lazy(() => import("../components/admin/DashBoard"));
 const RestaurantMangement = React.lazy(
@@ -57,10 +59,7 @@ const AppRouter: React.FC = () => {
     <Router>
       <Suspense
         fallback={
-          <div className="flex items-center justify-center h-screen">
-            {" "}
-            <span className="loading loading-spinner loading-lg"></span>
-          </div>
+         <Loading/>
         }
       >
         <Routes>
@@ -81,19 +80,21 @@ const AppRouter: React.FC = () => {
             {/* !------> PRIVATE ROUTE <------! */}
 
             <Route element={<PrivateRoute />}>
-              
               <Route
                 path="/reserve-table"
                 element={<ReserveTableConfirmation />}
               />
-              <Route path="/payment-status/:id" element={<BookingPaymentStatus />} />
+              <Route
+                path="/payment-status/:id"
+                element={<BookingPaymentStatus />}
+              />
             </Route>
           </Route>
           <Route element={<PrivateRoute />}>
-          <Route path="account" element={<UserProfile />} />
+            <Route path="/account" element={<UserProfile />} />
           </Route>
           <Route element={<PrivateRoute />}>
-              <Route path="/chat" element={<Chat/>}/>
+            <Route path="/chat" element={<Chat />} />
           </Route>
           <Route
             path="/reset-password"
@@ -130,6 +131,8 @@ const AppRouter: React.FC = () => {
                 path="/admin/restaurant-approval/:id"
                 element={<RestaurantApprovalForm />}
               />
+              <Route path="/admin/coupons" element={<Coupons />} />
+              <Route path="/admin/memberships" element={<MemberShip />} />
             </Route>
           </Route>
           {/* <------ ADMIN ROUTES END  ----->  */}
@@ -164,17 +167,15 @@ const AppRouter: React.FC = () => {
                 path="/restaurant/restaurant-details"
                 element={<RestaurantDetails />}
               />
-              
+
               <Route
                 path="/restaurant/view-table/:tableId"
                 element={<AddTableSlots />}
               />
             </Route>
-            <Route
-                path="/restaurant/chat"
-                element={<Chat />}
-              />
+            <Route path="/restaurant/chat" element={<Chat />} />
           </Route>
+          <Route path="/chat/chat" element={<ChatPage />} />
           {/* <------ SELLER ROUTES END  ----->  */}
         </Routes>
       </Suspense>

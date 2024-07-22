@@ -52,7 +52,7 @@ const BookingPaymentStatus : React.FC = () => {
           <p className="text-center">Thank you for completing your payment</p>
           </div>
           <div className="flex gap-5 pt-5">
-                <Link to="/booking-status"><button className="p-3 text-white font-bold bg-blue-700 rounded-lg hover:bg-blue-600">View Booking</button></Link>
+                <Link to="/account/?list_name=bookings"><button className="p-3 text-white font-bold bg-blue-700 rounded-lg hover:bg-blue-600">View Booking</button></Link>
                 <Link to="/"><button className="p-3 text-white font-bold bg-orange-500 rounded-lg w-44 hover:bg-orange-600">Go to home ?</button></Link>
             </div>
         </div>

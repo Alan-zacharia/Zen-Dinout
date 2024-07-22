@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { restaurantLoginApi } from "../services/api";
-import { useQueryClient } from "react-query";
+
 
 
 
@@ -17,7 +17,7 @@ interface restaurantLoginReturnType {
     error : string | null
 }
 const useRestaurantLogin = ():restaurantLoginReturnType=>{
-   const queryClient = useQueryClient();
+
    const [loading , setLoading] = useState<boolean>(false);
    const [error , setError] = useState<string | null>(null);
    const navigate = useNavigate();
@@ -27,7 +27,7 @@ const useRestaurantLogin = ():restaurantLoginReturnType=>{
      await restaurantLoginApi(restaurantDatas).then((res)=>{
        console.log(res); 
        setLoading(false);
-       queryClient.invalidateQueries("validateSellerToken");
+
        navigate("/restaurant/");
      }).catch((error : any)=>{
         setLoading(false);

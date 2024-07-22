@@ -1,20 +1,22 @@
 import React, { useState } from "react";
-import { Link , useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import { loginValidation } from "../../utils/validations";
-import { localStorageRemoveItem, localStorageSetItem } from "../../utils/localStorageImpl";
+import { HiEye, HiEyeOff } from "react-icons/hi";
+import { localStorageSetItem } from "../../utils/localStorageImpl";
 import { setUser } from "../../redux/user/userSlice";
-import {restaurantLoginApi} from "../../services/api"
+import { restaurantLoginApi } from "../../services/api";
 interface SellerType {
-  email : string;
-  password : string;
+  email: string;
+  password: string;
 }
 const SellerLogin: React.FC = () => {
-  const [loading , setLoading] = useState<boolean>(false);
-  const [errorMessage , setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errorMessage, setError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const formik = useFormik({
@@ -23,33 +25,37 @@ const SellerLogin: React.FC = () => {
       password: "",
     },
     validate: loginValidation,
-    onSubmit: async (values : SellerType) => {
-      setLoading(true)
-      console.log(values)
-     try{
-      // restaurantLogin(values);
-      await restaurantLoginApi(values).then((res)=>{
-        const {token , refreshToken} = res.data
-        console.log(res)  
-        const {restaurantName , _id} = res.data.user
-        dispatch(setUser({
-          isAuthenticated : true,
-          name : restaurantName,
-          role : "seller",
-          id: _id,
-        }))
-        setLoading(false);
-        localStorageSetItem("accessToken", token as string);
-        navigate("/restaurant/");
-      }).catch(({response})=>{
-        console.log(response)
-        setLoading(false)
-        console.log(response?.data?.message)
-        setError(response?.data?.message);
-      })
-     }catch(error){
-      console.log((error as Error).message)
-     }
+    onSubmit: async (values: SellerType) => {
+      setLoading(true);
+      console.log(values);
+      try {
+        // restaurantLogin(values);
+        await restaurantLoginApi(values)
+          .then((res) => {
+            const { token } = res.data;
+            console.log(res);
+            const { restaurantName, _id } = res.data.user;
+            dispatch(
+              setUser({
+                isAuthenticated: true,
+                name: restaurantName,
+                role: "seller",
+                id: _id,
+              })
+            );
+            setLoading(false);
+            localStorageSetItem("accessToken", token as string);
+            navigate("/restaurant/");
+          })
+          .catch(({ response }) => {
+            console.log(response);
+            setLoading(false);
+            console.log(response?.data?.message);
+            setError(response?.data?.message);
+          });
+      } catch (error) {
+        console.log((error as Error).message);
+      }
     },
   });
   return (
@@ -59,9 +65,9 @@ const SellerLogin: React.FC = () => {
           Restaurant Login
         </h1>
         <form className="mt-28 space-y-6" onSubmit={formik.handleSubmit}>
-        {errorMessage && (
+          {errorMessage && (
             <p className="text-red-500 font-bold text-lg">{errorMessage}</p>
-        )}
+          )}
           <div className="flex flex-col gap-5 w-[400px] fixed ">
             <div className="relative">
               <input
@@ -81,7 +87,7 @@ const SellerLogin: React.FC = () => {
             </div>
             <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="w-full px-10 py-3 bg-gray-200  outline-none font-semibold"
                 placeholder="Password"
                 {...formik.getFieldProps("password")}
@@ -94,6 +100,22 @@ const SellerLogin: React.FC = () => {
                     {formik.errors.password}
                   </p>
                 )}
+              {formik.values.password &&
+                (showPassword ? (
+                  <span
+                    className="absolute inset-y-0 flex items-center right-3 text-black cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    <HiEyeOff size={20} />
+                  </span>
+                ) : (
+                  <span
+                    className="absolute inset-y-0 flex items-center right-3 text-black cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    <HiEye size={20} />
+                  </span>
+                ))}
             </div>
 
             <button
@@ -101,8 +123,7 @@ const SellerLogin: React.FC = () => {
               type="submit"
               disabled={loading}
             >
-              {loading ? "LOADING" : " LOG IN" }
-             
+              {loading ? "LOADING" : " LOG IN"}
             </button>
             <div className="flex justify-between items-center">
               <Link to={"/Forgot-password"}>

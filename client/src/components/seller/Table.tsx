@@ -8,7 +8,7 @@ import {RootState} from "../../redux/store";
 
 const Table = () => {
   const [tableDatas, setTableDatas] = useState<tableSlotTypes[]>([]);
-  const {isAuthenticated , role , id} = useSelector((state : RootState) => state.user)
+  const {id} = useSelector((state : RootState) => state.user)
   const fetchTableData = async () => {
     try {
         const res = await getTablesSlots(id as string);

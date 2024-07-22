@@ -1,7 +1,7 @@
 import React from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import Button from "../../layouts/Button";
-
+import BannerImage from "../../../assets/banner-image.jpg"
 
 interface HeroProps {
   handleSearch: (query: string) => void;
@@ -19,7 +19,8 @@ const Hero: React.FC<HeroProps> = ({ handleSearch  }) => {
 
       <div className="max-h-[500px] relative">
         <img
-          src="https://wallpapers.com/images/hd/food-table-hklj98qajs2xepqx.jpg"
+          // src="https://wallpapers.com/images/hd/food-table-hklj98qajs2xepqx.jpg"
+          src={BannerImage}
           alt="img"
           className="w-full max-h-[500px] object-bottom object-cover "
         />

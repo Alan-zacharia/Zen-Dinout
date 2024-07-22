@@ -7,6 +7,7 @@ import { format } from 'timeago.js';
 import { MdDateRange } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import AddReviewModal from './AddReviewModal';
+import { formatDate } from '../../../utils/dateValidateFunctions';
 
 const BookingHistory: React.FC = () => {
   const { id } = useSelector((state: RootState) => state.user);
@@ -47,20 +48,11 @@ const BookingHistory: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    };
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', options);
-  };
-
+  
   return (
     <div className="p-8 flex flex-col gap-4">
-      {bookings.length === 0 ? (
+    
+      {bookings && bookings.length === 0 ? (
         <p className="text-gray-500 font-bold">No bookings found.</p>
       ) : (
         <>
@@ -76,12 +68,15 @@ const BookingHistory: React.FC = () => {
               <div className="flex-1 p-2">
                 <p className="text-xl font-bold">{booking.restaurantId.restaurantName}</p>
                 <p className={`text-base font-bold ${getBookingStatusColor(booking.bookingStatus)}`}>{booking.bookingStatus.toLowerCase()}</p>
-                <p className="text-gray-600 flex items-center pt-4"><MdDateRange size={23}/> {formatDate(booking.bookingDate)}</p>
+                <p className="text-gray-600 flex items-center pt-4"><MdDateRange size={23}/> {formatDate(booking.bookingDate)}</p>                
               </div>
-              <div className="absolute bottom-4 right-4">
+              <div className="absolute bottom-4 right-4 flex gap-3">
                 <button onClick={() => handleOpenModal(booking._id)} className="text-blue-500 text-sm font-bold hover:underline">
                   <a href="#my_review">Add Review</a>
                 </button>
+                <Link to={`/account/?list_name=bookings/${booking.bookingId}`}><button  className="text-white text-sm font-bold  bg-green-500 p-1 px-2 rounded-md hover:bg-green-400">
+                  View
+                </button></Link>
               </div>
               <div className='text-sm font-semibold text-right'>
                 <p className="text-gray-500">{format(booking.createdAt)}</p>
@@ -95,8 +90,10 @@ const BookingHistory: React.FC = () => {
               restaurantId={modalData.restaurantId}
             />
           )}
+        
         </>
       )}
+  
     </div>
   );
 };

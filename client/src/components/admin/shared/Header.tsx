@@ -8,19 +8,24 @@ import {
 } from "@headlessui/react";
 import classNames from "classnames";
 import { Fragment } from "react";
-import {
-  HiOutlineBell,
-  HiOutlineChatAlt,
-  HiOutlineSearch,
-} from "react-icons/hi";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { HiOutlineBell, HiOutlineChatAlt } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 
-function Header() {
+interface HeadeProps {
+  handleChange: () => void;
+  menu: boolean;
+}
+const Header: React.FC<HeadeProps> = ({ handleChange, menu }) => {
   const navigate = useNavigate();
   return (
-    <div className="bg-white h-16 px-4 flex justify-between items-center border-b border-gray-300">
-      <div className="relative flex-shrink-0 w-52 md:w-auto"/>
-       
+    <div className="relative bg-white h-16 lg:px-4 flex justify-between items-center border-b border-gray-300">
+      {!menu && (
+        <div className=" lg:hidden absolute left-8 top-5 z-10">
+          <GiHamburgerMenu size={25} onClick={handleChange} />
+        </div>
+      )}
+      <div className="relative flex-shrink-0 h-44 w-52 md:w-auto" />
       <div className="flex items-center gap-4 mr-2">
         <Popover className="relative">
           {({ open }) => (
@@ -142,6 +147,6 @@ function Header() {
       </div>
     </div>
   );
-}
+};
 
 export default Header;

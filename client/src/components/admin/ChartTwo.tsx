@@ -17,7 +17,7 @@ const ChartTwo: React.FC = () => {
   });
 
   const options: ApexOptions = {
-    colors: ['#3C50E0', '#80CAEE'],
+    colors: [ '#00BFFF' ],
     chart: {
       fontFamily: 'Satoshi, sans-serif',
       type: 'bar',
@@ -35,6 +35,7 @@ const ChartTwo: React.FC = () => {
         borderRadius: 0,
         borderRadiusApplication: 'end',
         borderRadiusWhenStacked: 'last',
+        
       },
     },
     dataLabels: {
@@ -60,7 +61,7 @@ const ChartTwo: React.FC = () => {
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8 w-full h-auto md:h-full">
-      <div className="mb-4 justify-between gap-4 sm:flex">
+      <div className="mb-4 justify-between gap-4 sm:flex ">
         <div>
           <h4 className="text-xl font-semibold text-black dark:text-white">
             Profit this week
@@ -106,7 +107,7 @@ const ChartTwo: React.FC = () => {
             options={options}
             series={state.series}
             type="bar"
-            height={335}
+            height={455}
           />
         </div>
       </div>

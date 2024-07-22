@@ -1,11 +1,11 @@
 import axios from "../api/axios";
 axios.defaults.withCredentials = true;
 
-export const axiosGetUser = async()=>{
+export const axiosGetUser = async(page : number)=>{
     try{
-        const {data : {users , message}} = await axios.get("/admin/users-list");
-         console.log({users , message}) 
-          return { users , message};
+        const {data : {users , message , totalPages}} = await axios.get(`/admin/users-list?page=${page}`);
+         console.log({users , message , totalPages})  
+          return { users , message , totalPages};
     }catch(error : any){
         console.log(error.message); 
         throw error;
@@ -14,8 +14,8 @@ export const axiosGetUser = async()=>{
 export const axiosActionsUser = async(id : string , block : boolean)=>{
     try{
         const {data : {users , message}} = await axios.put(`/admin/user-actions/${id}/${block}`);
-         console.log({users , message})
-          return { users , message};
+         console.log({users , message })
+          return { users , message };
     }catch(error : any){
         console.log(error.message); 
         throw error;
@@ -38,19 +38,4 @@ export const adminLogout = async()=>{
     }
 };
 
-// /**
-//  * Function for admin login
-//  * @param data - Object containing email and password for login
-//  * @returns Promise that resolves to an object containing the logged-in  admin , mesage , jwt, or null if login fails
-//  */
-// const adminLogin = async (data: Partial<credentials>): Promise<APIresponse> => {
-//     try {
-//       const {
-//         data: { message, user, token },
-//       } = await axios.post("/admin/login", data);
-//       return { data: { message, user, token } };
-//     } catch (error) {
-//       console.log(error);
-//       throw error;
-//     }
-//   };
+

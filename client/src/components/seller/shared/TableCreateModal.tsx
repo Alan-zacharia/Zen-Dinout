@@ -20,12 +20,13 @@ const TableCreateModal = ({MountAfterUpdate , tableDatas} : {MountAfterUpdate : 
 
   const formik = useFormik<tableSlotTypes>({
     initialValues: {
+      tableId:"",
       tableNumber: "",
       tableCapacity: 2,
       tableLocation: "",
     },
     validationSchema:validateTableSlot,
-    onSubmit: async (tableAddingDatas: tableSlotTypes , {resetForm}) => {
+    onSubmit: async (tableAddingDatas: tableSlotTypes, {resetForm}) => {
      const isDuplicateTableNumber = tableDatas.some(
         (table)=> table.tableNumber === tableAddingDatas.tableNumber && table.tableLocation === tableAddingDatas.tableLocation
      );

@@ -35,6 +35,11 @@ export interface tableTimeSlots {
   slotDate: string;
   IsAvailable: boolean;
 }
+export interface TimeSlots {
+  _id: string;
+  startTime: string;
+  endTime: string;
+}
 
 export interface BookingDetailsType {
   bookingId: string;
@@ -49,6 +54,7 @@ export interface BookingDetailsType {
 }
 export interface BookingsHistory {
   _id : string;
+  bookingId : string;
   userId: {
     username : string;
     email : string;
@@ -62,7 +68,10 @@ export interface BookingsHistory {
   bookingTime: number;
   bookingDate: string;
   bookingStatus: string;
+  paymentStatus: string;
   totalAmount: number;
   paymentMethod: string;
+  guestCount : number,
+  table : string,
   createdAt : string;
 }

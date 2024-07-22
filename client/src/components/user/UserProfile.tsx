@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import axios from "../../api/axios";
@@ -17,8 +17,12 @@ import { useDispatch } from "react-redux";
 import { clearUser } from "../../redux/user/userSlice";
 import logout from "../../utils/Logout";
 import { useNavigate } from "react-router-dom";
+import BookingDetailedView from "../../components/user/profile/BookingDetailedView" 
 
 const UserProfile: React.FC = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const navigation = searchParams.get("list_name");
   const [userDetails, setUserDetails] = useState<userTypesCredentials | null>(
     null
   );
@@ -27,7 +31,7 @@ const UserProfile: React.FC = () => {
   const [name, setName] = useState<string | undefined>(undefined);
   const [email, setEmail] = useState<string | undefined>(undefined);
   const [contact, setContact] = useState<string | undefined>(undefined);
-  const [navigationChange, setNavigationChange] = useState<string>("Profile");
+  const [navigationChange, setNavigationChange] = useState<string>("profile");
   const { isAuthenticated, role, id } = useSelector(
     (state: RootState) => state.user
   );
@@ -46,12 +50,17 @@ const UserProfile: React.FC = () => {
         }
       } catch (error) {
         console.log(error);
-        // Handle error
       }
     };
     fetchData();
   }, [nameInput, contactInput]);
 
+  useEffect(() => {
+    if (navigation) {
+      setNavigationChange(navigation);
+    }
+  }, [navigation]);
+  console.log(navigation); 
   const onEditName = () => {
     setNameInput(!nameInput);
   };
@@ -73,7 +82,6 @@ const UserProfile: React.FC = () => {
       setNameInput(false);
     } catch (error) {
       console.log(error);
-      // Handle error
     }
   };
 
@@ -97,18 +105,18 @@ const UserProfile: React.FC = () => {
   };
 
   const handleNavigation = (navigation: string) => {
+    navigate(`/account/?list_name=${navigation}`);
     setNavigationChange(navigation);
   };
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const handleClick = () => {
     dispatch(clearUser());
     logout("Logout Successfully completed");
     localStorage.removeItem("accessToken");
     navigate("/login");
   };
-
+  console.log(navigationChange); 
   return (
     <>
       <div className="fixed top-0 left-0 w-full z-50">
@@ -138,39 +146,48 @@ const UserProfile: React.FC = () => {
                 <ul className="flex flex-col gap-4 text-sm font-semibold">
                   <li
                     className={`nav-item p-2 rounded-2xl cursor-pointer flex items-center ${
-                      navigationChange === "Profile"
+                      navigationChange === "profile"
                         ? "bg-gray-200 text-blue-400"
                         : "hover:bg-gray-200"
                     }`}
-                    onClick={() => handleNavigation("Profile")}
+                    onClick={() => handleNavigation("profile")}
                   >
                     <FaUserCircle size={20} /> &nbsp; Profile Details
                   </li>
                   <li
                     className={`nav-item p-2 rounded-2xl cursor-pointer flex items-center ${
-                      navigationChange === "Bookings"
+                      navigationChange === "bookings"
                         ? "bg-gray-200 text-blue-400"
                         : "hover:bg-gray-200"
                     }`}
-                    onClick={() => handleNavigation("Bookings")}
+                    onClick={() => handleNavigation("bookings")}
                   >
                     <RiChatHistoryFill size={21} /> &nbsp; Booking History
                   </li>
                   <li
                     className={`nav-item p-2 rounded-2xl cursor-pointer flex items-center ${
-                      navigationChange === "Bookmarks"
+                      navigationChange === "bookmarks"
                         ? "bg-gray-200 text-blue-400"
                         : "hover:bg-gray-200"
                     }`}
-                    onClick={() => handleNavigation("Bookmarks")}
+                    onClick={() => handleNavigation("bookmarks")}
                   >
                     <FaBookmark size={20} /> &nbsp; Bookmarks
                   </li>
-                  <li className="nav-item p-2 rounded-2xl cursor-pointer flex items-center hover:bg-gray-200">
+                  <li
+                    className={`nav-item p-2 rounded-2xl cursor-pointer flex items-center ${
+                      navigationChange === "data"
+                        ? "bg-gray-200 text-blue-400"
+                        : "hover:bg-gray-200"
+                    }`}
+                    onClick={() => handleNavigation("data")}
+                  >
                     <BsBoxFill /> &nbsp; Order History
                   </li>
-                  <li className="nav-item p-2 rounded-2xl cursor-pointer flex items-center hover:bg-gray-200"
-                  onClick={handleClick}>
+                  <li
+                    className="nav-item p-2 rounded-2xl cursor-pointer flex items-center hover:bg-gray-200"
+                    onClick={handleClick}
+                  >
                     <RiLogoutBoxRFill
                       size={20}
                       className="hover:text-red-600"
@@ -184,7 +201,7 @@ const UserProfile: React.FC = () => {
 
           <div className="w-2/3 overflow-y-auto">
             <div className="bg-white shadow-xl shadow-neutral-300 p-5 rounded-lg">
-              {navigationChange === "Profile" && (
+              {navigationChange === "profile" && (
                 <div className="flex flex-col gap-10">
                   <div className="flex items-center gap-5">
                     <h1 className="text-xl font-bold">Personal Info</h1>
@@ -243,7 +260,7 @@ const UserProfile: React.FC = () => {
                       value={email}
                       disabled
                     />
-                  </div>
+                  </div> 
 
                   <div className="flex items-center gap-5">
                     <h1 className="text-xl font-bold">Contact</h1>
@@ -332,7 +349,7 @@ const UserProfile: React.FC = () => {
                   </div>
                 </div>
               )}
-              {navigationChange === "Bookings" && (
+              {navigationChange === "bookings" && (
                 <>
                   <h1 className="text-2xl font-bold text-black mb-4">
                     Booking History
@@ -342,13 +359,20 @@ const UserProfile: React.FC = () => {
                   </div>
                 </>
               )}
-              {navigationChange === "Bookmarks" && (
+              {navigationChange === "bookmarks" && (
                 <>
                   <h1 className="text-2xl font-bold text-black mb-4">
-                  {navigationChange}
+                    {navigationChange}
                   </h1>
                   <div className="max-h-[700px] overflow-y-auto">
                     <BookMarks />
+                  </div>
+                </>
+              )}
+              {navigationChange.startsWith("bookings/") && (
+                <>
+                  <div className="max-h-[700px] overflow-y-auto">
+                    <BookingDetailedView bookingId={navigationChange.split('/')[1]} />
                   </div>
                 </>
               )}

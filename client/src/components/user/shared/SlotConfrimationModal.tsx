@@ -19,7 +19,7 @@ const SlotConfrimationModal = ({
   isModalOpen: boolean;
   restaurantDetails: RestaurantType | undefined;
   time: string;
-  selectedGuests: string;
+  selectedGuests: number;
   date: string;
   tableId : string | undefined;
   timeSlotId : string | undefined
@@ -38,7 +38,7 @@ const SlotConfrimationModal = ({
         restaurantId : restaurantDetails._id,
         restaurantName : restaurantDetails.restaurantName,
         time,
-        guests : parseInt(selectedGuests),
+        guests : selectedGuests,
         date,
         tableId,
         timeSlotId,

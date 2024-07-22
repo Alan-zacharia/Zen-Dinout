@@ -1,5 +1,5 @@
 import React from 'react'
-import Login from '../../components/admin/LoginForm'
+import Login from '../../components/auth/AdminLoginForm'
 
 
 

@@ -14,6 +14,14 @@ import { RestaurantType } from "../../types/restaurantTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 
+const convertToLocalTime = (utcDateTime : string) => {
+  const date = new Date(utcDateTime);
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const formattedHours = hours.toString().padStart(2, '0');
+  const formattedMinutes = minutes.toString().padStart(2, '0');
+  return `${formattedHours}:${formattedMinutes}`;
+};
 const RestaurantDetails = () => {
   const { isAuthenticated, role, id } = useSelector(
     (state: RootState) => state.user
@@ -41,6 +49,8 @@ const RestaurantDetails = () => {
         if (isAuthenticated && role == "seller") {
           const res = await axios.get(`/restaurant/restaurant-details/${id}`);
           if (res.data.restaurantDetails) {
+            res.data.restaurantDetails.openingTime = convertToLocalTime(res.data.restaurantDetails.openingTime)
+            res.data.restaurantDetails.closingTime = convertToLocalTime(res.data.restaurantDetails.closingTime)
             setRestaurantDetails(res.data.restaurantDetails);
             formik.setValues({
               ...formik.values,
@@ -50,8 +60,8 @@ const RestaurantDetails = () => {
               address: res.data.restaurantDetails.address,
               description: res.data.restaurantDetails.description,
               TableRate: res.data.restaurantDetails.TableRate,
-              openingTime: res.data.restaurantDetails.openingTime,
-              closingTime: res.data.restaurantDetails.closingTime,
+              openingTime:convertToLocalTime(res.data.restaurantDetails.openingTime),
+              closingTime:convertToLocalTime(res.data.restaurantDetails.closingTime),
               featuredImage: res.data.restaurantDetails.featuredImage,
               secondaryImages: res.data.restaurantDetails.secondaryImages,
               location: {
@@ -71,7 +81,7 @@ const RestaurantDetails = () => {
 
     fetchData();
   }, []);
-
+  console.log(restaurantDetails.openingTime)
   const [suggestion, setSuggestions] = useState<any[]>([]);
   const [lat, setLat] = useState<number>(10.0);
   const [lng, setLng] = useState<number>(76.5);
@@ -80,7 +90,7 @@ const RestaurantDetails = () => {
   const [secondaryImage, setSecondaryImage] = useState<File | null>(null);
   const { error, registerFn } = useSellerRegisteration();
   const [loadings, setLoadings] = useState(false);
-
+  console.log(restaurantDetails.openingTime)
   const formik = useFormik({
     initialValues: {
       restaurantName: restaurantDetails.restaurantName,
@@ -101,7 +111,18 @@ const RestaurantDetails = () => {
     },
     validationSchema: sellerRegiseterationValidation,
     onSubmit: async (data) => {
-      console.log(data.featuredImage)
+      data.openingTime = restaurantDetails.openingTime
+      data.closingTime = restaurantDetails.closingTime
+      console.log(data.openingTime , data.closingTime)  
+      const today = new Date();
+      const startTimeParts = data.openingTime.split(":");
+      const endTimeParts = data.closingTime.split(":");
+      today.setHours(parseInt(startTimeParts[0], 10));
+      today.setMinutes(parseInt(startTimeParts[1], 10));
+      data.openingTime = today.toISOString();
+      today.setHours(parseInt(endTimeParts[0], 10));
+      today.setMinutes(parseInt(endTimeParts[1], 10));
+      data.closingTime = today.toISOString();
       try {
         setLoadings(true);
         await imageCloudUpload(data.featuredImage).then((res) => {
@@ -184,6 +205,7 @@ const RestaurantDetails = () => {
   // Handle change of contact input
   const handleInputContactChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log(restaurantDetails)
     setRestaurantDetails({ ...restaurantDetails, [name]: value });
     formik.setFieldValue(name, value);
   };
@@ -228,6 +250,7 @@ const RestaurantDetails = () => {
   // Handle change of closing time input
   const handleClosingTime = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log(value)
     setRestaurantDetails({ ...restaurantDetails, [name]: value });
     formik.setFieldValue(name, value);
   };
@@ -243,7 +266,7 @@ const RestaurantDetails = () => {
       console.error("Error fetching locations:", error);
     }
   };
-
+  console.log(formik.errors)
   return (
     <div className="h-full pt-7 mt-32  mx-auto">
       <Toaster position="top-center" />
@@ -385,6 +408,7 @@ const RestaurantDetails = () => {
                     onChange={handleOpeningTime}
                     value={restaurantDetails.openingTime}
                   />
+
                   {formik.touched.openingTime && formik.errors.openingTime && (
                     <div className="text-red-500 text-sm pt-2">
                       {formik.errors.openingTime}

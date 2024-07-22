@@ -1,76 +1,90 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import TimeSlotAddModal from "./shared/TimeSlotAddModal";
+import ConfrimationModal from "./shared/ConfirmationDeleteModal";
+import axiosInstance from "../../api/axios";
+interface TimeSlotType {
+  startTime: string;
+  endTime: string;
+  _id: string;
+}
+const TimeSlots: React.FC = () => {
+  const [timeSlots, setTimeSlots] = useState<TimeSlotType[]>([]);
+  const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
+  const [timeSlotId, setTimeSlotId] = useState<string>("");
+  useEffect(() => {
+    axiosInstance
+      .get("/restaurant/get-time-slots")
+      .then((res) => {
+        setTimeSlots(res.data.timeSlots);
+      })
+      .catch(({ response }) => {
+        console.log(response.data);
+      });
+  }, []);
 
-const TimeSlots = () => {
+  const formatTime = (time: string): string => {
+    const date = new Date(time);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+  const addTimeSlot = (newSlot: TimeSlotType) => {
+    setTimeSlots((prevSlots) => [...prevSlots, newSlot]);
+  };
+
+  const handleOpenConfirmation = (timeSlotId : string) => {
+    setOpenConfirmation(true);
+    setTimeSlotId(timeSlotId)
+  };
+
   return (
-    <div className="h-full lg:w-[800px] w-screen mx-10 mt-24 fixed">
-      <div className="pt-10 ">
-        <h1 className="text-xl font-bold ">Time Slots</h1>
-        <form >
-          <div className="flex flex-col gap-4 mt-7">
-              <h1 className="text-base font-bold text-orange-500 ">Add new slots</h1>
-            <div className="flex flex-row gap-4 pb-5">
-              
-          
-                <div>
-                  <label className="text-sm font-semibold block p-2">Start Time</label>
-                  <input type="time" className="border border-gray-300 rounded-md p-2"/>  
-                </div>
-                <div>
-                <label className="text-sm block font-semibold p-2">End Time</label>
-                <input type="time" className="border border-gray-300 rounded-md p-2"/>  
-                </div>
-              </div>
-           
+    <>
+      <ConfrimationModal
+        onClose={() => setOpenConfirmation(false)}
+        onConfirm={() => {
+          setOpenConfirmation(false);
+        }}
+        openConfirmation={openConfirmation}
+        timeSlotId={timeSlotId}
+        setTimeSlots={setTimeSlots}
+      />
+      <div className=" lg:w-[700px] w-screen mx-10 mt-24 relative">
+        <div className="pt-10">
+          <h1 className="text-xl font-bold">Time Slots</h1>
+          <div className="flex justify-end">
+            <TimeSlotAddModal addTimeSlot={addTimeSlot} timeSlots={timeSlots} />
           </div>
-        </form>
-        <div className="overflow-x-auto  h-[500px]">
-          <table className="table table-pin-rows">
-            <thead>
-              <tr>
-                <th className="text-base font-bold">Time</th>
-                <th className="text-base font-bold ">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <td>2:00 - 3:00</td>
-              <td><button className="btn btn-error btn-sm text-white">Delete</button></td>
-            </tbody>
-            <tbody>
-              <td>2:00 - 3:00</td>
-              <td><button className="btn btn-error btn-sm text-white">Delete</button></td>
-            </tbody>
-            <tbody>
-              <td>2:00 - 3:00</td>
-              <td><button className="btn btn-error btn-sm text-white">Delete</button></td>
-            </tbody>
-            <tbody>
-              <td>2:00 - 3:00</td>
-              <td><button className="btn btn-error btn-sm text-white">Delete</button></td>
-            </tbody>
-            <tbody>
-              <td>2:00 - 3:00</td>
-              <td><button className="btn btn-error btn-sm text-white">Delete</button></td>
-            </tbody>
-            <tbody>
-              <td>2:00 - 3:00</td>
-              <td><button className="btn btn-error btn-sm text-white">Delete</button></td>
-            </tbody>
-            <tbody>
-              <td>2:00 - 3:00</td>
-              <td><button className="btn btn-error btn-sm text-white">Delete</button></td>
-            </tbody>
-            <tbody>
-              <td>2:00 - 3:00</td>
-              <td><button className="btn btn-error btn-sm text-white">Delete</button></td>
-            </tbody>
-            <tbody>
-              <td>2:00 - 3:00</td>
-              <td><button className="btn btn-error btn-sm text-white">Delete</button></td>
-            </tbody>
-          </table>
+          <div className="px-4 flex gap-[360px] w-[550px] p-3 border">
+            <h5 className="text-black font-bold text-lg ">Time</h5>
+            <h5 className="text-black font-bold text-lg ">Action</h5>
+          </div>
+          <div className="overflow-x-auto h-[500px] w-[550px]  shadow-xl border border-gray-200">
+            {timeSlots && timeSlots.length > 0 ? (
+              <table className="table-fixed w-full font-bold text-gray-600">
+                <tbody>
+                  {timeSlots.map((slot, index) => (
+                    <tr key={index} className="border-b h-14">
+                      <td className="text-base px-4 py-2  w-1/2">
+                        {formatTime(slot.startTime)} -{" "}
+                        {formatTime(slot.endTime)}{" "}
+                      </td>
+                      <td className="px-36 py-2 w-1/2">
+                        <button className="btn btn-error btn-sm text-white"
+                      onClick={()=>handleOpenConfirmation(slot._id)}>
+                        Delete
+                      </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="flex px-40  text-black font-bold text-lg p-5">
+                No time slots added
+              </p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

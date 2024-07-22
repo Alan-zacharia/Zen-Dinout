@@ -62,7 +62,7 @@ const adminLogin = async (data: Partial<credentials>) => {
   try {
     const {
       data: { message, user, token ,  refreshToken },
-    } = await axios.post("/admin/login", data);
+    } = await axiosApi.post("http://localhost:3000/admin/login", data);
     return { data: { message, user, token , refreshToken} };
   } catch (error) {
     console.log(error); 
@@ -116,11 +116,11 @@ const validateToken = async () => {
     return response;
 };
 
-const getRestaurantTableSlot = async (restaurantId : string | undefined , date : string , selectedGuests : string)=>{
+const getRestaurantTableSlot = async (restaurantId : string | undefined , date : string )=>{
   try {
-    const { data: { TimeSlots },} = await axios.post("/api/restaurant-slots",{restaurantId , date , selectedGuests});
-    console.log(TimeSlots);
-    return { TimeSlots };
+    const { data } = await axios.post("/api/restaurant-slots",{restaurantId , date });
+    console.log(data);
+    return { data };
   } catch (error) {
     console.log(error);  
     throw error;

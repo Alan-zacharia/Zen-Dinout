@@ -14,7 +14,7 @@ interface UserType {
   password: string;
 };
 
-const LoginForm: React.FC = () => {
+const UserLoginForm: React.FC = () => {
   localStorageRemoveItem("&reset%pas%%");
   const userRef = useRef<HTMLInputElement>(null);
   const [loading , setLoading] = useState<boolean>(false);
@@ -153,4 +153,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default UserLoginForm;

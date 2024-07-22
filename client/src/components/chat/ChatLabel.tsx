@@ -11,16 +11,22 @@ const ChatLabel = ({
   currentChat,
   role,
   currentUser,
-  handleChat
+  handleChat,
+  isTyping,
+  users,
+  socket
 }: {
   currentChat: ConversationType;
   role: string | null;
   currentUser: string | null | undefined;
-  handleChat : ()=> void
+  handleChat: () => void;
+  isTyping: boolean;
+  users: { userId: string; online: boolean }[];
+  socket : any
 }) => {
   const [label, setLabel] = useState<labelType>();
+  const communicatorId = currentChat.members.find((m) => m !== currentUser);
   useEffect(() => {
-    const communicatorId = currentChat.members.find((m) => m !== currentUser);
     if (role == "user") {
       const getRestaurant = async () => {
         try {
@@ -47,17 +53,30 @@ const ChatLabel = ({
       getUsers();
     }
   }, [currentUser, currentChat]);
+
+  const [onlineStatus, setOnlineStatus] = useState<boolean>(false);
+
+  useEffect(() => {
+    const user = users.find((user) => user.userId === communicatorId);
+    if (user) {
+      setOnlineStatus(true);
+    } else {
+      setOnlineStatus(false);
+    }
+  }, [users, communicatorId]);
+
   return (
-    <div className="w-[40%] bg-neutral-200 h-[70px] mt-20 rounded-full flex items-center px-14 py-2">
+    <div className="w-[100%] bg-white  shadow-sm border border-b-slate-400 h-[70px]  flex items-center px-14 py-2">
       <div className="cursor-pointer">
-        <img
-          src={
-            "https://static.vecteezy.com/system/resources/previews/000/574/512/large_2x/vector-sign-of-user-icon.jpg"
-          }
-          width={40}
-          height={40}
-          className="rounded-full"
-        />
+        {role == "user" ? (
+          <div className="bg-black text-white w-10 h-10  text-center rounded-full text-2xl font-bold border border-b-8  border-blue-600">
+            {label?.restaurantName.charAt(0)}
+          </div>
+        ) : (
+          <div className="bg-black text-white w-10 h-10  text-center rounded-full text-2xl font-bold border border-b-8  border-blue-600">
+            {label?.username.charAt(0)}
+          </div>
+        )}
       </div>
 
       <div className="ml-6 mr-auto">
@@ -66,30 +85,20 @@ const ChatLabel = ({
         ) : (
           <h3 className="text-[17px] font-bold">{label?.username}</h3>
         )}
-        <p className="text-sm font-bold text-gray-500">{label?.email}</p>
+        {isTyping ? (
+          <div className="text-sm font-bold text-green-500">Typing...</div>
+        ) : (
+          onlineStatus && (
+            <p className="text-sm font-bold text-green-500">Online</p>
+          )
+        )}
       </div>
       <div className="cursor-pointer" onClick={handleChat}>
-        <ImCross size={20}/>
-        {/* <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="icon icon-tabler icon-tabler-phone-outgoing"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="black"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
-          <line x1="15" y1="9" x2="20" y2="4" />
-          <polyline points="16 4 20 4 20 8" />
-        </svg> */}
+        <ImCross size={20} />
       </div>
     </div>
   );
 };
 
 export default ChatLabel;
+
